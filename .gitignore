@@ -6,3 +6,8 @@ __pycache__/
 attendance_reports/
 discord_exports/
 *.json.bak
+# Temporary daily CSV files (the real data is in attendance_reports/)
+daily_attendance_*.csv
+
+# Symlink
+MTN_Repo

@@ -6,6 +6,7 @@ Tracks: check-in/check-out times, brb duration, work hours, leave requests, idle
 import json
 import re
 import csv
+import sqlite3
 from datetime import datetime, timedelta
 from collections import defaultdict
 import os
@@ -15,6 +16,9 @@ import glob
 # Use environment variables with fallback to original paths for Docker compatibility
 BASE_DIR = os.environ.get('APP_BASE_DIR', '/root/infrastructure')
 SCRIPTS_DIR = os.environ.get('SCRIPTS_DIR', os.path.join(BASE_DIR, 'scripts'))
+
+# SQLite database path
+ATTENDANCE_DB_PATH = os.path.join(BASE_DIR, 'attendance_reports', 'attendance.db')
 
 DISCORD_EXPORTS_DIR = os.environ.get('DISCORD_EXPORT_DIR', os.path.join(BASE_DIR, 'discord_exports'))
 LEAVE_LOG_FILE = os.path.join(SCRIPTS_DIR, 'leave_log.json')
@@ -1247,11 +1251,39 @@ def save_leave_log(data):
 
 # === Leave Database Integration ===
 def load_leave_database():
-    """Load pre-parsed leave database"""
-    if os.path.exists(LEAVE_DATABASE_FILE):
-        with open(LEAVE_DATABASE_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {}
+    """Load pre-parsed leave database from SQLite"""
+    leave_db = {}
+    
+    if not os.path.exists(ATTENDANCE_DB_PATH):
+        # Fallback to JSON if SQLite not available
+        if os.path.exists(LEAVE_DATABASE_FILE):
+            with open(LEAVE_DATABASE_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        return {}
+    
+    try:
+        conn = sqlite3.connect(ATTENDANCE_DB_PATH)
+        cursor = conn.cursor()
+        
+        cursor.execute('SELECT name, date, leave_type, hours FROM leave_records')
+        for row in cursor.fetchall():
+            name, date_str, leave_type, hours = row
+            if name not in leave_db:
+                leave_db[name] = {}
+            leave_db[name][date_str] = {
+                'type': leave_type,
+                'hours': hours
+            }
+        
+        conn.close()
+    except Exception as e:
+        print(f"Error loading leave database from SQLite: {e}")
+        # Fallback to JSON
+        if os.path.exists(LEAVE_DATABASE_FILE):
+            with open(LEAVE_DATABASE_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+    
+    return leave_db
 
 
 # === Attendance Database Integration ===
@@ -1352,11 +1384,38 @@ def get_leave_ranges(name, date_str):
 REMOTE_WORK_DB_FILE = os.path.join(SCRIPTS_DIR, 'remote_work_database.json')
 
 def load_remote_work_database():
-    """Load remote work database"""
-    if os.path.exists(REMOTE_WORK_DB_FILE):
-        with open(REMOTE_WORK_DB_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return {}
+    """Load remote work database from SQLite"""
+    remote_db = {}
+    
+    if not os.path.exists(ATTENDANCE_DB_PATH):
+        # Fallback to JSON if SQLite not available
+        if os.path.exists(REMOTE_WORK_DB_FILE):
+            with open(REMOTE_WORK_DB_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        return {}
+    
+    try:
+        conn = sqlite3.connect(ATTENDANCE_DB_PATH)
+        cursor = conn.cursor()
+        
+        cursor.execute('SELECT name, date, location FROM remote_work')
+        for row in cursor.fetchall():
+            name, date_str, location = row
+            if name not in remote_db:
+                remote_db[name] = {}
+            remote_db[name][date_str] = {
+                'location': location
+            }
+        
+        conn.close()
+    except Exception as e:
+        print(f"Error loading remote work database from SQLite: {e}")
+        # Fallback to JSON
+        if os.path.exists(REMOTE_WORK_DB_FILE):
+            with open(REMOTE_WORK_DB_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+    
+    return remote_db
 
 
 def is_remote_work(name, date_str):
@@ -1378,237 +1437,98 @@ def is_remote_work(name, date_str):
 
 
 def get_idle_time(name, date_str):
-    """Get idle time (in minutes) for person on given date from idle tracker bot"""
-    if not os.path.exists(IDLE_TIME_FILE):
+    """Get idle time (in minutes) for person on given date from SQLite database"""
+    if not os.path.exists(ATTENDANCE_DB_PATH):
         return None
     
     try:
-        with open(IDLE_TIME_FILE, 'r') as f:
-            idle_data = json.load(f)
-        
-        # Load user info to map user_id to display_name
-        user_info = {}
-        if os.path.exists(IDLE_USERS_FILE):
-            with open(IDLE_USERS_FILE, 'r') as f:
-                user_info = json.load(f)
-        
         # Convert date to string if it's a datetime.date object
         if hasattr(date_str, 'strftime'):
             date_key = date_str.strftime('%Y-%m-%d')
         else:
             date_key = str(date_str)
         
-        if date_key not in idle_data:
-            return None
+        conn = sqlite3.connect(ATTENDANCE_DB_PATH)
+        cursor = conn.cursor()
         
-        # Map display names to standard names
-        IDLE_NAME_MAP = {
-            'mohsen': 'Mohsen Roudsaz',
-            'erfan': 'Erfan Heidari',
-            'mahsa': 'Zeinabsadat Hejazi',
-            'mari': 'Maryam Yousefi',
-            # 'maryam': 'Maryam Yousefi',  # Removed - conflicts with Maryam Marefati
-            'hossein shahreza': 'Hosseinali Shirali',
-            'nader': 'Nader Shabibi',
-            'nissay87': 'Yassin Alivand',  # Fixed: nissay87 is Yassin, not Ehsan
-            'esi': 'Ehsan Yousefi',
-            'masoud sereshki': 'Masoud Sereshki',
-            'masoud': 'Masoud Rafiei',  # Just 'Masoud' display_name = Rafiei
-            'k1 sadeghi': 'Keivan Sadeghi',
-            'yassin': 'Yassin Alivand',
-        }
+        cursor.execute('''
+            SELECT minutes FROM idle_tracking
+            WHERE date = ? AND standard_name = ?
+        ''', (date_key, name))
         
-        # Also map by username (after removing numbers)
-        USERNAME_MAP = {
-            'mohsen.roud': 'Mohsen Roudsaz',
-            'erfan_heidari': 'Erfan Heidari',
-            'mahsahejszi': 'Zeinabsadat Hejazi',
-            'maryam.you': 'Maryam Yousefi',
-            'hosseinshahreza': 'Hosseinali Shirali',
-            'nader3307': 'Nader Shabibi',
-            'nissay87': 'Yassin Alivand',  # Fixed
-            'ehsan.yo': 'Ehsan Yousefi',
-            'masoudsereshki': 'Masoud Sereshki',
-            'masoudraafiee': 'Masoud Rafiei',  # Added
-            'k1.sadeghi_15101': 'Keivan Sadeghi',
-            # 'maryam6409': 'Maryam Marefati',  # Excluded member
-        }
+        row = cursor.fetchone()
+        conn.close()
         
-        # Get idle data for this date
-        day_idle = idle_data[date_key]
-        
-        for user_id, minutes in day_idle.items():
-            # Get display name from user_info
-            info = user_info.get(user_id, {})
-            display_name = info.get('display_name', '').lower()
-            username = info.get('name', '').lower()
-            
-            # Try to match with our name
-            name_lower = name.lower()
-            matched_name = IDLE_NAME_MAP.get(display_name) or USERNAME_MAP.get(username)
-            
-            if matched_name == name:
-                return round(minutes, 1)
-            
-            # No more fallback - the maps above should cover all cases
-            # Fallback matching by first name was causing Masoud Rafiei/Sereshki confusion
-        
+        if row:
+            return round(row[0], 1)
         return None
         
     except Exception as e:
-        print(f"Error loading idle time: {e}")
+        print(f"Error loading idle time from SQLite: {e}")
         return None
 
 
 def get_offline_time(name, date_str):
-    """Get offline time (in minutes) for person on given date from idle tracker bot"""
-    if not os.path.exists(OFFLINE_TIME_FILE):
+    """Get offline time (in minutes) for person on given date from SQLite database"""
+    if not os.path.exists(ATTENDANCE_DB_PATH):
         return None
     
     try:
-        with open(OFFLINE_TIME_FILE, 'r') as f:
-            offline_data = json.load(f)
-        
-        # Load user info to map user_id to display_name
-        user_info = {}
-        if os.path.exists(IDLE_USERS_FILE):
-            with open(IDLE_USERS_FILE, 'r') as f:
-                user_info = json.load(f)
-        
         # Convert date to string if it's a datetime.date object
         if hasattr(date_str, 'strftime'):
             date_key = date_str.strftime('%Y-%m-%d')
         else:
             date_key = str(date_str)
         
-        if date_key not in offline_data:
-            return None
+        conn = sqlite3.connect(ATTENDANCE_DB_PATH)
+        cursor = conn.cursor()
         
-        # Map display names to standard names (same as idle)
-        IDLE_NAME_MAP = {
-            'mohsen': 'Mohsen Roudsaz',
-            'erfan': 'Erfan Heidari',
-            'mahsa': 'Zeinabsadat Hejazi',
-            'mari': 'Maryam Yousefi',
-            'hossein shahreza': 'Hosseinali Shirali',
-            'nader': 'Nader Shabibi',
-            'nissay87': 'Yassin Alivand',  # Fixed
-            'esi': 'Ehsan Yousefi',
-            'masoud sereshki': 'Masoud Sereshki',
-            'masoud': 'Masoud Rafiei',  # Added
-            'k1 sadeghi': 'Keivan Sadeghi',
-            'yassin': 'Yassin Alivand',
-        }
+        cursor.execute('''
+            SELECT minutes FROM offline_tracking
+            WHERE date = ? AND standard_name = ?
+        ''', (date_key, name))
         
-        USERNAME_MAP = {
-            'mohsen.roud': 'Mohsen Roudsaz',
-            'erfan_heidari': 'Erfan Heidari',
-            'mahsahejszi': 'Zeinabsadat Hejazi',
-            'maryam.you': 'Maryam Yousefi',
-            'hosseinshahreza': 'Hosseinali Shirali',
-            'nader3307': 'Nader Shabibi',
-            'nissay87': 'Yassin Alivand',  # Fixed
-            'ehsan.yo': 'Ehsan Yousefi',
-            'masoudsereshki': 'Masoud Sereshki',
-            'masoudraafiee': 'Masoud Rafiei',  # Added
-            'k1.sadeghi_15101': 'Keivan Sadeghi',
-        }
+        row = cursor.fetchone()
+        conn.close()
         
-        day_offline = offline_data[date_key]
-        
-        for user_id, minutes in day_offline.items():
-            info = user_info.get(user_id, {})
-            display_name = info.get('display_name', '').lower()
-            username = info.get('name', '').lower()
-            
-            name_lower = name.lower()
-            matched_name = IDLE_NAME_MAP.get(display_name) or USERNAME_MAP.get(username)
-            
-            if matched_name == name:
-                return round(minutes, 1)
-            
-            # No more fallback - use explicit maps only
-        
+        if row:
+            return round(row[0], 1)
         return None
         
     except Exception as e:
-        print(f"Error loading offline time: {e}")
+        print(f"Error loading offline time from SQLite: {e}")
         return None
 
 
 def get_voice_time(name, date_str):
-    """Get voice channel time (in minutes) for person on given date from idle tracker bot"""
-    if not os.path.exists(VOICE_TIME_FILE):
+    """Get voice channel time (in minutes) for person on given date from SQLite database"""
+    if not os.path.exists(ATTENDANCE_DB_PATH):
         return None
     
     try:
-        with open(VOICE_TIME_FILE, 'r') as f:
-            voice_data = json.load(f)
-        
-        # Load user info to map user_id to display_name
-        user_info = {}
-        if os.path.exists(IDLE_USERS_FILE):
-            with open(IDLE_USERS_FILE, 'r') as f:
-                user_info = json.load(f)
-        
         # Convert date to string if it's a datetime.date object
         if hasattr(date_str, 'strftime'):
             date_key = date_str.strftime('%Y-%m-%d')
         else:
             date_key = str(date_str)
         
-        if date_key not in voice_data:
-            return None
+        conn = sqlite3.connect(ATTENDANCE_DB_PATH)
+        cursor = conn.cursor()
         
-        # Map display names to standard names (same as idle)
-        IDLE_NAME_MAP = {
-            'mohsen': 'Mohsen Roudsaz',
-            'erfan': 'Erfan Heidari',
-            'mahsa': 'Zeinabsadat Hejazi',
-            'mari': 'Maryam Yousefi',
-            'hossein shahreza': 'Hosseinali Shirali',
-            'nader': 'Nader Shabibi',
-            'nissay87': 'Yassin Alivand',  # Fixed
-            'esi': 'Ehsan Yousefi',
-            'masoud sereshki': 'Masoud Sereshki',
-            'masoud': 'Masoud Rafiei',  # Added
-            'k1 sadeghi': 'Keivan Sadeghi',
-            'yassin': 'Yassin Alivand',
-        }
+        cursor.execute('''
+            SELECT minutes FROM voice_tracking
+            WHERE date = ? AND standard_name = ?
+        ''', (date_key, name))
         
-        USERNAME_MAP = {
-            'mohsen.roud': 'Mohsen Roudsaz',
-            'erfan_heidari': 'Erfan Heidari',
-            'mahsahejszi': 'Zeinabsadat Hejazi',
-            'maryam.you': 'Maryam Yousefi',
-            'hosseinshahreza': 'Hosseinali Shirali',
-            'nader3307': 'Nader Shabibi',
-            'nissay87': 'Yassin Alivand',  # Fixed
-            'ehsan.yo': 'Ehsan Yousefi',
-            'masoudsereshki': 'Masoud Sereshki',
-            'masoudraafiee': 'Masoud Rafiei',  # Added
-            'k1.sadeghi_15101': 'Keivan Sadeghi',
-        }
+        row = cursor.fetchone()
+        conn.close()
         
-        day_voice = voice_data[date_key]
-        
-        for user_id, minutes in day_voice.items():
-            info = user_info.get(user_id, {})
-            display_name = info.get('display_name', '').lower()
-            username = info.get('name', '').lower()
-            
-            name_lower = name.lower()
-            matched_name = IDLE_NAME_MAP.get(display_name) or USERNAME_MAP.get(username)
-            
-            if matched_name == name:
-                return round(minutes, 1)
-            
-            # No more fallback - use explicit maps only
-        
+        if row:
+            return round(row[0], 1)
         return None
         
     except Exception as e:
-        print(f"Error loading voice time: {e}")
+        print(f"Error loading voice time from SQLite: {e}")
         return None
 
 

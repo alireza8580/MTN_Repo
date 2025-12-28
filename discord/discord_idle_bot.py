@@ -23,6 +23,7 @@ import discord
 from discord.ext import commands, tasks
 import json
 import os
+import sqlite3
 from datetime import datetime, timedelta
 from collections import defaultdict
 from pathlib import Path
@@ -126,6 +127,35 @@ user_info = {}  # {user_id: {'name': str, 'display_name': str}}
 # Check-in/Check-out times (loaded from attendance_tracker or detected via messages)
 user_work_hours = {}  # {user_id: {'check_in': datetime, 'check_out': datetime}}
 
+# SQLite attendance database path
+ATTENDANCE_DB_PATH = Path('/root/infrastructure/attendance_reports/attendance.db')
+
+# Standard name mapping (Discord display name -> Standard name for SQLite)
+STANDARD_NAME_MAP = {
+    'mohsen': 'Mohsen Roudsaz',
+    'erfan': 'Erfan Heidari',
+    'mahsa': 'Zeinabsadat Hejazi',
+    'mari': 'Maryam Yousefi',
+    'hossein shahreza': 'Hosseinali Shirali',
+    'nader': 'Nader Shabibi',
+    'nissay87': 'Yassin Alivand',
+    'esi': 'Ehsan Yousefi',
+    'masoud sereshki': 'Masoud Sereshki',
+    'masoud': 'Masoud Rafiei',
+    'k1 sadeghi': 'Keivan Sadeghi',
+    'yassin': 'Yassin Alivand',
+    'mohsen.roud': 'Mohsen Roudsaz',
+    'erfan_heidari': 'Erfan Heidari',
+    'mahsahejszi': 'Zeinabsadat Hejazi',
+    'maryam.you': 'Maryam Yousefi',
+    'hosseinshahreza': 'Hosseinali Shirali',
+    'nader3307': 'Nader Shabibi',
+    'ehsan.yo': 'Ehsan Yousefi',
+    'masoudsereshki': 'Masoud Sereshki',
+    'masoudraafiee': 'Masoud Rafiei',
+    'k1.sadeghi_15101': 'Keivan Sadeghi',
+}
+
 
 def get_iran_time():
     """Get current time in Iran timezone"""
@@ -225,6 +255,83 @@ def load_data():
             print(f"Error loading user status: {e}")
 
 
+def get_standard_name(user_id: int) -> str:
+    """Convert Discord user ID to standard name for SQLite"""
+    if user_id not in user_info:
+        return None
+    
+    info = user_info[user_id]
+    display_name = info.get('display_name', '').lower()
+    username = info.get('name', '').lower()
+    
+    # Try display_name first, then username
+    for name in [display_name, username]:
+        if name in STANDARD_NAME_MAP:
+            return STANDARD_NAME_MAP[name]
+    
+    return None
+
+
+def sync_to_sqlite():
+    """Sync idle, offline, and voice time data to SQLite attendance database"""
+    if not ATTENDANCE_DB_PATH.exists():
+        print(f"⚠️ SQLite database not found: {ATTENDANCE_DB_PATH}")
+        return
+    
+    try:
+        conn = sqlite3.connect(str(ATTENDANCE_DB_PATH))
+        cursor = conn.cursor()
+        
+        # Get today's date string
+        today_str = datetime.now().strftime('%Y-%m-%d')
+        
+        synced_idle = 0
+        synced_offline = 0
+        synced_voice = 0
+        
+        # Sync idle time
+        if today_str in daily_idle_time:
+            for user_id, minutes in daily_idle_time[today_str].items():
+                standard_name = get_standard_name(int(user_id))
+                if standard_name and minutes > 0:
+                    cursor.execute('''
+                        INSERT OR REPLACE INTO idle_tracking (date, name, idle_minutes)
+                        VALUES (?, ?, ?)
+                    ''', (today_str, standard_name, round(minutes, 1)))
+                    synced_idle += 1
+        
+        # Sync offline time
+        if today_str in daily_offline_time:
+            for user_id, minutes in daily_offline_time[today_str].items():
+                standard_name = get_standard_name(int(user_id))
+                if standard_name and minutes > 0:
+                    cursor.execute('''
+                        INSERT OR REPLACE INTO offline_tracking (date, name, offline_minutes)
+                        VALUES (?, ?, ?)
+                    ''', (today_str, standard_name, round(minutes, 1)))
+                    synced_offline += 1
+        
+        # Sync voice time
+        if today_str in daily_voice_time:
+            for user_id, minutes in daily_voice_time[today_str].items():
+                standard_name = get_standard_name(int(user_id))
+                if standard_name and minutes > 0:
+                    cursor.execute('''
+                        INSERT OR REPLACE INTO voice_tracking (date, name, voice_minutes)
+                        VALUES (?, ?, ?)
+                    ''', (today_str, standard_name, round(minutes, 1)))
+                    synced_voice += 1
+        
+        conn.commit()
+        conn.close()
+        
+        if synced_idle > 0 or synced_offline > 0 or synced_voice > 0:
+            print(f"📊 SQLite sync: {synced_idle} idle, {synced_offline} offline, {synced_voice} voice records for {today_str}")
+    
+    except Exception as e:
+        print(f"❌ Error syncing to SQLite: {e}")
+
+
 def save_data():
     """Save idle, offline, and voice time data to files"""
     try:
@@ -266,6 +373,10 @@ def save_data():
                 }
         with open(USER_STATUS_FILE, 'w') as f:
             json.dump(user_status_data, f, indent=2)
+        
+        # Sync to SQLite database
+        sync_to_sqlite()
+        
     except Exception as e:
         print(f"Error saving data: {e}")
 
