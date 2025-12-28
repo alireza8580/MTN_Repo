@@ -12,7 +12,11 @@ import jdatetime
 
 # Import email sender
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from email_sender import send_email, ATTENDANCE_CSV, TO_EMAILS_TEST, TO_EMAILS_PROD
+from email_sender import (
+    send_email, ATTENDANCE_CSV, 
+    TO_EMAILS_TEST, TO_EMAILS_PROD,
+    CC_EMAILS_PROD, CC_EMAILS_MONTHLY
+)
 
 
 def get_reporting_period_range(jalali_year, jalali_month):
@@ -715,10 +719,16 @@ def send_monthly_report(jalali_year=None, jalali_month=None, test_mode=True):
     
     recipients = TO_EMAILS_TEST if test_mode else TO_EMAILS_PROD
     
+    # CC recipients: for production, CC both regular and monthly CCs
+    cc_emails = None
+    if not test_mode:
+        cc_emails = CC_EMAILS_PROD + CC_EMAILS_MONTHLY
+    
     return send_email(
         subject=subject,
         body_html=body,
         to_emails=recipients,
+        cc_emails=cc_emails,
         attachment_path=monthly_csv
     )
 
