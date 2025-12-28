@@ -2487,6 +2487,14 @@ def export_daily_csv_discord_only(attendance, date_str):
             # Work hours: 10.5 hours = 630 minutes
             idle_percent = f'{(idle_minutes / WORK_HOURS_TOTAL_MINUTES) * 100:.0f}%'
         
+        # Offline time from Discord bot
+        offline_minutes = get_offline_time(name, date_str)
+        offline_str = ''
+        offline_percent = ''
+        if offline_minutes is not None:
+            offline_str = str(int(offline_minutes))
+            offline_percent = f'{(offline_minutes / WORK_HOURS_TOTAL_MINUTES) * 100:.0f}%'
+        
         # Update or insert
         key = (date_str, name)
         existing_data[key] = {
@@ -2504,8 +2512,8 @@ def export_daily_csv_discord_only(attendance, date_str):
             'RemoteWork': remote_work,
             'IdleMinutes': idle_str,
             'IdlePercent': idle_percent,
-            'OfflineMinutes': '',
-            'OfflinePercent': '',
+            'OfflineMinutes': offline_str,
+            'OfflinePercent': offline_percent,
             'Weekend': 'YES' if is_weekend(date_str) else '',
             'IsOnCall': 'YES' if oncall_person == name else '',
             'IsSupport': 'YES' if support_person == name else '',
