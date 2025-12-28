@@ -2145,37 +2145,39 @@ def export_daily_csv(attendance, date_str):
             # Additionally subtract excess BRB (penalty for going over limits)
             effective -= brb_excess_total
             
-            # Adjust idle: During BRB time, person may be idle - that's expected
-            # Only count idle time OUTSIDE of BRB periods
-            adjusted_idle = 0
-            if idle_minutes:
-                # Idle during allowed BRB time is expected, so subtract BRB from idle
-                adjusted_idle = max(0, idle_minutes - brb_total)
+            # Combine idle and offline - both represent unavailable time
+            raw_idle = idle_minutes if idle_minutes else 0
+            raw_offline = offline_minutes if offline_minutes else 0
             
-            # Get adjusted offline
-            adjusted_offline = offline_minutes if offline_minutes else 0
+            # During BRB time, person is expected to be idle/offline (they announced they're away)
+            # So we should only penalize idle/offline time that exceeds BRB time
+            # 
+            # Logic:
+            # - BRB = announced break time (already subtracted from effective)
+            # - Idle + Offline = detected unavailable time
+            # - If idle+offline <= BRB: no penalty (they were unavailable during their announced break)
+            # - If idle+offline > BRB: penalty for the excess (unavailable outside of break)
+            #
+            # Example 1: BRB=60, Idle=30, Offline=20 → total=50 ≤ 60 → adjusted=0
+            # Example 2: BRB=60, Idle=60, Offline=60 → total=120 > 60 → adjusted=60
+            total_raw_unavailable = raw_idle + raw_offline
+            adjusted_unavailable = max(0, total_raw_unavailable - brb_total)
             
             # Hourly leave adjustment:
             # If person has hourly leave, assume idle/offline during leave time is expected
-            # Don't double-count: only deduct max(idle+offline, leave)
+            # Don't double-count: only deduct max(adjusted_unavailable, leave)
             # 
             # Logic:
-            # - If person was idle/offline during leave → these times overlap
-            # - idle + offline = total unavailable time during work hours
+            # - adjusted_unavailable = unavailable time outside of BRB
             # - leave = approved unavailable time
-            # - If idle+offline >= leave: person was truly unavailable, deduct idle+offline
-            # - If idle+offline < leave: person was available during some leave time, deduct leave
+            # - If unavailable >= leave: deduct unavailable (they were truly away)
+            # - If unavailable < leave: deduct leave (approved absence)
             # 
-            # Formula: max(idle+offline, leave)
-            # This means: deduct the larger of (actual unavailable) or (approved leave)
-            total_unavailable = adjusted_idle + adjusted_offline
-            
+            # Formula: max(adjusted_unavailable, leave)
             if hourly_leave_minutes > 0:
-                # The "unavailable" time is max of (idle+offline) or leave, not the sum
-                # This prevents double-counting when idle/offline happens during leave
-                effective_unavailable = max(total_unavailable, hourly_leave_minutes)
+                effective_unavailable = max(adjusted_unavailable, hourly_leave_minutes)
             else:
-                effective_unavailable = total_unavailable
+                effective_unavailable = adjusted_unavailable
             
             effective -= effective_unavailable
             
