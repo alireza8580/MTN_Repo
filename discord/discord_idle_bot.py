@@ -9,6 +9,7 @@ Features:
 - Calculates total idle time per user per day
 - Shows idle percentage of work hours
 - Stores data in JSON for integration with attendance_tracker.py
+- Stores detailed sessions in SQLite for precise overlap analysis
 - Reports daily summaries
 
 Setup:
@@ -54,6 +55,19 @@ DAILY_REPORT_FILE = DATA_DIR / 'daily_idle_report.json'
 WORK_START_HOUR = 8   # 08:00
 WORK_END_HOUR = 20    # 20:00 (extended for flexible work hours)
 
+# SQLite database for detailed session tracking
+try:
+    from activity_database import (
+        init_database, start_session, end_session, 
+        end_sessions_by_user_type, update_daily_summary
+    )
+    USE_SQLITE = True
+    init_database()
+    print("📊 SQLite activity database initialized")
+except ImportError as e:
+    USE_SQLITE = False
+    print(f"⚠️ SQLite database not available: {e}")
+
 # Team members to track (Discord usernames or display names)
 # EXCLUDED: Maryam (Maryam Marefati - Team Lead), Alireza (Owner), Hossein Feizollahi (Senior)
 # Match by lowercase display_name or username
@@ -91,7 +105,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 # === DATA STRUCTURES ===
 # Track current status and timestamps
-user_status = {}  # {user_id: {'status': 'online/idle/offline', 'since': datetime}}
+user_status = {}  # {user_id: {'status': 'online/idle/offline', 'since': datetime, 'session_id': int}}
 
 # Daily idle time accumulator (now tracks both idle and offline)
 daily_idle_time = defaultdict(lambda: defaultdict(float))  # {date_str: {user_id: minutes}}
@@ -375,9 +389,10 @@ async def on_presence_update(before, after):
     today = get_today_str()
     
     # Get previous status
-    prev_data = user_status.get(user_id, {'status': 'offline', 'since': now})
+    prev_data = user_status.get(user_id, {'status': 'offline', 'since': now, 'session_id': None})
     prev_status = prev_data['status']
     prev_since = prev_data['since']
+    prev_session_id = prev_data.get('session_id')
     
     new_status = str(after.status)
     
@@ -387,6 +402,13 @@ async def on_presence_update(before, after):
     
     # Calculate time spent in previous status - ONLY during work hours (or check_in to check_out)
     duration_minutes = calculate_work_hours_overlap(prev_since, now, user_id)
+    
+    # End previous session in SQLite if exists
+    if USE_SQLITE and prev_session_id:
+        try:
+            end_session(prev_session_id)
+        except Exception as e:
+            print(f"⚠️ SQLite end_session error: {e}")
     
     # Track idle time
     if prev_status == 'idle' and duration_minutes > 0:
@@ -398,10 +420,23 @@ async def on_presence_update(before, after):
         daily_offline_time[today][str(user_id)] += duration_minutes
         print(f'⚫ {after.display_name}: +{duration_minutes:.1f} min offline (total: {daily_offline_time[today][str(user_id)]:.1f} min)')
     
+    # Start new session in SQLite for idle/offline
+    new_session_id = None
+    if USE_SQLITE and new_status in ('idle', 'offline'):
+        try:
+            new_session_id = start_session(
+                user_id=str(user_id),
+                user_name=after.display_name,
+                activity_type=new_status
+            )
+        except Exception as e:
+            print(f"⚠️ SQLite start_session error: {e}")
+    
     # Update current status
     user_status[user_id] = {
         'status': new_status,
-        'since': now
+        'since': now,
+        'session_id': new_session_id
     }
     
     # Update user info
@@ -494,10 +529,25 @@ async def on_voice_state_update(member, before, after):
     
     # User joined a voice channel
     if before.channel is None and after.channel is not None:
+        # Start voice session in SQLite
+        voice_session_id = None
+        if USE_SQLITE:
+            try:
+                voice_session_id = start_session(
+                    user_id=str(user_id),
+                    user_name=member.display_name,
+                    activity_type='voice',
+                    channel_id=str(after.channel.id),
+                    channel_name=after.channel.name
+                )
+            except Exception as e:
+                print(f"⚠️ SQLite voice start_session error: {e}")
+        
         user_voice_status[user_id] = {
             'in_voice': True,
             'since': now,
-            'channel': after.channel.name
+            'channel': after.channel.name,
+            'session_id': voice_session_id
         }
         print(f'🎤 {member.display_name} joined voice: {after.channel.name}')
     
@@ -505,6 +555,15 @@ async def on_voice_state_update(member, before, after):
     elif before.channel is not None and after.channel is None:
         if user_id in user_voice_status and user_voice_status[user_id].get('in_voice'):
             since = user_voice_status[user_id]['since']
+            voice_session_id = user_voice_status[user_id].get('session_id')
+            
+            # End voice session in SQLite
+            if USE_SQLITE and voice_session_id:
+                try:
+                    end_session(voice_session_id)
+                except Exception as e:
+                    print(f"⚠️ SQLite voice end_session error: {e}")
+            
             # Calculate voice time (only during work hours)
             duration_minutes = calculate_work_hours_overlap(since, now, user_id)
             if duration_minutes > 0:
@@ -514,7 +573,8 @@ async def on_voice_state_update(member, before, after):
             user_voice_status[user_id] = {
                 'in_voice': False,
                 'since': None,
-                'channel': None
+                'channel': None,
+                'session_id': None
             }
     
     # User switched voice channels
