@@ -2283,35 +2283,60 @@ def export_daily_csv(attendance, date_str):
         print(f"⚠ SQLite update failed: {e}")
 
 
-def get_all_dates_from_discord():
-    """Get all unique dates from Discord export"""
-    discord_file = get_latest_discord_file()
-    if not discord_file:
-        return []
+def get_all_dates_from_discord(use_all_files=False):
+    """Get all unique dates from Discord export
     
-    with open(discord_file, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-    
-    channels = data.get('channels', {})
+    Args:
+        use_all_files: If True, scan all Discord export files. If False, use only latest.
+    """
     dates = set()
     
-    if 'general_new' in channels:
-        messages = channels['general_new'].get('messages', [])
-        for m in messages:
-            ts = m.get('timestamp', '')[:10]  # YYYY-MM-DD
-            if ts:
-                dates.add(ts)
+    if use_all_files:
+        # Scan all Discord export files
+        files = glob.glob(os.path.join(DISCORD_EXPORTS_DIR, '*.json'))
+    else:
+        discord_file = get_latest_discord_file()
+        files = [discord_file] if discord_file else []
+    
+    for discord_file in files:
+        if not discord_file:
+            continue
+        try:
+            with open(discord_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            channels = data.get('channels', {})
+            
+            if 'general_new' in channels:
+                messages = channels['general_new'].get('messages', [])
+                for m in messages:
+                    ts = m.get('timestamp', '')[:10]  # YYYY-MM-DD
+                    if ts:
+                        dates.add(ts)
+        except Exception as e:
+            print(f"Error reading {discord_file}: {e}")
     
     return sorted(dates)
 
 
-def backfill_csv():
-    """Backfill CSV with all dates from Discord export (Discord data only, no emails)"""
-    dates = get_all_dates_from_discord()
+def backfill_csv(start_date=None):
+    """Backfill CSV with all dates from Discord export (Discord data only, no emails)
+    
+    Args:
+        start_date: Optional start date (YYYY-MM-DD). If provided, only process dates >= start_date
+    """
+    dates = get_all_dates_from_discord(use_all_files=True)
     
     if not dates:
         print("No dates found in Discord export!")
         return
+    
+    # Filter dates if start_date provided
+    if start_date:
+        dates = [d for d in dates if d >= start_date]
+        if not dates:
+            print(f"No dates found >= {start_date}")
+            return
     
     print(f"Backfilling {len(dates)} days: {dates[0]} to {dates[-1]}")
     print("=" * 60)
