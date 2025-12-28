@@ -2193,10 +2193,12 @@ def export_daily_csv(attendance, date_str):
         
         # Detect absent (غیبت): No greeting, no goodbye, not on leave, not on-call/support
         # Uses ORIGINAL check_in/check_out before any defaults are applied
+        # Note: Weekends and holidays don't count as absence
         is_absent = (not original_check_in and not original_check_out 
                      and not has_leave 
                      and not is_oncall_or_support
-                     and not is_weekend(date_str))  # Weekends don't count as absence
+                     and not is_weekend(date_str)    # Weekends don't count as absence
+                     and not is_holiday(date_str))   # Holidays don't count as absence
         
         # Update or insert
         key = (date_str, name)

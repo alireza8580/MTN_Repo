@@ -54,6 +54,19 @@ CREATE INDEX IF NOT EXISTS idx_name ON attendance(name);
 CREATE INDEX IF NOT EXISTS idx_date_name ON attendance(date, name);
 """
 
+CREATE_HOLIDAYS_TABLE_SQL = """
+CREATE TABLE IF NOT EXISTS holidays (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT NOT NULL UNIQUE,              -- Gregorian date YYYY-MM-DD
+    jalali_date TEXT,                        -- Jalali date YYYY/MM/DD
+    name TEXT,                               -- Holiday name
+    support_person TEXT,                     -- Person on support duty
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_holidays_date ON holidays(date);
+"""
+
 CREATE_META_TABLE_SQL = """
 CREATE TABLE IF NOT EXISTS meta (
     key TEXT PRIMARY KEY,
@@ -75,6 +88,7 @@ def init_db():
     cursor = conn.cursor()
     
     cursor.executescript(CREATE_TABLE_SQL)
+    cursor.executescript(CREATE_HOLIDAYS_TABLE_SQL)
     cursor.executescript(CREATE_META_TABLE_SQL)
     
     # Set schema version
@@ -306,6 +320,96 @@ def stats():
         print(f"\nAbsent days by person:")
         for row in absent:
             print(f"  {row['name']}: {row['absent_days']} days")
+    
+    # Holiday count
+    holidays = get_holidays()
+    if holidays:
+        print(f"\nHolidays: {len(holidays)} registered")
+
+
+def import_holidays_csv(csv_path=None):
+    """
+    Import holidays from holiday_shifts.csv to database.
+    Converts Jalali dates to Gregorian.
+    """
+    import jdatetime
+    
+    if csv_path is None:
+        csv_path = os.environ.get('HOLIDAY_SHIFT_FILE', '/root/infrastructure/holiday_shifts.csv')
+    
+    if not os.path.exists(csv_path):
+        print(f"ERROR: Holiday CSV file not found: {csv_path}")
+        return 0
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    imported = 0
+    
+    with open(csv_path, 'r', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            jalali_date = row.get('date', '').strip()
+            support = row.get('support person', '').strip()
+            
+            if not jalali_date:
+                continue
+            
+            # Parse Jalali date (format: 1404/10/13)
+            try:
+                parts = jalali_date.split('/')
+                jd = jdatetime.date(int(parts[0]), int(parts[1]), int(parts[2]))
+                gregorian = jd.togregorian()
+                gregorian_str = gregorian.strftime('%Y-%m-%d')
+            except Exception as e:
+                print(f"  ERROR parsing date {jalali_date}: {e}")
+                continue
+            
+            try:
+                cursor.execute("""
+                    INSERT OR REPLACE INTO holidays (date, jalali_date, support_person)
+                    VALUES (?, ?, ?)
+                """, (gregorian_str, jalali_date, support))
+                imported += 1
+            except Exception as e:
+                print(f"  ERROR importing holiday {jalali_date}: {e}")
+    
+    conn.commit()
+    conn.close()
+    
+    print(f"✓ Imported {imported} holidays")
+    return imported
+
+
+def get_holidays(start_date=None, end_date=None):
+    """Get list of holidays, optionally within a date range."""
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    if start_date and end_date:
+        cursor.execute(
+            "SELECT * FROM holidays WHERE date BETWEEN ? AND ? ORDER BY date",
+            (start_date, end_date)
+        )
+    else:
+        cursor.execute("SELECT * FROM holidays ORDER BY date")
+    
+    rows = cursor.fetchall()
+    conn.close()
+    
+    return [dict(row) for row in rows]
+
+
+def is_holiday_db(date_str):
+    """Check if a date is a holiday (from database)."""
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT * FROM holidays WHERE date = ?", (date_str,))
+    row = cursor.fetchone()
+    conn.close()
+    
+    return dict(row) if row else None
 
 
 if __name__ == '__main__':
@@ -313,11 +417,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Attendance Database Manager')
     parser.add_argument('--init', action='store_true', help='Initialize database')
     parser.add_argument('--import', dest='import_csv', action='store_true', help='Import CSV to database')
+    parser.add_argument('--import-holidays', action='store_true', help='Import holidays from CSV')
     parser.add_argument('--replace', action='store_true', help='Replace existing records during import')
     parser.add_argument('--csv', type=str, help='Path to CSV file')
     parser.add_argument('--stats', action='store_true', help='Show database statistics')
     parser.add_argument('--date', type=str, help='Query by date (YYYY-MM-DD)')
     parser.add_argument('--name', type=str, help='Query by name')
+    parser.add_argument('--holidays', action='store_true', help='List all holidays')
     
     args = parser.parse_args()
     
@@ -327,6 +433,19 @@ if __name__ == '__main__':
     if args.import_csv:
         init_db()  # Ensure DB exists
         import_csv(args.csv, replace=args.replace)
+    
+    if args.import_holidays:
+        init_db()  # Ensure DB exists
+        import_holidays_csv(args.csv)
+    
+    if args.holidays:
+        holidays = get_holidays()
+        if holidays:
+            print("Holidays:")
+            for h in holidays:
+                print(f"  {h['date']} ({h['jalali_date']}): Support - {h['support_person']}")
+        else:
+            print("No holidays registered.")
     
     if args.stats:
         stats()
