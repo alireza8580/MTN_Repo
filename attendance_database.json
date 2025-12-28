@@ -147,5 +147,100 @@
   "2025-12-23": {},
   "2025-12-24": {},
   "2025-12-25": {},
-  "2025-12-26": {}
+  "2025-12-26": {},
+  "2025-12-28": {
+    "Yassin Alivand": {
+      "check_in": "07:15",
+      "check_out": "17:06",
+      "brb_sessions": [
+        {
+          "start": "13:13",
+          "end": "14:06",
+          "minutes": 53,
+          "is_lunch": true
+        }
+      ]
+    },
+    "Nader Shabibi": {
+      "check_in": "07:16",
+      "check_out": "17:05",
+      "brb_sessions": [
+        {
+          "start": "13:16",
+          "end": "14:15",
+          "minutes": 58,
+          "is_lunch": true
+        }
+      ]
+    },
+    "Masoud Rafiei": {
+      "check_in": "07:30",
+      "check_out": "17:04",
+      "brb_sessions": [
+        {
+          "start": "13:17",
+          "end": "14:16",
+          "minutes": 59,
+          "is_lunch": true
+        }
+      ]
+    },
+    "Erfan Heidari": {
+      "check_in": "07:46",
+      "check_out": "16:05"
+    },
+    "Maryam Yousefi": {
+      "check_in": "08:01",
+      "check_out": "17:04"
+    },
+    "Hosseinali Shirali": {
+      "check_in": "08:05",
+      "check_out": "17:03"
+    },
+    "Masoud Sereshki": {
+      "check_in": "08:39",
+      "leave_ranges": [
+        {
+          "start": "13:50",
+          "end": "17:00",
+          "minutes": 190
+        }
+      ],
+      "brb_sessions": [
+        {
+          "start": "08:39",
+          "end": "09:29",
+          "minutes": 49,
+          "is_lunch": false
+        }
+      ]
+    },
+    "Mohsen Roudsaz": {
+      "check_in": "08:42",
+      "check_out": "17:35",
+      "brb_sessions": [
+        {
+          "start": "13:17",
+          "end": "14:18",
+          "minutes": 61,
+          "is_lunch": true
+        }
+      ]
+    },
+    "Keivan Sadeghi": {
+      "check_in": "10:09",
+      "check_out": "16:05",
+      "brb_sessions": [
+        {
+          "start": "13:11",
+          "end": "13:56",
+          "minutes": 44,
+          "is_lunch": true
+        }
+      ]
+    },
+    "Zeinabsadat Hejazi": {
+      "check_in": "17:06"
+    }
+  }
 }

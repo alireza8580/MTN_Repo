@@ -1992,6 +1992,10 @@ def export_daily_csv(attendance, date_str):
         is_prev_oncall = support_person == name
         is_oncall_or_support = is_new_oncall or is_prev_oncall
         
+        # Store original check-in/out for absence detection (before any defaults are applied)
+        original_check_in = check_in
+        original_check_out = check_out
+        
         # Handle missing check-in: If person said goodbye but no greeting → set check-in to 10:00
         no_checkin = False
         if check_out and not check_in and not is_oncall_or_support:
@@ -2187,6 +2191,13 @@ def export_daily_csv(attendance, date_str):
             effective_hours = max(0, effective) / 60
             effective_minutes = f'{effective_hours:.1f}'
         
+        # Detect absent (غیبت): No greeting, no goodbye, not on leave, not on-call/support
+        # Uses ORIGINAL check_in/check_out before any defaults are applied
+        is_absent = (not original_check_in and not original_check_out 
+                     and not has_leave 
+                     and not is_oncall_or_support
+                     and not is_weekend(date_str))  # Weekends don't count as absence
+        
         # Update or insert
         key = (date_str, name)
         existing_data[key] = {
@@ -2216,6 +2227,7 @@ def export_daily_csv(attendance, date_str):
             'HolidaySupport': 'YES' if holiday_support == name else '',
             'NoCheckout': 'YES' if no_checkout else '',  # Flag for missing goodbye
             'NoCheckin': 'YES' if no_checkin else '',  # Flag for missing greeting
+            'Absent': 'YES' if is_absent else '',  # Flag for absence (غیبت)
         }
         
         # Add on-call notes (oncall_result already calculated above)
@@ -2227,7 +2239,7 @@ def export_daily_csv(attendance, date_str):
                   'BRB_Minutes', 'BRB_Open', 'Emails', 'Discord', 'Voice', 'EffectiveMinutes',
                   'Leave', 'LeaveHours', 'RemoteWork', 'IdleMinutes', 'IdlePercent', 
                   'OfflineMinutes', 'OfflinePercent', 'Weekend', 'IsOnCall', 'IsSupport', 
-                  'OnCallNotes', 'IsHoliday', 'HolidaySupport', 'NoCheckout', 'NoCheckin']
+                  'OnCallNotes', 'IsHoliday', 'HolidaySupport', 'NoCheckout', 'NoCheckin', 'Absent']
     
     with open(ATTENDANCE_CSV, 'w', encoding='utf-8', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)

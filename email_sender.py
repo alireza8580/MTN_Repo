@@ -105,6 +105,7 @@ def read_daily_summary(date_str):
         'checked_in': 0,
         'on_leave_full': 0,
         'on_leave_hourly': 0,
+        'absent': 0,  # Absent count (غیبت)
         'on_call': None,
         'support': None,
         'details': []
@@ -125,6 +126,9 @@ def read_daily_summary(date_str):
                 summary['on_leave_full'] += 1
             elif row.get('Leave') == 'HOURLY':
                 summary['on_leave_hourly'] += 1
+            
+            if row.get('Absent') == 'YES':
+                summary['absent'] += 1
             
             if row.get('IsOnCall') == 'YES':
                 summary['on_call'] = row['Name']
@@ -151,6 +155,7 @@ def read_daily_summary(date_str):
                 'effective': row.get('EffectiveMinutes', ''),
                 'no_checkout': row.get('NoCheckout', ''),  # Flag for missing goodbye
                 'no_checkin': row.get('NoCheckin', ''),  # Flag for missing greeting
+                'absent': row.get('Absent', ''),  # Flag for absence (غیبت)
             })
     
     return summary
@@ -181,6 +186,9 @@ def create_daily_email_body(date_str, summary):
     no_checkin_people = [d['name'] for d in summary['details'] 
                          if d.get('no_checkin') == 'YES' and d.get('is_oncall') != 'YES' and d.get('is_support') != 'YES']
     
+    # Find absent people (غیبت)
+    absent_people = [d['name'] for d in summary['details'] if d.get('absent') == 'YES']
+    
     html = f"""
     <html>
     <head>
@@ -192,10 +200,12 @@ def create_daily_email_body(date_str, summary):
             tr:nth-child(even) {{ background-color: #f2f2f2; }}
             .summary {{ background-color: #e7f3fe; padding: 15px; border-radius: 5px; margin: 10px 0; }}
             .warning {{ background-color: #fff3cd; padding: 15px; border-radius: 5px; margin: 10px 0; }}
+            .absent-warning {{ background-color: #dc3545; color: white; padding: 15px; border-radius: 5px; margin: 10px 0; }}
             .oncall {{ background-color: #fff3cd; }}
             .leave {{ background-color: #f8d7da; }}
             .no-checkout {{ background-color: #ffcccc; }}
             .no-checkin {{ background-color: #ffe6cc; }}
+            .absent {{ background-color: #8b0000; color: white; }}
         </style>
     </head>
     <body>
@@ -208,10 +218,21 @@ def create_daily_email_body(date_str, summary):
             حاضر (check-in): {summary['checked_in']} نفر<br>
             مرخصی روزانه: {summary['on_leave_full']} نفر<br>
             مرخصی ساعتی: {summary['on_leave_hourly']} نفر<br>
+            غیبت: {summary['absent']} نفر<br>
             آنکال: {summary['on_call'] or '-'}<br>
             آنکال هفته قبل (استراحت): {summary['support'] or '-'}
         </div>
     """
+    
+    # Add warning section for absent people (most critical - at top)
+    if absent_people:
+        html += f"""
+        <div class="absent-warning">
+            <strong>غیبت کاری:</strong><br>
+            (افرادی که هیچ ورود، خروج یا مرخصی ثبت نکردند)<br><br>
+            {', '.join(absent_people)}
+        </div>
+        """
     
     # Add warning section for people without checkout
     if no_checkout_people:
@@ -257,8 +278,11 @@ def create_daily_email_body(date_str, summary):
         is_oncall_or_support = d['is_oncall'] == 'YES' or d['is_support'] == 'YES'
         is_no_checkout = d.get('no_checkout') == 'YES'
         is_no_checkin = d.get('no_checkin') == 'YES'
+        is_absent = d.get('absent') == 'YES'
         
-        if is_no_checkin:
+        if is_absent:
+            row_class = 'absent'  # Highest priority - dark red for absence (غیبت)
+        elif is_no_checkin:
             row_class = 'no-checkin'  # Highlight people without greeting (different color)
         elif is_no_checkout:
             row_class = 'no-checkout'  # Highlight people without goodbye

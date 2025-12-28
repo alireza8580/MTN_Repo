@@ -1,0 +1,12 @@
+Date,Name,CheckIn,CheckOut,WorkHours,BRB_Minutes,BRB_Open,Emails,Discord,Voice,Leave,LeaveHours,RemoteWork,IdleMinutes,IdlePercent,OfflineMinutes,OfflinePercent,Weekend,IsOnCall,IsSupport,IsHoliday,HolidaySupport
+2025-12-24,Ehsan Yousefi,09:51,,,34,,6,4,,,,,105,17%,128,20%,,,,,
+2025-12-24,Erfan Heidari,08:31,17:02,7.6,52,,5,9,402,,,,210,33%,3,1%,,,,,
+2025-12-24,Hosseinali Shirali,08:29,10:32,2.0,,,,5,126,HOURLY,7h,,27,4%,304,48%,,,,,
+2025-12-24,Keivan Sadeghi,,,,,,1,,,,,,151,24%,89,14%,,,YES,,
+2025-12-24,Maryam Yousefi,08:45,17:17,7.7,50,,3,1,409,,,,148,24%,135,21%,,,,,
+2025-12-24,Masoud Rafiei,08:48,18:43,9.3,35,,9,8,,,,,70,11%,,,,,,,
+2025-12-24,Masoud Sereshki,08:32,,,41,,,1,,,,,57,9%,475,76%,,,,,
+2025-12-24,Mohsen Roudsaz,08:19,,,42,,,4,533,,,,24,4%,14,2%,,,,,
+2025-12-24,Nader Shabibi,08:05,,,127,,2,4,287,,,,174,28%,11,2%,,,,,
+2025-12-24,Yassin Alivand,08:14,17:28,8.5,43,,1,,,,,,287,46%,0,0%,,,,,
+2025-12-24,Zeinabsadat Hejazi,08:18,16:44,8.4,,,,3,254,,,,50,8%,212,34%,,YES,,,
