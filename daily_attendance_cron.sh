@@ -56,9 +56,16 @@ python3 discord_exporter.py --days 1 || {
 echo "Step 1.5: Extracting email counts..."
 cd "$SCRIPT_DIR"
 
-# Load SMTP password for Exchange access
-if [ -f "$SCRIPT_DIR/.smtp_password" ]; then
-    export SMTP_PASSWORD=$(cat "$SCRIPT_DIR/.smtp_password")
+# Load SMTP password - prefer environment variable, fallback to file
+if [ -z "$SMTP_PASSWORD" ]; then
+    # Source .zshrc if available (for non-interactive cron)
+    if [ -f "$HOME/.zshrc" ]; then
+        source "$HOME/.zshrc" 2>/dev/null || true
+    fi
+    # Fallback to file-based password
+    if [ -z "$SMTP_PASSWORD" ] && [ -f "$SCRIPT_DIR/.smtp_password" ]; then
+        export SMTP_PASSWORD=$(cat "$SCRIPT_DIR/.smtp_password")
+    fi
 fi
 
 # Get yesterday's email counts (report is for yesterday's attendance)
@@ -80,9 +87,15 @@ python3 attendance_tracker.py --csv
 
 # Step 3: Send email report (PRODUCTION mode)
 echo "Step 3: Sending email report..."
-# Load SMTP password from secure file
-if [ -f "$SCRIPT_DIR/.smtp_password" ]; then
-    export SMTP_PASSWORD=$(cat "$SCRIPT_DIR/.smtp_password")
+
+# Ensure SMTP_PASSWORD is still set (may have been lost after cd)
+if [ -z "$SMTP_PASSWORD" ]; then
+    if [ -f "$HOME/.zshrc" ]; then
+        source "$HOME/.zshrc" 2>/dev/null || true
+    fi
+    if [ -z "$SMTP_PASSWORD" ] && [ -f "$SCRIPT_DIR/.smtp_password" ]; then
+        export SMTP_PASSWORD=$(cat "$SCRIPT_DIR/.smtp_password")
+    fi
 fi
 
 # Send daily email report - PRODUCTION mode with CC recipients

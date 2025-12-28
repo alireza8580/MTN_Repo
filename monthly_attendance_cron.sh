@@ -21,9 +21,16 @@ fi
 
 cd "$SCRIPT_DIR"
 
-# Load SMTP password
-if [ -f "$SCRIPT_DIR/.smtp_password" ]; then
-    export SMTP_PASSWORD=$(cat "$SCRIPT_DIR/.smtp_password")
+# Load SMTP password - prefer environment variable, fallback to file
+if [ -z "$SMTP_PASSWORD" ]; then
+    # Source .zshrc if available (for non-interactive cron)
+    if [ -f "$HOME/.zshrc" ]; then
+        source "$HOME/.zshrc" 2>/dev/null || true
+    fi
+    # Fallback to file-based password
+    if [ -z "$SMTP_PASSWORD" ] && [ -f "$SCRIPT_DIR/.smtp_password" ]; then
+        export SMTP_PASSWORD=$(cat "$SCRIPT_DIR/.smtp_password")
+    fi
 fi
 
 # Run monthly report (will check if today is 24th) - PRODUCTION mode with BCC
