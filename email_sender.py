@@ -35,6 +35,43 @@ CC_EMAILS_MONTHLY = ['mehdi.kheir@mtnirancell.ir', 'omid.her@mtnirancell.ir']
 
 # File paths
 ATTENDANCE_CSV = os.environ.get('ATTENDANCE_CSV', '/root/infrastructure/attendance_reports/daily_attendance.csv')
+ATTENDANCE_REPORTS_DIR = os.path.dirname(ATTENDANCE_CSV)
+
+
+def create_date_specific_csv(date_str):
+    """
+    Create a date-specific CSV file from the main attendance CSV.
+    Returns the path to the date-specific CSV file.
+    Filename format: daily_attendance_YYYY-MM-DD.csv
+    """
+    if not os.path.exists(ATTENDANCE_CSV):
+        return None
+    
+    # Create date-specific filename
+    output_file = os.path.join(ATTENDANCE_REPORTS_DIR, f"daily_attendance_{date_str}.csv")
+    
+    # Read rows for this date from main CSV
+    rows_for_date = []
+    fieldnames = None
+    
+    with open(ATTENDANCE_CSV, 'r', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        fieldnames = reader.fieldnames
+        for row in reader:
+            if row['Date'] == date_str:
+                rows_for_date.append(row)
+    
+    if not rows_for_date or not fieldnames:
+        return None
+    
+    # Write date-specific CSV
+    with open(output_file, 'w', encoding='utf-8', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows_for_date)
+    
+    print(f"✓ Created date-specific CSV: {output_file} ({len(rows_for_date)} rows)")
+    return output_file
 
 
 def get_ews_account():
@@ -391,13 +428,19 @@ def send_daily_report(date_str=None, test_mode=True):
         cc_emails = CC_EMAILS_PROD
         bcc_emails = BCC_EMAILS_PROD
     
+    # Create date-specific CSV for attachment
+    attachment_csv = create_date_specific_csv(date_str)
+    if not attachment_csv:
+        print(f"Warning: Could not create date-specific CSV, using main file")
+        attachment_csv = ATTENDANCE_CSV
+    
     return send_email(
         subject=subject,
         body_html=body,
         to_emails=recipients,
         cc_emails=cc_emails,
         bcc_emails=bcc_emails,
-        attachment_path=ATTENDANCE_CSV
+        attachment_path=attachment_csv
     )
 
 
