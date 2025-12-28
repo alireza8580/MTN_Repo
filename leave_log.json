@@ -1,0 +1,68 @@
+{
+  "Erfan Heidari": {
+    "total_days": 2,
+    "requests": [
+      {
+        "date": "2025-12-22",
+        "content": "<@736498592168280114> khanoom slm\nMn ye kare edari force pish omade ta 11 ina morakhasi mikham"
+      },
+      {
+        "date": "2025-12-27",
+        "content": "morakhasi saat 14:00 ta 16:00"
+      }
+    ]
+  },
+  "Alireza": {
+    "total_days": 1,
+    "requests": [
+      {
+        "date": "2025-12-23",
+        "content": "@everyone salam \njahate inke kamtar hozuri berim,ruye ye report daram kar mikonam ke moshakhas she h"
+      }
+    ]
+  },
+  "Alireza Aghajanzadeh": {
+    "total_days": 2,
+    "requests": [
+      {
+        "date": "2025-12-23",
+        "content": "@everyone salam \njahate inke kamtar hozuri berim,ruye ye report daram kar mikonam ke moshakhas she h"
+      },
+      {
+        "date": "2025-12-24",
+        "content": "lotfan tu BCC bezarid chon nemishe track kard. \nmasalan man password dorost mifrestam va miram morak"
+      }
+    ]
+  },
+  "Hosseinali Shirali": {
+    "total_days": 2,
+    "requests": [
+      {
+        "date": "2025-12-24",
+        "content": "morakhasi az 10:30 ta 17:30"
+      },
+      {
+        "date": "2025-12-27",
+        "content": "morakhasi az 12:00 ta 14:30"
+      }
+    ]
+  },
+  "Nader Shabibi": {
+    "total_days": 1,
+    "requests": [
+      {
+        "date": "2025-12-27",
+        "content": "morakhasi az saat [12:00] ta [13:00]"
+      }
+    ]
+  },
+  "Keivan Sadeghi": {
+    "total_days": 1,
+    "requests": [
+      {
+        "date": "2025-12-27",
+        "content": "morakhasi mikhastam 11:45 ta 13"
+      }
+    ]
+  }
+}

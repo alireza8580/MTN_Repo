@@ -1,0 +1,45 @@
+{
+  "2025-12-26": {
+    "date": "2025-12-26",
+    "generated_at": "2025-12-27T00:04:52.321925+00:00",
+    "work_hours": "08:00-18:00",
+    "total_work_minutes": 600,
+    "users": {
+      "Mari": {
+        "idle_minutes": 5.4,
+        "idle_hours": 0.09,
+        "idle_percent": 0.9,
+        "active_minutes": 594.6,
+        "active_percent": 99.1
+      },
+      "Alireza": {
+        "idle_minutes": 127.9,
+        "idle_hours": 2.13,
+        "idle_percent": 21.3,
+        "active_minutes": 472.1,
+        "active_percent": 78.7
+      },
+      "Mahsa": {
+        "idle_minutes": 0.7,
+        "idle_hours": 0.01,
+        "idle_percent": 0.1,
+        "active_minutes": 599.3,
+        "active_percent": 99.9
+      },
+      "Masoud": {
+        "idle_minutes": 376.0,
+        "idle_hours": 6.27,
+        "idle_percent": 62.7,
+        "active_minutes": 224.0,
+        "active_percent": 37.3
+      },
+      "nissay87": {
+        "idle_minutes": 376.0,
+        "idle_hours": 6.27,
+        "idle_percent": 62.7,
+        "active_minutes": 224.0,
+        "active_percent": 37.3
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.env
+.smtp_password
+*.log
+attendance_reports/
+discord_exports/
+*.json.bak

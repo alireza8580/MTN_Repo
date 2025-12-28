@@ -1,0 +1,151 @@
+{
+  "2025-12-27": {
+    "Nader Shabibi": {
+      "check_in": "08:05",
+      "check_out": "17:46",
+      "leave_ranges": [
+        {
+          "start": "12:00",
+          "end": "13:00",
+          "minutes": 60
+        }
+      ]
+    },
+    "Yassin Alivand": {
+      "check_in": "08:10",
+      "check_out": "17:27",
+      "brb_sessions": [
+        {
+          "start": "10:15",
+          "end": "10:29",
+          "minutes": 14,
+          "is_lunch": false
+        },
+        {
+          "start": "14:03",
+          "end": "14:42",
+          "minutes": 38,
+          "is_lunch": true
+        }
+      ]
+    },
+    "Masoud Sereshki": {
+      "check_in": "08:26",
+      "check_out": "19:27",
+      "brb_sessions": [
+        {
+          "start": "14:18",
+          "end": "15:02",
+          "minutes": 43,
+          "is_lunch": true
+        }
+      ]
+    },
+    "Mohsen Roudsaz": {
+      "check_in": "08:30",
+      "check_out": "17:54",
+      "brb_sessions": [
+        {
+          "start": "13:31",
+          "end": "14:08",
+          "minutes": 37,
+          "is_lunch": true
+        }
+      ]
+    },
+    "Erfan Heidari": {
+      "check_in": "08:36",
+      "check_out": "17:04",
+      "leave_ranges": [
+        {
+          "start": "14:00",
+          "end": "16:00",
+          "minutes": 120
+        }
+      ]
+    },
+    "Masoud Rafiei": {
+      "check_in": "08:51",
+      "check_out": "17:45",
+      "brb_sessions": [
+        {
+          "start": "15:16",
+          "end": "15:44",
+          "minutes": 28,
+          "is_lunch": true
+        }
+      ]
+    },
+    "Hosseinali Shirali": {
+      "check_in": "08:55",
+      "check_out": "17:21",
+      "leave_ranges": [
+        {
+          "start": "12:00",
+          "end": "14:30",
+          "minutes": 150
+        }
+      ],
+      "brb_sessions": [
+        {
+          "start": "09:44",
+          "end": "10:12",
+          "minutes": 28,
+          "is_lunch": false
+        },
+        {
+          "start": "15:02",
+          "end": "15:47",
+          "minutes": 45,
+          "is_lunch": true
+        }
+      ]
+    },
+    "Maryam Yousefi": {
+      "check_in": "08:59",
+      "check_out": "17:04",
+      "brb_sessions": [
+        {
+          "start": "11:59",
+          "end": "12:27",
+          "minutes": 27,
+          "is_lunch": false
+        },
+        {
+          "start": "13:38",
+          "end": "14:37",
+          "minutes": 58,
+          "is_lunch": true
+        },
+        {
+          "start": "16:47",
+          "end": "17:04",
+          "minutes": 17,
+          "is_lunch": false
+        }
+      ]
+    },
+    "Keivan Sadeghi": {
+      "check_in": "09:31",
+      "check_out": "17:44",
+      "leave_ranges": [
+        {
+          "start": "11:45",
+          "end": "13:00",
+          "minutes": 75
+        }
+      ]
+    },
+    "Ehsan Yousefi": {
+      "check_in": "09:41"
+    },
+    "Zeinabsadat Hejazi": {
+      "check_in": "17:05"
+    }
+  },
+  "2025-12-22": {},
+  "2025-12-23": {},
+  "2025-12-24": {},
+  "2025-12-25": {},
+  "2025-12-26": {}
+}

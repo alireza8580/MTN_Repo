@@ -1,0 +1,507 @@
+{
+  "Masoud Sereshki": {
+    "2025-04-23": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "Salam man emrooz morekhasi hastam",
+      "msg_date": "2025-04-23",
+      "channel": "general_new"
+    }
+  },
+  "Masoud Rafiei": {
+    "2025-09-13": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "Salam agha <@988029106836869181> / <@681468450870132757>  shabetoon bekheir.\nShrmnde man khastam bar",
+      "msg_date": "2025-09-13",
+      "channel": "masoud_chann"
+    },
+    "2025-10-31": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "Salam agha <@988029106836869181> / <@681468450870132757> vaght bekheir. Khastam begam age emkanesh b",
+      "msg_date": "2025-10-31",
+      "channel": "masoud_chann"
+    }
+  },
+  "Maryam Yousefi": {
+    "2025-05-21": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "سلام من میتونم سه شنبه و چهارشنبه\n۳۰ و ۳۱ اردیبهشت مرخصی باشم؟",
+      "msg_date": "2025-05-17",
+      "channel": "maryam_y_chan"
+    },
+    "2025-08-05": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "man mitoonam farda off basham?",
+      "msg_date": "2025-08-05",
+      "channel": "maryam_y_chan"
+    },
+    "2025-11-16": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "man mitoonam shanbe va 1shanbe hafte dige off basham? (24 va 25 aban)",
+      "msg_date": "2025-11-11",
+      "channel": "maryam_y_chan"
+    }
+  },
+  "Hosseinali Shirali": {
+    "2025-08-02": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "سلام\nمن چهارشنبه این هفته و شنبه هفته دیگه مرخصی می خواستم.",
+      "msg_date": "2025-07-27",
+      "channel": "hosseinali-chann"
+    },
+    "2025-07-30": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "سلام\nمن چهارشنبه این هفته و شنبه هفته دیگه مرخصی می خواستم.",
+      "msg_date": "2025-07-27",
+      "channel": "hosseinali-chann"
+    }
+  },
+  "Erfan Heidari": {
+    "2025-07-28": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "<@988029106836869181> slm ,man emrooz az saat 15 be baad niaz be morakhasi saati daram .mamnoon",
+      "msg_date": "2025-07-28",
+      "channel": "erfan_chann"
+    },
+    "2025-08-30": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "Slm man niaz be morakhasi baraye 3shanbe va 4 shanbe daram , emkanesh hast? Mail niaze bezanam?",
+      "msg_date": "2025-08-30",
+      "channel": "erfan_chann"
+    },
+    "2025-09-02": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "Slm man niaz be morakhasi baraye 3shanbe va 4 shanbe daram , emkanesh hast? Mail niaze bezanam?",
+      "msg_date": "2025-08-30",
+      "channel": "erfan_chann"
+    },
+    "2025-09-03": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "Slm man niaz be morakhasi baraye 3shanbe va 4 shanbe daram , emkanesh hast? Mail niaze bezanam?",
+      "msg_date": "2025-08-30",
+      "channel": "erfan_chann"
+    },
+    "2025-10-18": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "<@681468450870132757> سلام اقا احسان خوبین؟ ببخشید من میتونم شنبه رو مرخصی بگیرم؟",
+      "msg_date": "2025-10-16",
+      "channel": "erfan_chann"
+    },
+    "2025-10-26": {
+      "type": "hourly",
+      "hours": 1,
+      "source_msg": "<@681468450870132757> jan slm , man 1 saat morakhasi niaz daram , ba tashakkor",
+      "msg_date": "2025-10-26",
+      "channel": "erfan_chann"
+    },
+    "2025-11-02": {
+      "type": "hourly",
+      "hours": 2,
+      "source_msg": "Slm 1-2 saat morakhasi niaz daram , mamnonam <@736498592168280114>",
+      "msg_date": "2025-11-02",
+      "channel": "erfan_chann"
+    },
+    "2025-11-09": {
+      "type": "hourly",
+      "hours": 1,
+      "source_msg": "Slm \nMan halam khob nist va mariz shodam \n1 saat morakhasi mikham baraye dr raftn \nMamnon <@73649859",
+      "msg_date": "2025-11-09",
+      "channel": "erfan_chann"
+    },
+    "2025-11-29": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "erfan jan lotfan moshkeli ya kari dari begu va morekhasi begir",
+      "msg_date": "2025-11-29",
+      "channel": "erfan_chann"
+    },
+    "2025-12-03": {
+      "type": "hourly",
+      "hours": 2,
+      "source_msg": "<@736498592168280114> khanoom slm \nMn ba ejazatoon 2 saat morakhasi mikham",
+      "msg_date": "2025-12-03",
+      "channel": "erfan_chann"
+    },
+    "2025-12-13": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "slm <@736498592168280114>  khanoom , az 3 ta 5 leave mikhastam , emkanesh hast?",
+      "msg_date": "2025-12-13",
+      "channel": "erfan_chann"
+    },
+    "2025-12-20": {
+      "type": "hourly",
+      "hours": 1,
+      "source_msg": "<@736498592168280114> slm khobin? \nMishe baraye man 1 saat morakhasi dar nazar bgirin ta alan \nKhab ",
+      "msg_date": "2025-12-20",
+      "channel": "erfan_chann"
+    }
+  },
+  "Keivan Sadeghi": {
+    "2025-04-07": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "Doroud bar shoma asaatid, age emkan dare farda ro morakhasi mikhastam",
+      "msg_date": "2025-04-07",
+      "channel": "keivan_chann"
+    },
+    "2025-06-17": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "Doroud bar asaatid mohtaram, age kari ba man nadarid, emrooz ro morakhasi mikhastam",
+      "msg_date": "2025-06-17",
+      "channel": "keivan_chann"
+    },
+    "2025-07-13": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "<@988029106836869181> salam, khubi? agha ba arze puzesh, emrooz ro morakhasi mikhastam",
+      "msg_date": "2025-07-13",
+      "channel": "keivan_chann"
+    },
+    "2025-08-12": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "Faghat man emrooz ro morakhasi gereftam, ba ehsan hamahang kardam",
+      "msg_date": "2025-08-12",
+      "channel": "keivan_chann"
+    },
+    "2025-08-26": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "<@988029106836869181> <@681468450870132757>  ba arze poozaesh az shoma, man brb zadam raftam yekam k",
+      "msg_date": "2025-08-26",
+      "channel": "keivan_chann"
+    },
+    "2025-08-31": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "agha ma ye kare banaei va bazsazi darim ke age emkan dashte bashe dar rooz haye ayande man yeki 2 ro",
+      "msg_date": "2025-08-31",
+      "channel": "keivan_chann"
+    },
+    "2025-09-02": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "man emrooz age emkan dare morakhasi basham",
+      "msg_date": "2025-09-02",
+      "channel": "keivan_chann"
+    },
+    "2025-09-27": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "salam va arze adab, age emkan dashte bashe man emrooz morakhasi begiram",
+      "msg_date": "2025-09-27",
+      "channel": "keivan_chann"
+    },
+    "2025-10-15": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "salam va arze adab, age emkan dare emrooz baraye man morakhasi hesab beshe  🙏",
+      "msg_date": "2025-10-15",
+      "channel": "keivan_chann"
+    },
+    "2025-10-26": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "Doroud bar asaatid, khaste nabashid\nagar emkan dare emrooz az saat 2 baraye man morakhasi hesab besh",
+      "msg_date": "2025-10-26",
+      "channel": "keivan_chann"
+    },
+    "2025-11-16": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "salam va arze adab, age emkan dare mikhastam morakhasi begiram ta akhare vaght",
+      "msg_date": "2025-11-16",
+      "channel": "keivan_chann"
+    },
+    "2025-11-25": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "<@736498592168280114> salam va arze adab, man emrooz dargire kare khune hastam, mikhastam age emkan ",
+      "msg_date": "2025-11-25",
+      "channel": "keivan_chann"
+    },
+    "2025-12-01": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "ozr khahi mikonam man morakhasi mikhastam ta akhare time",
+      "msg_date": "2025-12-01",
+      "channel": "keivan_chann"
+    },
+    "2025-12-02": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "ozr khahi mikonam man morakhasi mikhastam ta akhare time",
+      "msg_date": "2025-12-01",
+      "channel": "keivan_chann"
+    },
+    "2025-12-03": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "ozr khahi mikonam man morakhasi mikhastam ta akhare time",
+      "msg_date": "2025-12-01",
+      "channel": "keivan_chann"
+    },
+    "2025-12-13": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "ba arze poozesh mikhastam begam man be soorate barnamerizi nashode ye pooli dastam umade ke  bayad b",
+      "msg_date": "2025-12-13",
+      "channel": "keivan_chann"
+    }
+  },
+  "Maryam": {
+    "2025-07-19": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "salam sob b kheir man age moshkeli nist shanbe ta 2shanbe hafte bad morakhasi mikhastam",
+      "msg_date": "2025-07-15",
+      "channel": "maryam_chan"
+    },
+    "2025-07-21": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "salam sob b kheir man age moshkeli nist shanbe ta 2shanbe hafte bad morakhasi mikhastam",
+      "msg_date": "2025-07-15",
+      "channel": "maryam_chan"
+    },
+    "2025-10-22": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "man hafte dg mikhastam ta 4shanbe morakhasi begiram daram miram safar age moshkeli nist",
+      "msg_date": "2025-10-21",
+      "channel": "maryam_chan"
+    },
+    "2025-10-25": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "man hafte dg mikhastam ta 4shanbe morakhasi begiram daram miram safar age moshkeli nist",
+      "msg_date": "2025-10-21",
+      "channel": "maryam_chan"
+    }
+  },
+  "Nader Shabibi": {
+    "2025-08-02": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "salam ruzetoon bekheir. man shanbe va yekshanbaro mikhastam beram morekhasi ba ejazatoon.",
+      "msg_date": "2025-08-01",
+      "channel": "nader_chan"
+    },
+    "2025-08-16": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "<@681468450870132757> salam ehsan jan ejaze hast man fardaro morekhasi beram.",
+      "msg_date": "2025-08-16",
+      "channel": "nader_chan"
+    },
+    "2025-09-27": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "<@681468450870132757> salam ehsan jan ,man fardaro ba ejazat morekhasi basham , bimarestanm .mamnoon",
+      "msg_date": "2025-09-27",
+      "channel": "nader_chan"
+    },
+    "2025-10-27": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "<@681468450870132757> ehsan jan man farda ro morekhasi mikhastam . mamnoon.",
+      "msg_date": "2025-10-27",
+      "channel": "nader_chan"
+    },
+    "2025-10-28": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "salam ehsan jan , man emrooz hastam ba ejazat fardaro miram morekhasi",
+      "msg_date": "2025-10-28",
+      "channel": "nader_chan"
+    },
+    "2025-11-29": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "<@681468450870132757> ehsan jan salam shabet bekheir, man baram kari pish omade fardaro morekhasi ha",
+      "msg_date": "2025-11-29",
+      "channel": "nader_chan"
+    },
+    "2025-12-08": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "<@681468450870132757> <@736498592168280114> salam vaght bekheir, man shayad farda ehtiaj be morekhas",
+      "msg_date": "2025-12-08",
+      "channel": "nader_chan"
+    },
+    "2025-12-15": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "<@736498592168280114> <@681468450870132757> salam vaght bekheir , man farda baram kari pishomade ba ",
+      "msg_date": "2025-12-15",
+      "channel": "nader_chan"
+    }
+  },
+  "Zeinabsadat Hejazi": {
+    "2025-04-14": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "سلام شب بخیر \n<@988029106836869181>  من با اجازه‌تون فردا رو مرخصی میخواستم بگیرم \n🙏",
+      "msg_date": "2025-04-14",
+      "channel": "mahsa_chann"
+    },
+    "2025-04-19": {
+      "type": "hourly",
+      "hours": 2,
+      "source_msg": "من با اجازتون فردا صبح ۲ساعت مرخصی میخواستم🙏 <@988029106836869181>",
+      "msg_date": "2025-04-19",
+      "channel": "mahsa_chann"
+    },
+    "2025-04-26": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "من برنامه ام تغییر کرد \nبا اجازتون دوشنبه صبح رو مرخصی میگیرم ازتون 🙏🙏",
+      "msg_date": "2025-04-20",
+      "channel": "mahsa_chann"
+    },
+    "2025-04-21": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "من برنامه ام تغییر کرد \nبا اجازتون دوشنبه صبح رو مرخصی میگیرم ازتون 🙏🙏",
+      "msg_date": "2025-04-20",
+      "channel": "mahsa_chann"
+    },
+    "2025-06-01": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "سلام وقت بخیر \nمن تا الان متاسفانه حالم خوب نبود \nفردا رو با اجازه‌تون مرخصی میگیرم 🙏",
+      "msg_date": "2025-06-01",
+      "channel": "mahsa_chann"
+    },
+    "2025-09-08": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "سلام \nبله تز صبح برق نداشتم \nبعدش یه کار فرس پیش اومد که متاسفانه تموم نشد \nبالاتر گفتم اگر میشه مرخ",
+      "msg_date": "2025-09-08",
+      "channel": "mahsa_chann"
+    },
+    "2025-09-30": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "سلام روز بخیر \nمن ساعت ۹ رفتم آریا همراه برای آزمایش خون\nتازه رسیدم خونه \nامروز رو با اجازه‌تون مرخص",
+      "msg_date": "2025-09-30",
+      "channel": "mahsa_chann"
+    },
+    "2025-10-14": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "Salam\nBaraye morekhasi injuri mail 1to1 bezan behem\nMizanam baraye hasani Chon bayad sabt beshe",
+      "msg_date": "2025-10-14",
+      "channel": "mahsa_chann"
+    },
+    "2025-10-18": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "سلام \nباشه چشم ایمیلشو میزنم . \nفقط من شنبه نمیرسم متاسفانه ،شنبه هم  با اجازه‌تون مرخصی خواستم  بگی",
+      "msg_date": "2025-10-17",
+      "channel": "mahsa_chann"
+    }
+  },
+  "hadi.toofani": {
+    "2025-04-22": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "<@988029106836869181> fardaro mikhastam morakhasi begiram.",
+      "msg_date": "2025-04-22",
+      "channel": "hadi_chan"
+    }
+  },
+  "Yassin Alivand": {
+    "2025-05-09": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "<@988029106836869181> علیرضا جان سلام\nبرنامه سفر دورکار من به اهواز شد برای هفته آینده، 13ام شنبه تا",
+      "msg_date": "2025-05-03",
+      "channel": "yassin_chann"
+    },
+    "2025-05-08": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "<@988029106836869181> علیرضا جان سلام\nبرنامه سفر دورکار من به اهواز شد برای هفته آینده، 13ام شنبه تا",
+      "msg_date": "2025-05-03",
+      "channel": "yassin_chann"
+    },
+    "2025-06-18": {
+      "type": "full_day",
+      "hours": null,
+      "source_msg": "<@988029106836869181> علیرضا جان ، پیرو تماس اون روز ، من روز چهار شنبه ۲۸ ام خرداد، مرخصی هستم و ته",
+      "msg_date": "2025-06-02",
+      "channel": "yassin_chann"
+    },
+    "2025-06-21": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "<@988029106836869181> علیرضا جان \nمن برنامم شد سه شنبه صبح \n\nسه شنبه راه می افتم \nسه شنبه مرخصی میشه",
+      "msg_date": "2025-06-15",
+      "channel": "yassin_chann"
+    },
+    "2025-06-17": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "<@988029106836869181> علیرضا جان \nمن برنامم شد سه شنبه صبح \n\nسه شنبه راه می افتم \nسه شنبه مرخصی میشه",
+      "msg_date": "2025-06-15",
+      "channel": "yassin_chann"
+    },
+    "2025-12-19": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "<@736498592168280114> \nسلام مریم خانوم\nپیرو صحبتمون برای مرخصی این ها روز های مرخصی من میشه \n**18 اذ",
+      "msg_date": "2025-12-07",
+      "channel": "yassin_chann"
+    },
+    "2025-12-11": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "<@736498592168280114> \nسلام مریم خانوم\nپیرو صحبتمون برای مرخصی این ها روز های مرخصی من میشه \n**18 اذ",
+      "msg_date": "2025-12-07",
+      "channel": "yassin_chann"
+    },
+    "2025-12-12": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "<@736498592168280114> \nسلام مریم خانوم\nپیرو صحبتمون برای مرخصی این ها روز های مرخصی من میشه \n**18 اذ",
+      "msg_date": "2025-12-07",
+      "channel": "yassin_chann"
+    },
+    "2025-12-09": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "<@736498592168280114> \nسلام مریم خانوم\nپیرو صحبتمون برای مرخصی این ها روز های مرخصی من میشه \n**18 اذ",
+      "msg_date": "2025-12-07",
+      "channel": "yassin_chann"
+    },
+    "2025-12-18": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "<@736498592168280114> \nسلام مریم خانوم\nپیرو صحبتمون برای مرخصی این ها روز های مرخصی من میشه \n**18 اذ",
+      "msg_date": "2025-12-07",
+      "channel": "yassin_chann"
+    },
+    "2025-12-22": {
+      "type": "multi_day",
+      "hours": null,
+      "source_msg": "<@736498592168280114> \nسلام مریم خانوم\nپیرو صحبتمون برای مرخصی این ها روز های مرخصی من میشه \n**18 اذ",
+      "msg_date": "2025-12-07",
+      "channel": "yassin_chann"
+    }
+  }
+}

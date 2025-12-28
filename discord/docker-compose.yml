@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  discord-idle-bot:
+    build: .
+    container_name: discord-idle-bot
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      # Persist data files
+      - ./data:/app/data
+    # No ports needed - bot connects outbound only
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+# Usage:
+# docker-compose up -d
+# docker-compose logs -f
+# docker-compose down

@@ -1,0 +1,16 @@
+[Unit]
+Description=Discord Idle Time Tracker Bot
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/infrastructure/scripts/discord
+ExecStart=/usr/bin/python3 /root/infrastructure/scripts/discord/discord_idle_bot.py
+Restart=always
+RestartSec=10
+StandardOutput=append:/var/log/discord-idle-tracker.log
+StandardError=append:/var/log/discord-idle-tracker.log
+
+[Install]
+WantedBy=multi-user.target

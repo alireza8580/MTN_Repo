@@ -1,0 +1,81 @@
+version: "3.8"
+
+# DBA Attendance Tracking System - Complete Docker Compose Setup
+#
+# This runs:
+# 1. Discord idle bot (real-time presence tracking)
+# 2. Cron-based daily/monthly reports
+#
+# Usage:
+#   docker-compose up -d
+#   docker-compose logs -f
+#   docker-compose exec attendance bash  # Shell access
+#
+# Volumes are persisted in ./data directory
+
+services:
+  # Main attendance service (cron jobs + email)
+  attendance:
+    build: .
+    container_name: dba-attendance
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Tehran
+    volumes:
+      # Persist all data
+      - ./data/discord_exports:/app/data/discord_exports
+      - ./data/email_exports:/app/data/email_exports
+      - ./data/mtn_emails:/app/data/mtn_emails
+      - ./data/attendance_reports:/app/data/attendance_reports
+      - ./data/logs:/app/data/logs
+      # Config files
+      - ../MTN_standby_shift.csv:/app/MTN_standby_shift.csv:ro
+      - ../holiday_shifts.csv:/app/holiday_shifts.csv:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Discord bot for real-time idle tracking
+  discord-bot:
+    build:
+      context: .
+      dockerfile: discord/Dockerfile
+    container_name: discord-idle-bot
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      # Share data with main service
+      - ./data/discord_exports:/app/data
+    depends_on:
+      - attendance
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+# Usage:
+# 1. Create .env file with:
+#    DISCORD_TOKEN=your_bot_token
+#    SMTP_PASSWORD=your_exchange_password
+#    EWS_EMAIL=alireza.aghaja@mtnirancell.ir
+#
+# 2. Copy config files:
+#    cp ../MTN_standby_shift.csv ./MTN_standby_shift.csv
+#    cp ../holiday_shifts.csv ./holiday_shifts.csv
+#
+# 3. Start:
+#    docker-compose up -d
+#
+# 4. Check logs:
+#    docker-compose logs -f
+#    docker-compose logs attendance
+#    docker-compose logs discord-bot
+#
+# 5. Manual test:
+#    docker-compose exec attendance python3 attendance_tracker.py --csv
+#    docker-compose exec attendance python3 email_sender.py --test
