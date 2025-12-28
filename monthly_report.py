@@ -97,11 +97,14 @@ def aggregate_monthly_data(start_date, end_date):
     if not os.path.exists(ATTENDANCE_CSV):
         return {}
     
+    # EXPECTED_HOURS_PER_DAY: 8 hours is the target for effective work
+    EXPECTED_HOURS_PER_DAY = 8
+    
     stats = defaultdict(lambda: {
         'work_days': 0,
         'present_days': 0,
-        'leave_days': 0,
-        'hourly_leave_minutes': 0,
+        'leave_days': 0,           # Full daily leaves
+        'hourly_leave_minutes': 0, # Hourly leaves (separate from daily)
         'oncall_days': 0,
         'support_days': 0,
         'total_work_hours': 0.0,
@@ -112,9 +115,11 @@ def aggregate_monthly_data(start_date, end_date):
         'total_voice_minutes': 0,
         'total_emails': 0,
         'total_discord': 0,
+        'total_communication': 0,  # Discord + Emails combined
         'weekends': 0,
         'no_checkout_days': 0,
         'no_checkin_days': 0,
+        'expected_hours_per_day': EXPECTED_HOURS_PER_DAY,
     })
     
     start_str = start_date.strftime('%Y-%m-%d')
@@ -173,13 +178,17 @@ def aggregate_monthly_data(start_date, end_date):
             
             # Emails
             try:
-                stats[name]['total_emails'] += int(row.get('Emails') or 0)
+                email_count = int(row.get('Emails') or 0)
+                stats[name]['total_emails'] += email_count
+                stats[name]['total_communication'] += email_count
             except ValueError:
                 pass
             
             # Discord messages
             try:
-                stats[name]['total_discord'] += int(row.get('Discord') or 0)
+                discord_count = int(row.get('Discord') or 0)
+                stats[name]['total_discord'] += discord_count
+                stats[name]['total_communication'] += discord_count
             except ValueError:
                 pass
             
@@ -248,6 +257,8 @@ def calculate_performance_grade(effective_hours, expected_hours, idle_pct, atten
 def create_monthly_email_body(jalali_year, jalali_month, stats, start_date, end_date):
     """Create HTML email body for monthly report with enhanced formatting"""
     
+    EXPECTED_HOURS_PER_DAY = 8  # Target for effective work per day
+    
     month_name = get_jalali_month_name(jalali_month)
     prev_month = jalali_month - 1 if jalali_month > 1 else 12
     prev_month_name = get_jalali_month_name(prev_month)
@@ -262,6 +273,9 @@ def create_monthly_email_body(jalali_year, jalali_month, stats, start_date, end_
     avg_attendance = sum(s['present_days'] / s['work_days'] * 100 if s['work_days'] > 0 else 0 for s in stats.values()) / total_people if total_people > 0 else 0
     avg_idle_pct = sum(s['total_idle_minutes'] / (s['total_work_hours'] * 60) * 100 if s['total_work_hours'] > 0 else 0 for s in stats.values()) / total_people if total_people > 0 else 0
     total_voice = sum(s['total_voice_minutes'] for s in stats.values())
+    total_communication = sum(s['total_communication'] for s in stats.values())
+    total_daily_leaves = sum(s['leave_days'] for s in stats.values())
+    total_hourly_leave_hours = sum(s['hourly_leave_minutes'] for s in stats.values()) / 60
     
     html = f"""
     <html>
@@ -448,6 +462,18 @@ def create_monthly_email_body(jalali_year, jalali_month, stats, start_date, end_
                     <div class="number">{total_voice // 60}h</div>
                     <div class="label">جمع Voice</div>
                 </div>
+                <div class="stat-card">
+                    <div class="number">{total_communication}</div>
+                    <div class="label">جمع پیام (Discord+Email)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">{total_daily_leaves}</div>
+                    <div class="label">روز-نفر مرخصی کامل</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">{total_hourly_leave_hours:.1f}h</div>
+                    <div class="label">جمع مرخصی ساعتی</div>
+                </div>
             </div>
             
             <table>
@@ -456,14 +482,14 @@ def create_monthly_email_body(jalali_year, jalali_month, stats, start_date, end_
                     <th>رتبه</th>
                     <th>روز کاری</th>
                     <th>حضور</th>
-                    <th>مرخصی</th>
-                    <th>ساعتی</th>
+                    <th>مرخصی روزانه</th>
+                    <th>مرخصی ساعتی</th>
                     <th>آنکال</th>
                     <th>ساعت مفید</th>
-                    <th>انتظار</th>
+                    <th>انتظار ({EXPECTED_HOURS_PER_DAY}h/day)</th>
                     <th>اختلاف</th>
                     <th>Idle%</th>
-                    <th>BRB</th>
+                    <th>پیام‌ها</th>
                     <th>Voice</th>
                 </tr>
     """
@@ -487,7 +513,7 @@ def create_monthly_email_body(jalali_year, jalali_month, stats, start_date, end_
             attendance_pct = 0
         
         # Calculate expected and effective hours
-        expected_hours = s['work_days'] * 7  # 7 hours per work day
+        expected_hours = s['work_days'] * EXPECTED_HOURS_PER_DAY  # 8 hours per work day
         effective_hours = s['total_effective_minutes'] / 60
         difference = effective_hours - expected_hours
         
@@ -520,6 +546,9 @@ def create_monthly_email_body(jalali_year, jalali_month, stats, start_date, end_
         # Voice time in hours
         voice_hours = s['total_voice_minutes'] / 60
         
+        # Communication breakdown (Discord + Email)
+        comm_str = f"{s['total_discord']}D+{s['total_emails']}E"
+        
         html += f"""
             <tr>
                 <td style="text-align: right; font-weight: 500;">{name}</td>
@@ -533,13 +562,13 @@ def create_monthly_email_body(jalali_year, jalali_month, stats, start_date, end_
                 <td>{hourly_leave_str}</td>
                 <td>{s['oncall_days']}</td>
                 <td>{effective_hours:.1f}h</td>
-                <td>{expected_hours}h</td>
+                <td>{expected_hours:.0f}h</td>
                 <td class="{diff_class}">{difference:+.1f}h</td>
                 <td>
                     {idle_pct:.0f}%
                     <div class="progress-bar"><div class="progress-fill" style="width: {min(idle_pct, 100)}%; background: {idle_bar_color};"></div></div>
                 </td>
-                <td>{s['total_brb_minutes']}m</td>
+                <td title="Discord+Email">{comm_str}</td>
                 <td>{voice_hours:.1f}h</td>
             </tr>
         """
@@ -600,13 +629,15 @@ def export_monthly_csv(stats, jalali_year, jalali_month, start_date, end_date):
     month_name = get_jalali_month_name(jalali_month)
     filename = f'/root/infrastructure/attendance_reports/monthly_{jalali_year}_{jalali_month:02d}_{month_name}.csv'
     
+    EXPECTED_HOURS_PER_DAY = 8  # Target for effective work per day
+    
     fieldnames = [
         'Name', 'WorkDays', 'PresentDays', 'AttendancePercent', 
         'LeaveDays', 'HourlyLeaveMinutes', 'OnCallDays', 'SupportDays',
         'TotalWorkHours', 'TotalEffectiveMinutes', 'ExpectedHours', 'DifferenceHours',
         'TotalBRB', 'TotalIdle', 'TotalOffline', 'TotalVoice',
         'NoCheckinDays', 'NoCheckoutDays',
-        'TotalEmails', 'TotalDiscord'
+        'TotalEmails', 'TotalDiscord', 'TotalCommunication'
     ]
     
     with open(filename, 'w', encoding='utf-8', newline='') as f:
@@ -616,7 +647,7 @@ def export_monthly_csv(stats, jalali_year, jalali_month, start_date, end_date):
         for name in sorted(stats.keys()):
             s = stats[name]
             attendance_pct = (s['present_days'] / s['work_days'] * 100) if s['work_days'] > 0 else 0
-            expected_hours = s['work_days'] * 7
+            expected_hours = s['work_days'] * EXPECTED_HOURS_PER_DAY  # 8 hours per day
             effective_hours = s['total_effective_minutes'] / 60
             difference = effective_hours - expected_hours
             
@@ -641,6 +672,7 @@ def export_monthly_csv(stats, jalali_year, jalali_month, start_date, end_date):
                 'NoCheckoutDays': s['no_checkout_days'],
                 'TotalEmails': s['total_emails'],
                 'TotalDiscord': s['total_discord'],
+                'TotalCommunication': s['total_communication'],
             })
     
     print(f"✓ Monthly CSV exported: {filename}")
