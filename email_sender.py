@@ -296,7 +296,23 @@ def create_daily_email_body(date_str, summary):
         if d['leave'] == 'YES':
             leave_display = 'بله'
         elif d['leave'] == 'HOURLY':
-            leave_display = f"ساعتی ({d['leave_hours']})" if d['leave_hours'] else 'ساعتی'
+            # Use Persian format for hours to avoid RTL display issues
+            # Convert 3h10m to "۳ ساعت ۱۰ دقیقه" or shorter
+            if d['leave_hours']:
+                # Parse hours and minutes from format like "3h10m" or "3h"
+                leave_str = d['leave_hours']
+                hours = 0
+                mins = 0
+                if 'h' in leave_str:
+                    parts = leave_str.replace('m', '').split('h')
+                    hours = int(parts[0]) if parts[0] else 0
+                    mins = int(parts[1]) if len(parts) > 1 and parts[1] else 0
+                if mins:
+                    leave_display = f'ساعتی ({hours}:{mins:02d})'
+                else:
+                    leave_display = f'ساعتی ({hours}:00)'
+            else:
+                leave_display = 'ساعتی'
         
         # For on-call people, handle display differently
         # Previous on-call (support): Show effective (9.0 automatic) but rest is -

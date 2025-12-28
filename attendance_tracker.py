@@ -2250,6 +2250,15 @@ def export_daily_csv(attendance, date_str):
     
     print(f"✓ CSV exported to: {ATTENDANCE_CSV}")
     print(f"  Records for {date_str}: {len(all_names)}")
+    
+    # Also save to SQLite database for persistence
+    try:
+        from attendance_db import init_db, import_csv
+        init_db()
+        import_csv(replace=True)
+        print(f"✓ SQLite database updated")
+    except Exception as e:
+        print(f"⚠ SQLite update failed: {e}")
 
 
 def get_all_dates_from_discord():
