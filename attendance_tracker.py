@@ -312,7 +312,7 @@ def map_holiday_name(name):
     name_mapping = {
         'alireza': 'Alireza Aghajanzadeh Gheshlaghi',
         'maryam': 'Maryam Marefati',
-        'mary': 'Maryam Yousefi',
+        'mari': 'Maryam Yousefi',
         'mahsa': 'Zeinabsadat Hejazi',
         'hadi': 'Hadi Toofiani',  # Former member
         'keyvan': 'Keivan Sadeghi',
@@ -865,6 +865,13 @@ def analyze_attendance(date_str=None):
     
     target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
     
+    # Check if it's a holiday - if so, only process messages from the support person
+    holiday_support = get_holiday_support_person(date_str)
+    is_holiday_date = is_holiday(date_str)
+    
+    if is_holiday_date:
+        print(f"🎉 روز تعطیل: فقط پیام‌های {holiday_support} پردازش می‌شود")
+    
     # Filter messages by Iran date (not UTC date)
     day_messages = []
     for m in messages:
@@ -895,6 +902,10 @@ def analyze_attendance(date_str=None):
         timestamp = parse_timestamp(msg.get('timestamp', ''))
         
         if not timestamp:
+            continue
+        
+        # On holidays, only process messages from the support person
+        if is_holiday_date and name != holiday_support:
             continue
         
         # Check-in (morning greeting)
@@ -1950,6 +1961,7 @@ def export_daily_csv(attendance, date_str):
     discord_counts = count_discord_messages(date_str)
     oncall_person, support_person = get_oncall_person(date_str)
     holiday_support = get_holiday_support_person(date_str)
+    is_holiday_date = is_holiday(date_str)
     
     # Ensure directory exists
     csv_dir = os.path.dirname(ATTENDANCE_CSV)
@@ -1970,6 +1982,14 @@ def export_daily_csv(attendance, date_str):
     
     # Prepare new data (excluding management)
     all_names = set(TEAM_MEMBERS.values()) - EXCLUDED_MEMBERS
+    
+    # On holidays, only include the holiday support person
+    if is_holiday_date and holiday_support:
+        if holiday_support in all_names:
+            all_names = {holiday_support}
+            print(f"🎉 روز تعطیل: فقط {holiday_support} در گزارش CSV")
+        else:
+            print(f"⚠️ روز تعطیل: {holiday_support} در لیست پیدا نشد")
     
     for name in all_names:
         data = attendance.get(name, {
@@ -2314,6 +2334,8 @@ def export_daily_csv_discord_only(attendance, date_str):
     """Export daily attendance to CSV (Discord data only, no email counts)"""
     discord_counts = count_discord_messages(date_str)
     oncall_person, support_person = get_oncall_person(date_str)
+    holiday_support = get_holiday_support_person(date_str)
+    is_holiday_date = is_holiday(date_str)
     
     # Ensure directory exists
     csv_dir = os.path.dirname(ATTENDANCE_CSV)
@@ -2334,6 +2356,11 @@ def export_daily_csv_discord_only(attendance, date_str):
     
     # Prepare new data (excluding management)
     all_names = set(TEAM_MEMBERS.values()) - EXCLUDED_MEMBERS
+    
+    # On holidays, only include the holiday support person
+    if is_holiday_date and holiday_support:
+        if holiday_support in all_names:
+            all_names = {holiday_support}
     
     for name in all_names:
         data = attendance.get(name, {
