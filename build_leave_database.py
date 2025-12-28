@@ -25,7 +25,7 @@ LEAVE_DB_FILE = '/root/infrastructure/scripts/leave_database.json'
 LEAVE_PATTERNS = [
     'morakhasi', 'morekhasi', 'مرخصی',
     'off basham', 'off bashim', 
-    'leave mikham', 'leave mikhastam',
+    'leave mikham', 'leave mikhastam','morkhasi',
 ]
 
 # Negation patterns - these patterns mean it's NOT a leave request
@@ -40,16 +40,17 @@ NEGATION_PHRASES = [
 
 # Personal channels mapping
 PERSONAL_CHANNELS = {
-    'masoud_chann': 'Masoud Rafiei',
+    'masoud_chan': 'Masoud Rafiei',
     'maryam_y_chan': 'Maryam Yousefi',
     'ehsan_chan': 'Ehsan Yousefi',
-    'hosseinali-chann': 'Hosseinali Shirali',
-    'erfan_chann': 'Erfan Heidari',
-    'keivan_chann': 'Keivan Sadeghi',
+    'hosseinali_chan': 'Hosseinali Shirali',
+    'erfan_chan': 'Erfan Heidari',
+    'keivan_chan': 'Keivan Sadeghi',
     'nader_chan': 'Nader Shabibi',
-    'mahsa_chann': 'Zeinabsadat Hejazi',
-    'yassin_chann': 'Yassin Alivand',
-    'mohsen_chann': 'Mohsen Roudsaz',
+    'mahsa_chan': 'Zeinabsadat Hejazi',
+    'yassin_chan': 'Yassin Alivand',
+    'mohsen_chan': 'Mohsen Roudsaz',
+    'masoud_sereshki_chan': 'Masoud Sereshki',
 }
 
 # Team members mapping

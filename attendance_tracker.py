@@ -365,6 +365,74 @@ def get_latest_discord_file():
     return max(files, key=os.path.getctime)
 
 
+def get_discord_file_for_date(date_str):
+    """Get the best Discord export file for a specific date.
+    
+    For dates in the past, we need to find a file that contains messages for that date.
+    Returns the file path or None if not found.
+    """
+    target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    files = glob.glob(os.path.join(DISCORD_EXPORTS_DIR, '*.json'))
+    
+    if not files:
+        return None
+    
+    # For today or recent dates, use the latest file
+    today = datetime.now().date()
+    if target_date >= today - timedelta(days=1):
+        return max(files, key=os.path.getctime)
+    
+    # For older dates, find a file that contains messages for that date
+    for f in sorted(files, key=os.path.getctime, reverse=True):
+        try:
+            with open(f, 'r', encoding='utf-8') as fp:
+                data = json.load(fp)
+            channels = data.get('channels', {})
+            if 'general_new' in channels:
+                messages = channels['general_new'].get('messages', [])
+                for m in messages:
+                    ts = m.get('timestamp', '')[:10]
+                    if ts == date_str:
+                        return f
+        except:
+            continue
+    
+    return None
+
+
+def get_all_messages_for_date(date_str, channel_name='general_new'):
+    """Get all messages for a specific date from all Discord export files.
+    
+    This scans all available files and merges messages for the target date.
+    Returns list of messages sorted by timestamp.
+    """
+    target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    files = glob.glob(os.path.join(DISCORD_EXPORTS_DIR, '*.json'))
+    
+    all_messages = {}  # Use dict to dedupe by message ID
+    
+    for f in files:
+        try:
+            with open(f, 'r', encoding='utf-8') as fp:
+                data = json.load(fp)
+            channels = data.get('channels', {})
+            if channel_name in channels:
+                messages = channels[channel_name].get('messages', [])
+                for m in messages:
+                    # Check if message is for target date (in Iran time)
+                    ts = m.get('timestamp', '')
+                    iran_dt = parse_timestamp(ts)
+                    if iran_dt and iran_dt.date() == target_date:
+                        msg_id = m.get('id', ts)  # Use ID or timestamp as key
+                        all_messages[msg_id] = m
+        except Exception as e:
+            continue
+    
+    # Sort by timestamp
+    sorted_msgs = sorted(all_messages.values(), key=lambda m: m.get('timestamp', ''))
+    return sorted_msgs
+
+
 # Iran timezone offset: +03:30
 IRAN_OFFSET = timedelta(hours=3, minutes=30)
 
@@ -843,27 +911,23 @@ def calculate_leave_duration(leave_times):
     return max(0, end_minutes - start_minutes)
 
 def analyze_attendance(date_str=None):
-    """Analyze attendance for a specific date"""
-    discord_file = get_latest_discord_file()
-    if not discord_file:
-        print("No Discord export file found!")
-        return
+    """Analyze attendance for a specific date.
     
-    with open(discord_file, 'r', encoding='utf-8') as f:
-        data = json.load(f)
-    
-    channels = data.get('channels', {})
-    if 'general_new' not in channels:
-        print("general_new channel not found!")
-        return
-    
-    messages = channels['general_new'].get('messages', [])
-    
+    This function now scans ALL Discord export files to find messages for the target date.
+    This is necessary for historical dates which won't be in the latest export file.
+    """
     # Filter by date (in Iran timezone, not UTC)
     if date_str is None:
         date_str = datetime.now().strftime('%Y-%m-%d')
     
     target_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    
+    # Get all messages for the target date from ALL Discord files
+    day_messages = get_all_messages_for_date(date_str, 'general_new')
+    
+    if not day_messages:
+        # No messages found - this could be a weekend, holiday, or missing data
+        pass  # Continue with empty attendance (will be marked as absent)
     
     # Check if it's a holiday - if so, only process messages from the support person
     holiday_support = get_holiday_support_person(date_str)
@@ -871,14 +935,6 @@ def analyze_attendance(date_str=None):
     
     if is_holiday_date:
         print(f"🎉 روز تعطیل: فقط پیام‌های {holiday_support} پردازش می‌شود")
-    
-    # Filter messages by Iran date (not UTC date)
-    day_messages = []
-    for m in messages:
-        ts = m.get('timestamp', '')
-        iran_dt = parse_timestamp(ts)
-        if iran_dt and iran_dt.date() == target_date:
-            day_messages.append(m)
     
     # Track attendance per person
     attendance = defaultdict(lambda: {
@@ -964,17 +1020,10 @@ def analyze_attendance(date_str=None):
     
     # === Check personal channels for leave requests (ONLY place for leave) ===
     for channel_name, person_name in PERSONAL_CHANNELS.items():
-        if channel_name not in channels:
-            continue
-        ch_data = channels[channel_name]
-        if not isinstance(ch_data, dict):
-            continue
-        ch_messages = ch_data.get('messages', [])
+        # Get messages from this personal channel for the target date
+        ch_messages = get_all_messages_for_date(date_str, channel_name)
         
-        # Filter by date
-        day_ch_messages = [m for m in ch_messages if date_str in m.get('timestamp', '')]
-        
-        for msg in day_ch_messages:
+        for msg in ch_messages:
             content = msg.get('content', '')
             timestamp = parse_timestamp(msg.get('timestamp', ''))
             author_display = msg.get('author', {}).get('display_name', '')
@@ -1955,8 +2004,14 @@ def print_daily_table(attendance, date_str):
 ATTENDANCE_CSV = os.environ.get('ATTENDANCE_CSV', os.path.join(BASE_DIR, 'attendance_reports/daily_attendance.csv'))
 
 
-def export_daily_csv(attendance, date_str):
-    """Export daily attendance to CSV file (append or update)"""
+def export_daily_csv(attendance, date_str, sync_db=True):
+    """Export daily attendance to CSV file (append or update)
+    
+    Args:
+        attendance: Attendance data from analyze_attendance()
+        date_str: Date string (YYYY-MM-DD)
+        sync_db: If True, sync to SQLite database after CSV export
+    """
     email_counts = count_emails_per_person(date_str)
     discord_counts = count_discord_messages(date_str)
     oncall_person, support_person = get_oncall_person(date_str)
@@ -2273,14 +2328,15 @@ def export_daily_csv(attendance, date_str):
     print(f"✓ CSV exported to: {ATTENDANCE_CSV}")
     print(f"  Records for {date_str}: {len(all_names)}")
     
-    # Also save to SQLite database for persistence
-    try:
-        from attendance_db import init_db, import_csv
-        init_db()
-        import_csv(replace=True)
-        print(f"✓ SQLite database updated")
-    except Exception as e:
-        print(f"⚠ SQLite update failed: {e}")
+    # Also save to SQLite database for persistence (unless disabled)
+    if sync_db:
+        try:
+            from attendance_db import init_db, import_csv
+            init_db()
+            import_csv(replace=True)
+            print(f"✓ SQLite database updated")
+        except Exception as e:
+            print(f"⚠ SQLite update failed: {e}")
 
 
 def get_all_dates_from_discord(use_all_files=False):
@@ -2345,13 +2401,23 @@ def backfill_csv(start_date=None):
         print(f"Processing {date_str}...", end=" ")
         try:
             attendance, _ = analyze_attendance(date_str)
-            # Export without email counts (only Discord data for backfill)
-            export_daily_csv_discord_only(attendance, date_str)
+            # Use full export but skip DB sync during backfill (we'll sync once at end)
+            export_daily_csv(attendance, date_str, sync_db=False)
             print("OK")
         except Exception as e:
             print(f"Error: {e}")
     
+    # Sync DB once at the end
     print("=" * 60)
+    print("Syncing to SQLite database...")
+    try:
+        from attendance_db import init_db, import_csv
+        init_db()
+        import_csv(replace=True)
+        print(f"✓ SQLite database updated")
+    except Exception as e:
+        print(f"⚠ SQLite update failed: {e}")
+    
     print(f"Backfill complete! CSV: {ATTENDANCE_CSV}")
 
 
