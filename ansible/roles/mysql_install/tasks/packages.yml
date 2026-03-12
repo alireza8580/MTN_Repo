@@ -1,0 +1,48 @@
+---
+# Package installation tasks
+
+- name: Check if MySQL RPMs source is accessible
+  ansible.builtin.stat:
+    path: "{{ mysql_rpm_source }}"
+  register: rpm_source
+
+- name: Fail if RPM source not accessible
+  ansible.builtin.fail:
+    msg: "MySQL RPM source {{ mysql_rpm_source }} is not accessible. Ensure NFS is mounted."
+  when: not rpm_source.stat.exists
+
+- name: Find MySQL RPM files
+  ansible.builtin.find:
+    paths: "{{ mysql_rpm_source }}"
+    patterns: "*.rpm"
+  register: mysql_rpms
+
+- name: Display found RPMs
+  ansible.builtin.debug:
+    msg: "Found {{ mysql_rpms.files | length }} MySQL RPM files"
+
+- name: Check if MySQL is already installed
+  ansible.builtin.shell: |
+    rpm -q mysql-commercial-server 2>/dev/null && echo "installed" || echo "not installed"
+  register: mysql_installed
+  changed_when: false
+
+- name: Install MySQL RPMs
+  ansible.builtin.shell: |
+    yum localinstall -y {{ mysql_rpm_source }}/*.rpm
+  when: mysql_installed.stdout != "installed"
+  register: rpm_install
+
+- name: Display installation result
+  ansible.builtin.debug:
+    msg: "{{ 'MySQL packages installed successfully' if rpm_install.changed | default(false) else 'MySQL already installed' }}"
+
+- name: Verify MySQL installation
+  ansible.builtin.shell: |
+    mysql --version
+  register: mysql_version_output
+  changed_when: false
+
+- name: Display MySQL version
+  ansible.builtin.debug:
+    msg: "Installed MySQL version: {{ mysql_version_output.stdout }}"

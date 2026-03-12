@@ -156,6 +156,22 @@ STANDARD_NAME_MAP = {
     'k1.sadeghi_15101': 'Keivan Sadeghi',
 }
 
+# Direct user ID to standard name mapping (more reliable than display name)
+USER_ID_TO_NAME = {
+    681468450870132757: 'Ehsan Yousefi',       # Esi (@ehsan.yo)
+    1029634494862475294: 'Maryam Yousefi',     # Mari (@maryam.you)
+    1428398226704433254: 'Mohsen Roudsaz',     # Mohsen (@mohsen.roud)
+    929347812901138482: 'Nader Shabibi',       # Nader (@nader3307)
+    1380899491745370243: 'Erfan Heidari',      # Erfan (@erfan_heidari) - NOT Zeinabsadat!
+    1016789594613743719: 'Hosseinali Shirali', # hossein shahreza (@hosseinshahreza)
+    356431782704316428: 'Masoud Rafiei',       # Masoud (@masoudraafiee)
+    1335373406874501225: 'Zeinabsadat Hejazi', # Mahsa (@mahsahejszi)
+    498491862324215819: 'Yassin Alivand',      # nissay87 (@nissay87)
+    1197192616018718781: 'Masoud Sereshki',    # Masoud Sereshki (@masoudsereshki)
+    1249939570913706081: 'Keivan Sadeghi',     # K1 Sadeghi (@k1.sadeghi_15101)
+    # Excluded: 988029106836869181 (Alireza), 736498592168280114 (Maryam Marefati)
+}
+
 
 def get_iran_time():
     """Get current time in Iran timezone"""
@@ -257,6 +273,11 @@ def load_data():
 
 def get_standard_name(user_id: int) -> str:
     """Convert Discord user ID to standard name for SQLite"""
+    # First try direct user ID mapping (most reliable)
+    if user_id in USER_ID_TO_NAME:
+        return USER_ID_TO_NAME[user_id]
+    
+    # Fallback to display name mapping
     if user_id not in user_info:
         return None
     
@@ -289,37 +310,37 @@ def sync_to_sqlite():
         synced_offline = 0
         synced_voice = 0
         
-        # Sync idle time
+        # Sync idle time - use correct column names: discord_user_id, standard_name, minutes
         if today_str in daily_idle_time:
             for user_id, minutes in daily_idle_time[today_str].items():
                 standard_name = get_standard_name(int(user_id))
                 if standard_name and minutes > 0:
                     cursor.execute('''
-                        INSERT OR REPLACE INTO idle_tracking (date, name, idle_minutes)
-                        VALUES (?, ?, ?)
-                    ''', (today_str, standard_name, round(minutes, 1)))
+                        INSERT OR REPLACE INTO idle_tracking (date, discord_user_id, standard_name, minutes)
+                        VALUES (?, ?, ?, ?)
+                    ''', (today_str, str(user_id), standard_name, round(minutes, 1)))
                     synced_idle += 1
         
-        # Sync offline time
+        # Sync offline time - use correct column names
         if today_str in daily_offline_time:
             for user_id, minutes in daily_offline_time[today_str].items():
                 standard_name = get_standard_name(int(user_id))
                 if standard_name and minutes > 0:
                     cursor.execute('''
-                        INSERT OR REPLACE INTO offline_tracking (date, name, offline_minutes)
-                        VALUES (?, ?, ?)
-                    ''', (today_str, standard_name, round(minutes, 1)))
+                        INSERT OR REPLACE INTO offline_tracking (date, discord_user_id, standard_name, minutes)
+                        VALUES (?, ?, ?, ?)
+                    ''', (today_str, str(user_id), standard_name, round(minutes, 1)))
                     synced_offline += 1
         
-        # Sync voice time
+        # Sync voice time - use correct column names
         if today_str in daily_voice_time:
             for user_id, minutes in daily_voice_time[today_str].items():
                 standard_name = get_standard_name(int(user_id))
                 if standard_name and minutes > 0:
                     cursor.execute('''
-                        INSERT OR REPLACE INTO voice_tracking (date, name, voice_minutes)
-                        VALUES (?, ?, ?)
-                    ''', (today_str, standard_name, round(minutes, 1)))
+                        INSERT OR REPLACE INTO voice_tracking (date, discord_user_id, standard_name, minutes)
+                        VALUES (?, ?, ?, ?)
+                    ''', (today_str, str(user_id), standard_name, round(minutes, 1)))
                     synced_voice += 1
         
         conn.commit()

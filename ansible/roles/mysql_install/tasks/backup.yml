@@ -1,0 +1,20 @@
+---
+# Backup configuration tasks
+# Only runs on nodes with is_backup_node: true
+
+- name: Deploy backup script
+  ansible.builtin.template:
+    src: backup_script.sh.j2
+    dest: "{{ mysql_scripts_dir }}/MEB{{ mysql_port }}.sh"
+    owner: mysql
+    group: mysql
+    mode: '0775'
+
+- name: Schedule backup cron job
+  ansible.builtin.cron:
+    name: "MySQL Enterprise Backup"
+    minute: "0"
+    hour: "2"
+    job: "{{ mysql_scripts_dir }}/MEB{{ mysql_port }}.sh >> {{ mysql_log_dir }}/backup.log 2>&1"
+    user: mysql
+  when: is_backup_node | bool

@@ -1,0 +1,17 @@
+#===============================================================================
+# MFS_REPORT Gather Stats Crontab - Drl168
+# Server: Drl168 (MFS_REPORT PDB)
+# User: oracle
+#
+# IMPORTANT: Replace SCRIPT_PATH with actual installation path, e.g.:
+#   /oracle/alireza/Schedule_ORA_OS_Job/drl168
+#===============================================================================
+
+# MFS_REPORT Gather Stats - Schedule C (every 12 hours)
+# Tables: MFS_EDR_DAILY (partitioned - day of year)
+0 11,23 * * * SCRIPT_PATH/mfs_report_scheduleC.scr
+
+# MFS_REPORT Gather Stats - Monthly (10th of month at 2AM)
+# Tables: MFS_EDR_DAILY with higher DEGREE
+0 2 10 * * SCRIPT_PATH/mfs_report_monthly.scr
+

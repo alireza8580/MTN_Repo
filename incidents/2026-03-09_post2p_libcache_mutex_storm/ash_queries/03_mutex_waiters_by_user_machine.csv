@@ -1,0 +1,53 @@
+-- ============================================================================
+-- Query 03: Mutex Waiters — Aggregated by User, Machine, and Module
+-- ============================================================================
+-- Database: POST2P (DBID: 2771519206)
+-- Snap Range: 233938 - 233941 (09-MAR-2026 08:00 to 09:30)
+-- Purpose: Show which users/machines/modules were waiting on 'library cache: mutex X' and how many sessions were affected
+-- 
+-- SQL Query:
+--   SELECT sql_id, sql_opname, module, machine, program,
+--          user_id, username,
+--          COUNT(*) wait_samples,
+--          COUNT(DISTINCT session_id) distinct_sessions,
+--          MIN(sample_time) first_wait, MAX(sample_time) last_wait
+--   FROM   dba_hist_active_sess_history
+--   WHERE  dbid = 2771519206
+--     AND  snap_id BETWEEN 233938 AND 233941
+--     AND  event = 'library cache: mutex X'
+--   GROUP BY sql_id, sql_opname, module, machine, program, user_id, username
+--   ORDER BY COUNT(*) DESC;
+-- 
+-- Notes: Shows 2,878+ distinct sessions affected across multiple machines
+-- ============================================================================
+SQL_ID,SQL_OPNAME,MODULE,MACHINE,PROGRAM,USER_ID,USERNAME,WAIT_SAMPLES,DISTINCT_SESSIONS,FIRST_WAIT,LAST_WAIT
+,,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),267,ABL_DBOBJECTS,24926,803,09-MAR-26 08.47.12.774000000 AM,09-MAR-26 09.23.14.641000000 AM
+,,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),198,TT$ABILLITY_BATCH,20258,353,09-MAR-26 08.47.12.774000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,sqlplus@drvl141 (TNS V1-V3),drvl141,sqlplus@drvl141 (TNS V1-V3),267,ABL_DBOBJECTS,10988,189,09-MAR-26 08.47.12.774000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,,drum711a.mtnirancell.ir,,267,ABL_DBOBJECTS,5491,95,09-MAR-26 08.47.12.774000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,sqlplus@dru822a (TNS V1-V3),dru822a,sqlplus@dru822a (TNS V1-V3),267,ABL_DBOBJECTS,2043,74,09-MAR-26 08.47.22.860000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,perl@drvl140 (TNS V1-V3),drvl140,perl@drvl140 (TNS V1-V3),198,TT$ABILLITY_BATCH,1721,36,09-MAR-26 08.47.12.774000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,JDBC Thin Client,drvl242.mtnirancell.ir,JDBC Thin Client,489,ABL_APPS_CLM,1545,50,09-MAR-26 08.47.53.288000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,JDBC Thin Client,drvl240.mtnirancell.ir,JDBC Thin Client,489,ABL_APPS_CLM,1544,50,09-MAR-26 08.47.53.288000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,JDBC Thin Client,drvl241.mtnirancell.ir,JDBC Thin Client,489,ABL_APPS_CLM,1426,50,09-MAR-26 08.48.23.740000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,JDBC Thin Client,drvl243.mtnirancell.ir,JDBC Thin Client,489,ABL_APPS_CLM,1396,50,09-MAR-26 08.50.06.501000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,JDBC Thin Client,drvl244.mtnirancell.ir,JDBC Thin Client,489,ABL_APPS_CLM,1350,50,09-MAR-26 09.16.44.156000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,JDBC Thin Client,drvl245.mtnirancell.ir,JDBC Thin Client,489,ABL_APPS_CLM,1350,50,09-MAR-26 09.16.44.156000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,sqlplus@drvl140 (TNS V1-V3),drvl140,sqlplus@drvl140 (TNS V1-V3),267,ABL_DBOBJECTS,1267,44,09-MAR-26 08.47.22.860000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,JDBC Thin Client,drl061,JDBC Thin Client,267,ABL_DBOBJECTS,1023,37,09-MAR-26 08.47.12.774000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,SpwanPrpdStmtInstances@dru822a (TNS V1-V3),dru822a,SpwanPrpdStmtInstances@dru822a (TNS V1-V3),267,ABL_DBOBJECTS,966,36,09-MAR-26 08.48.03.450000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,JDBC Thin Client,drvl720.mtnirancell.ir,JDBC Thin Client,65,IRANCELL_SSP,961,31,09-MAR-26 08.48.44.395000000 AM,09-MAR-26 09.24.38.087000000 AM
+,,sqlplus@drl061 (TNS V1-V3),drl061,sqlplus@drl061 (TNS V1-V3),267,ABL_DBOBJECTS,902,33,09-MAR-26 08.48.13.621000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,JDBC Thin Client,drvl722.mtnirancell.ir,JDBC Thin Client,65,IRANCELL_SSP,830,28,09-MAR-26 08.48.23.740000000 AM,09-MAR-26 09.24.48.274000000 AM
+,,JDBC Thin Client,drvl254.mtnirancell.ir,JDBC Thin Client,489,ABL_APPS_CLM,766,40,09-MAR-26 08.49.35.734000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,JDBC Thin Client,drvl719.mtnirancell.ir,JDBC Thin Client,65,IRANCELL_SSP,719,24,09-MAR-26 08.47.22.860000000 AM,09-MAR-26 09.26.29.894000000 AM
+,,JDBC Thin Client,drvl665.mtnirancell.ir,JDBC Thin Client,65,IRANCELL_SSP,693,15,09-MAR-26 08.48.23.740000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,JDBC Thin Client,drvl250.mtnirancell.ir,JDBC Thin Client,489,ABL_APPS_CLM,676,26,09-MAR-26 08.48.13.621000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,JDBC Thin Client,drvl249.mtnirancell.ir,JDBC Thin Client,489,ABL_APPS_CLM,666,35,09-MAR-26 08.49.46.151000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,JDBC Thin Client,drvl246.mtnirancell.ir,JDBC Thin Client,489,ABL_APPS_CLM,659,23,09-MAR-26 08.49.35.734000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,JDBC Thin Client,drvl253.mtnirancell.ir,JDBC Thin Client,489,ABL_APPS_CLM,646,38,09-MAR-26 08.50.16.731000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,JDBC Thin Client,drvl247.mtnirancell.ir,JDBC Thin Client,489,ABL_APPS_CLM,630,23,09-MAR-26 08.49.35.734000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,JDBC Thin Client,drvl255.mtnirancell.ir,JDBC Thin Client,489,ABL_APPS_CLM,599,37,09-MAR-26 08.49.46.151000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,JDBC Thin Client,drvl248.mtnirancell.ir,JDBC Thin Client,489,ABL_APPS_CLM,592,34,09-MAR-26 08.50.29.375000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,JDBC Thin Client,drvl372,JDBC Thin Client,65,IRANCELL_SSP,570,10,09-MAR-26 08.48.03.450000000 AM,09-MAR-26 09.23.03.815000000 AM
+,,,drvl1078,sqlplus@drvl1078 (TNS V1-V3),267,ABL_DBOBJECTS,544,9,09-MAR-26 08.47.12.774000000 AM,09-MAR-26 09.23.03.815000000 AM

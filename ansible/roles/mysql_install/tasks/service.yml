@@ -1,0 +1,30 @@
+---
+# MySQL service management tasks
+
+- name: Enable mysqld@{{ mysql_port }} service
+  ansible.builtin.systemd:
+    name: "mysqld@{{ mysql_port }}"
+    enabled: yes
+  notify: Reload systemd
+
+- name: Start mysqld@{{ mysql_port }} service
+  ansible.builtin.systemd:
+    name: "mysqld@{{ mysql_port }}"
+    state: started
+  register: mysql_service_start
+
+- name: Wait for MySQL to be ready
+  ansible.builtin.wait_for:
+    path: "{{ mysql_socket }}"
+    state: present
+    timeout: 60
+  when: mysql_service_start.changed
+
+- name: Check MySQL service status
+  ansible.builtin.systemd:
+    name: "mysqld@{{ mysql_port }}"
+  register: mysql_service_status
+
+- name: Display service status
+  ansible.builtin.debug:
+    msg: "MySQL service status: {{ mysql_service_status.status.ActiveState }}"

@@ -1,0 +1,19 @@
+---
+# Shell configuration for mysql user
+
+- name: Deploy .bash_profile for mysql user
+  ansible.builtin.template:
+    src: bash_profile.j2
+    dest: /data/.bash_profile
+    owner: mysql
+    group: mysql
+    mode: '0644'
+
+- name: Source bash_profile
+  ansible.builtin.shell: |
+    source /data/.bash_profile
+  become: yes
+  become_user: mysql
+  args:
+    executable: /bin/bash
+  changed_when: false

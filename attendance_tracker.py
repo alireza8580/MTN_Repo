@@ -519,7 +519,10 @@ def is_goodbye(content):
         'khaste nabshid', 'khasteh nabshid',  # Common typos (missing 'a')
         'khastenabashid', 'khastehnabashid',  # No space variants
         'khasteh nabasheed', 'khaste nabasheed',  # Different transliteration
+        'khaste nabashin', 'khasteh nabashin',  # Informal/plural form (e.g., "khaste nabashin doostan")
+        'khastenabasheen', 'khastehnabasheen',  # No space informal variants
         'خسته نباشید', 'خسته‌نباشید',  # Persian with/without half-space
+        'خسته نباشین',  # Persian informal
         'felan', 'shb khosh', 'شب خوش', 
         'khodafez', 'khodahafez', 'khodanegahdar', 
         'bye', 'خروج',
@@ -580,8 +583,7 @@ def is_brb_special(content):
 # 4. Add brb_special_excess to CSV export
 
 def is_wednesday(date_str):
-    """Check if date is Wednesday (shift handover day)"""
-    from datetime import datetime
+    """Check if date is Wednesday (shift handover day)."""
     dt = datetime.strptime(date_str, '%Y-%m-%d')
     return dt.weekday() == 2  # Monday=0, Wednesday=2
 
@@ -651,17 +653,25 @@ def calculate_oncall_metrics(name, date_str, data, is_new_oncall=False, is_prev_
         check_in_time = data.get('check_in')
         if check_in_time:
             # Check if online before 17:00
-            from datetime import datetime
-            try:
-                t = datetime.strptime(check_in_time, '%H:%M')
-                if t.hour < 17:
-                    result['check_in_status'] = 'OK'
-                    result['notes'] = f'ورود {check_in_time}'
-                else:
-                    result['check_in_status'] = 'LATE'
-                    result['notes'] = f'ورود {check_in_time} (دیر)'
-            except:
-                result['notes'] = check_in_time
+            # check_in_time can be datetime object or string
+            if isinstance(check_in_time, datetime):
+                check_hour = check_in_time.hour
+                check_in_str = check_in_time.strftime('%H:%M')
+            else:
+                try:
+                    t = datetime.strptime(check_in_time, '%H:%M')
+                    check_hour = t.hour
+                    check_in_str = check_in_time
+                except ValueError:
+                    result['notes'] = str(check_in_time)
+                    return result
+            
+            if check_hour < 17:
+                result['check_in_status'] = 'OK'
+                result['notes'] = f'ورود {check_in_str}'
+            else:
+                result['check_in_status'] = 'LATE'
+                result['notes'] = f'ورود {check_in_str} (دیر)'
         else:
             result['check_in_status'] = 'MISSING'
             result['notes'] = 'ورود نداشته'
@@ -716,6 +726,13 @@ def is_leave_request(content):
     ]
     
     if any(p in content_lower for p in primary_patterns):
+        # Check if message specifies future dates (should not count as leave for today)
+        # Pattern: "tarikh 20-21-22" or "20-21-22-23-24" - specific day numbers
+        import re
+        if re.search(r'\d{1,2}-\d{1,2}-\d{1,2}', content_lower):  # Date range like 20-21-22
+            return False
+        if 'tarikh' in content_lower or 'تاریخ' in content_lower:
+            return False  # Message specifies dates, handle separately
         return True
     
     # Note: Removed 'nistam' and 'نیستم' as they cause too many false positives
@@ -1451,15 +1468,16 @@ def get_idle_time(name, date_str):
         conn = sqlite3.connect(ATTENDANCE_DB_PATH)
         cursor = conn.cursor()
         
+        # Use SUM to aggregate if person has multiple Discord accounts
         cursor.execute('''
-            SELECT minutes FROM idle_tracking
+            SELECT SUM(minutes) FROM idle_tracking
             WHERE date = ? AND standard_name = ?
         ''', (date_key, name))
         
         row = cursor.fetchone()
         conn.close()
         
-        if row:
+        if row and row[0]:
             return round(row[0], 1)
         return None
         
@@ -1483,15 +1501,16 @@ def get_offline_time(name, date_str):
         conn = sqlite3.connect(ATTENDANCE_DB_PATH)
         cursor = conn.cursor()
         
+        # Use SUM to aggregate if person has multiple Discord accounts
         cursor.execute('''
-            SELECT minutes FROM offline_tracking
+            SELECT SUM(minutes) FROM offline_tracking
             WHERE date = ? AND standard_name = ?
         ''', (date_key, name))
         
         row = cursor.fetchone()
         conn.close()
         
-        if row:
+        if row and row[0]:
             return round(row[0], 1)
         return None
         
@@ -1515,15 +1534,16 @@ def get_voice_time(name, date_str):
         conn = sqlite3.connect(ATTENDANCE_DB_PATH)
         cursor = conn.cursor()
         
+        # Use SUM to aggregate if person has multiple Discord accounts
         cursor.execute('''
-            SELECT minutes FROM voice_tracking
+            SELECT SUM(minutes) FROM voice_tracking
             WHERE date = ? AND standard_name = ?
         ''', (date_key, name))
         
         row = cursor.fetchone()
         conn.close()
         
-        if row:
+        if row and row[0]:
             return round(row[0], 1)
         return None
         
@@ -2093,19 +2113,21 @@ def export_daily_csv(attendance, date_str, sync_db=True):
         remote_work = remote_info.get('location', 'YES') if remote_info else ''
         
         # Idle time from Discord bot (08:00-18:30 work hours)
+        # Don't show for full day leave
         idle_minutes = get_idle_time(name, date_str)
         idle_str = ''
         idle_percent = ''
-        if idle_minutes is not None:
+        if has_leave != 'YES' and idle_minutes is not None:
             idle_str = str(int(idle_minutes))
             # Work hours: 10.5 hours = 630 minutes
             idle_percent = f'{(idle_minutes / WORK_HOURS_TOTAL_MINUTES) * 100:.0f}%'
         
         # Offline time from Discord bot
+        # Don't show for full day leave
         offline_minutes = get_offline_time(name, date_str)
         offline_str = ''
         offline_percent = ''
-        if offline_minutes is not None:
+        if has_leave != 'YES' and offline_minutes is not None:
             offline_str = str(int(offline_minutes))
             offline_percent = f'{(offline_minutes / WORK_HOURS_TOTAL_MINUTES) * 100:.0f}%'
         

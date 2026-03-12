@@ -1,0 +1,320 @@
+08:30	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	20	56
+08:30	drvl1078	SQL*Plus	17	39
+08:30	dru104a	DBMS_SCHEDULER	10	34
+08:30	dru822a	SQL*Plus	8	27
+08:30	dru104a		13	24
+08:30	drvl141	SQL*Plus	21	22
+08:30	t1vl286	JDBC Thin Client	9	9
+08:31	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	22	62
+08:31	dru104a		16	35
+08:31	dru822a	SQL*Plus	6	31
+08:31	dru104a	DBMS_SCHEDULER	7	26
+08:31	drvl1078	SQL*Plus	10	25
+08:31	drvl141	SQL*Plus	15	16
+08:31	drum711a	preUploadMW@drum711a (TNS V1-V3)	9	15
+08:32	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	18	61
+08:32	dru822a	SQL*Plus	11	28
+08:32	drvl141	SQL*Plus	24	27
+08:32	dru104a	DBMS_SCHEDULER	7	26
+08:32	drvl1078	SQL*Plus	11	24
+08:32	dru104a		7	18
+08:32	drum711a	preUploadMW@drum711a (TNS V1-V3)	7	10
+08:33	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	19	52
+08:33	drvl1078	SQL*Plus	22	32
+08:33	dru104a		15	31
+08:33	dru104a	DBMS_SCHEDULER	6	25
+08:33	drvl141	SQL*Plus	13	14
+08:33	drum711a	preUploadMW@drum711a (TNS V1-V3)	6	8
+08:33	dru822a	SQL*Plus	6	7
+08:34	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	23	64
+08:34	drvl1078	SQL*Plus	17	26
+08:34	dru104a	DBMS_SCHEDULER	6	25
+08:34	dru104a		9	19
+08:34	drvl141	SQL*Plus	13	14
+08:34	drum711a	preUploadMW@drum711a (TNS V1-V3)	8	13
+08:35	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	20	63
+08:35	drvl1078	SQL*Plus	21	40
+08:35	dru822a	SQL*Plus	7	31
+08:35	dru104a	DBMS_SCHEDULER	7	29
+08:35	dru104a		11	24
+08:35	drvl141	SQL*Plus	20	22
+08:35	t1vl286	JDBC Thin Client	8	8
+08:36	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	21	58
+08:36	dru104a		18	32
+08:36	dru822a	SQL*Plus	11	31
+08:36	dru104a	DBMS_SCHEDULER	7	25
+08:36	drvl1078	SQL*Plus	13	24
+08:36	drvl141	SQL*Plus	18	18
+08:36	drum711a	preUploadMW@drum711a (TNS V1-V3)	7	8
+08:37	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	23	68
+08:37	drvl141	SQL*Plus	23	26
+08:37	dru104a	DBMS_SCHEDULER	6	25
+08:37	drvl1078	SQL*Plus	7	18
+08:37	dru104a		6	17
+08:37	drum711a	preUploadMW@drum711a (TNS V1-V3)	6	9
+08:37	dru822a	SQL*Plus	6	7
+08:38	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	21	59
+08:38	dru104a		17	41
+08:38	dru104a	DBMS_SCHEDULER	6	25
+08:38	drvl141	SQL*Plus	16	19
+08:38	drvl1078	SQL*Plus	9	15
+08:39	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	21	62
+08:39	dru104a	DBMS_SCHEDULER	7	25
+08:39	dru104a		8	23
+08:39	drvl141	SQL*Plus	16	17
+08:39	drvl1078	SQL*Plus	7	12
+08:39	drum711a	preUploadMW@drum711a (TNS V1-V3)	7	11
+08:39	drvl721.mtnirancell.ir	JDBC Thin Client	6	6
+08:40	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	21	66
+08:40	drvl1078	SQL*Plus	20	45
+08:40	dru822a	SQL*Plus	10	30
+08:40	dru104a	DBMS_SCHEDULER	8	30
+08:40	dru104a		9	20
+08:40	drvl141	SQL*Plus	17	19
+08:40	drum711a	preUploadMW@drum711a (TNS V1-V3)	7	11
+08:40	t1vl286	JDBC Thin Client	10	10
+08:41	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	20	64
+08:41	dru822a	SQL*Plus	11	33
+08:41	dru104a		15	32
+08:41	dru104a	DBMS_SCHEDULER	6	26
+08:41	drvl1078	SQL*Plus	7	22
+08:41	drvl141	SQL*Plus	11	12
+08:41	drum711a	preUploadMW@drum711a (TNS V1-V3)	7	10
+08:41	drvl720.mtnirancell.ir	JDBC Thin Client	6	9
+08:42	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	20	48
+08:42	dru104a	DBMS_SCHEDULER	6	21
+08:42	dru104a		8	21
+08:42	drvl1078	SQL*Plus	10	20
+08:42	drvl141	SQL*Plus	13	13
+08:42	drum711a	preUploadMW@drum711a (TNS V1-V3)	7	12
+08:43	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	20	57
+08:43	dru104a	DBMS_SCHEDULER	6	25
+08:43	dru104a		12	23
+08:43	drvl141	SQL*Plus	14	16
+08:43	drvl1078	SQL*Plus	8	16
+08:43	drum711a	preUploadMW@drum711a (TNS V1-V3)	7	9
+08:44	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	19	54
+08:44	dru104a	DBMS_SCHEDULER	9	29
+08:44	dru104a		13	26
+08:44	drvl141	SQL*Plus	18	19
+08:44	drvl1078	SQL*Plus	8	13
+08:44	drum711a	preUploadMW@drum711a (TNS V1-V3)	7	8
+08:45	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	20	53
+08:45	dru104a	DBMS_SCHEDULER	7	27
+08:45	drvl1078	SQL*Plus	10	26
+08:45	dru822a	SQL*Plus	8	26
+08:45	dru104a		10	21
+08:45	drum711a	preUploadMW@drum711a (TNS V1-V3)	10	16
+08:45	drvl141	SQL*Plus	12	13
+08:45	t1vl286	JDBC Thin Client	9	10
+08:46	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	20	55
+08:46	dru104a	DBMS_SCHEDULER	9	29
+08:46	dru104a		14	26
+08:46	drvl141	SQL*Plus	16	19
+08:46	drum711a	preUploadMW@drum711a (TNS V1-V3)	6	10
+08:47	drvl1078	sqlplus@drvl1078 (TNS V1-V3)	271	955
+08:47	drvl141	sqlplus@drvl141 (TNS V1-V3)	153	743
+08:47	drum711a.mtnirancell.ir		30	151
+08:47	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	23	63
+08:47	drvl1078		9	43
+08:47	drvl141		8	37
+08:47	dru104a		16	30
+08:47	drvl140	perl@drvl140 (TNS V1-V3)	9	29
+08:47	dru104a	DBMS_SCHEDULER	6	26
+08:47	dru822a	SQL*Plus	10	17
+08:47	drvl666.mtnirancell.ir	JDBC Thin Client	6	14
+08:47	drum711a	preUploadMW@drum711a (TNS V1-V3)	8	13
+08:48	drvl1078	sqlplus@drvl1078 (TNS V1-V3)	439	2434
+08:48	drvl141	sqlplus@drvl141 (TNS V1-V3)	172	1032
+08:48	drum711a.mtnirancell.ir		95	496
+08:48	drvl140	perl@drvl140 (TNS V1-V3)	18	96
+08:48	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	23	89
+08:48	drvl372	JDBC Thin Client	10	60
+08:48	drvl1078		9	54
+08:48	drvl141		8	48
+08:48	dru104a	DBMS_SCHEDULER	9	35
+08:48	dru104a		11	30
+08:48	drvl242.mtnirancell.ir	JDBC Thin Client	7	29
+08:48	drum711a	preUploadMW@drum711a (TNS V1-V3)	10	22
+08:48	drvl665.mtnirancell.ir	JDBC Thin Client	9	19
+08:48	dru603a	JDBC Thin Client	6	18
+08:48	drvl676.mtnirancell.ir	JDBC Thin Client	8	17
+08:48	drvl241.mtnirancell.ir	JDBC Thin Client	6	17
+08:48	drvl720.mtnirancell.ir	JDBC Thin Client	8	16
+08:48	drvl240.mtnirancell.ir	JDBC Thin Client	6	16
+08:48	drvl723.mtnirancell.ir	JDBC Thin Client	8	14
+08:48	drvl666.mtnirancell.ir	JDBC Thin Client	7	13
+08:48	drvl679.mtnirancell.ir	JDBC Thin Client	7	12
+08:48	drvl722.mtnirancell.ir	JDBC Thin Client	6	12
+08:48	drvl668.mtnirancell.ir	JDBC Thin Client	6	7
+08:49	drvl1078	sqlplus@drvl1078 (TNS V1-V3)	457	2732
+08:49	drvl141	sqlplus@drvl141 (TNS V1-V3)	172	1032
+08:49	drum711a.mtnirancell.ir		95	570
+08:49	drvl140	perl@drvl140 (TNS V1-V3)	22	120
+08:49	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	24	111
+08:49	drvl372	JDBC Thin Client	10	60
+08:49	drvl1078		10	59
+08:49	drvl722.mtnirancell.ir	JDBC Thin Client	15	48
+08:49	drvl141		8	48
+08:49	drvl242.mtnirancell.ir	JDBC Thin Client	9	45
+08:49	drvl720.mtnirancell.ir	JDBC Thin Client	16	44
+08:49	drvl719.mtnirancell.ir	JDBC Thin Client	17	43
+08:49	drvl676.mtnirancell.ir	JDBC Thin Client	9	42
+08:49	drvl665.mtnirancell.ir	JDBC Thin Client	9	37
+08:49	dru603a	JDBC Thin Client	6	36
+08:49	dru104a	DBMS_SCHEDULER	8	33
+08:49	dru104a		15	31
+08:49	dru822a	sqlplus@dru822a (TNS V1-V3)	6	30
+08:49	drvl679.mtnirancell.ir	JDBC Thin Client	8	30
+08:49	drvl666.mtnirancell.ir	JDBC Thin Client	9	24
+08:49	drvl240.mtnirancell.ir	JDBC Thin Client	6	23
+08:49	drum711a	preUploadMW@drum711a (TNS V1-V3)	8	23
+08:49	drvl723.mtnirancell.ir	JDBC Thin Client	10	22
+08:49	drvl241.mtnirancell.ir	JDBC Thin Client	6	22
+08:49	drvl668.mtnirancell.ir	JDBC Thin Client	10	19
+08:49	drvl677.mtnirancell.ir	JDBC Thin Client	6	18
+08:49	drvl721.mtnirancell.ir	JDBC Thin Client	10	16
+08:49	drvl667.mtnirancell.ir	JDBC Thin Client	8	14
+08:49	drvl678.mtnirancell.ir	JDBC Thin Client	7	14
+08:50	drvl1078	sqlplus@drvl1078 (TNS V1-V3)	509	2504
+08:50	drvl141	sqlplus@drvl141 (TNS V1-V3)	173	865
+08:50	drum711a.mtnirancell.ir		95	475
+08:50	drvl140	perl@drvl140 (TNS V1-V3)	26	118
+08:50	drvl720.mtnirancell.ir	JDBC Thin Client	30	101
+08:50	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	22	84
+08:50	drvl722.mtnirancell.ir	JDBC Thin Client	23	82
+08:50	drvl719.mtnirancell.ir	JDBC Thin Client	20	73
+08:50	drvl665.mtnirancell.ir	JDBC Thin Client	21	73
+08:50	drvl676.mtnirancell.ir	JDBC Thin Client	17	66
+08:50	drvl666.mtnirancell.ir	JDBC Thin Client	18	60
+08:50	drvl668.mtnirancell.ir	JDBC Thin Client	15	51
+08:50	t1vl286	JDBC Thin Client	10	50
+08:50	drvl372	JDBC Thin Client	10	50
+08:50	drvl1078		10	50
+08:50	dru104a	DBMS_SCHEDULER	17	48
+08:50	drvl679.mtnirancell.ir	JDBC Thin Client	13	46
+08:50	drvl723.mtnirancell.ir	JDBC Thin Client	16	45
+08:50	drvl721.mtnirancell.ir	JDBC Thin Client	14	41
+08:50	drvl141		8	40
+08:50	drvl242.mtnirancell.ir	JDBC Thin Client	9	39
+08:50	drvl667.mtnirancell.ir	JDBC Thin Client	14	36
+08:50	drvl140	sqlplus@drvl140 (TNS V1-V3)	7	34
+08:50	dru603a	JDBC Thin Client	7	33
+08:50	dru104a		16	31
+08:50	dru822a	sqlplus@dru822a (TNS V1-V3)	7	31
+08:50	drvl240.mtnirancell.ir	JDBC Thin Client	7	28
+08:50	drvl669.mtnirancell.ir	JDBC Thin Client	9	27
+08:50	drvl677.mtnirancell.ir	JDBC Thin Client	8	25
+08:50	drvl675.mtnirancell.ir	JDBC Thin Client	10	24
+08:50	drum711a	preUploadMW@drum711a (TNS V1-V3)	13	23
+08:50	drvl678.mtnirancell.ir	JDBC Thin Client	8	22
+08:50	drvl672.mtnirancell.ir	JDBC Thin Client	9	22
+08:50	drvl673.mtnirancell.ir	JDBC Thin Client	6	19
+08:50	drvl671.mtnirancell.ir	JDBC Thin Client	7	9
+08:51	drvl1078	sqlplus@drvl1078 (TNS V1-V3)	526	3136
+08:51	drvl141	sqlplus@drvl141 (TNS V1-V3)	173	1038
+08:51	drum711a.mtnirancell.ir		95	570
+08:51	drvl140	perl@drvl140 (TNS V1-V3)	30	168
+08:51	drvl720.mtnirancell.ir	JDBC Thin Client	30	153
+08:51	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	24	119
+08:51	drvl722.mtnirancell.ir	JDBC Thin Client	25	118
+08:51	drvl719.mtnirancell.ir	JDBC Thin Client	23	112
+08:51	drvl665.mtnirancell.ir	JDBC Thin Client	20	102
+08:51	drvl666.mtnirancell.ir	JDBC Thin Client	20	88
+08:51	drvl676.mtnirancell.ir	JDBC Thin Client	16	82
+08:51	drvl723.mtnirancell.ir	JDBC Thin Client	18	71
+08:51	drvl679.mtnirancell.ir	JDBC Thin Client	17	71
+08:51	drvl668.mtnirancell.ir	JDBC Thin Client	17	65
+08:51	drvl240.mtnirancell.ir	JDBC Thin Client	13	64
+08:51	drvl372	JDBC Thin Client	10	60
+08:51	drvl1078		10	60
+08:51	t1vl286	JDBC Thin Client	10	60
+08:51	dru104a		19	60
+08:51	drvl242.mtnirancell.ir	JDBC Thin Client	12	58
+08:51	dru822a	sqlplus@dru822a (TNS V1-V3)	10	54
+08:51	drvl667.mtnirancell.ir	JDBC Thin Client	15	51
+08:51	dru104a	DBMS_SCHEDULER	13	51
+08:51	drvl721.mtnirancell.ir	JDBC Thin Client	14	48
+08:51	drvl141		8	48
+08:51	drvl140	sqlplus@drvl140 (TNS V1-V3)	8	47
+08:51	dru603a	JDBC Thin Client	7	42
+08:51	drum711a	preUploadMW@drum711a (TNS V1-V3)	13	42
+08:51	drvl675.mtnirancell.ir	JDBC Thin Client	11	40
+08:51	drvl672.mtnirancell.ir	JDBC Thin Client	8	32
+08:51	drvl673.mtnirancell.ir	JDBC Thin Client	9	30
+08:51	drvl677.mtnirancell.ir	JDBC Thin Client	8	29
+08:51	drvl243.mtnirancell.ir	JDBC Thin Client	7	28
+08:51	drvl678.mtnirancell.ir	JDBC Thin Client	9	28
+08:51	drvl669.mtnirancell.ir	JDBC Thin Client	7	24
+08:51	drvl671.mtnirancell.ir	JDBC Thin Client	6	19
+08:52	drvl1078	sqlplus@drvl1078 (TNS V1-V3)	545	3253
+08:52	drvl141	sqlplus@drvl141 (TNS V1-V3)	174	1044
+08:52	drum711a.mtnirancell.ir		95	570
+08:52	drvl140	perl@drvl140 (TNS V1-V3)	32	186
+08:52	drvl720.mtnirancell.ir	JDBC Thin Client	30	156
+08:52	drvl722.mtnirancell.ir	JDBC Thin Client	26	133
+08:52	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	24	127
+08:52	drvl719.mtnirancell.ir	JDBC Thin Client	21	102
+08:52	drvl665.mtnirancell.ir	JDBC Thin Client	20	101
+08:52	drvl666.mtnirancell.ir	JDBC Thin Client	19	93
+08:52	drvl676.mtnirancell.ir	JDBC Thin Client	15	82
+08:52	drvl240.mtnirancell.ir	JDBC Thin Client	15	74
+08:52	drvl679.mtnirancell.ir	JDBC Thin Client	16	68
+08:52	drvl723.mtnirancell.ir	JDBC Thin Client	18	67
+08:52	dru822a	sqlplus@dru822a (TNS V1-V3)	12	66
+08:52	drvl668.mtnirancell.ir	JDBC Thin Client	16	65
+08:52	drvl721.mtnirancell.ir	JDBC Thin Client	14	63
+08:52	drvl1078		10	60
+08:52	t1vl286	JDBC Thin Client	10	60
+08:52	drvl372	JDBC Thin Client	10	60
+08:52	drvl667.mtnirancell.ir	JDBC Thin Client	15	59
+08:52	drvl242.mtnirancell.ir	JDBC Thin Client	11	58
+08:52	dru104a	DBMS_SCHEDULER	15	57
+08:52	drvl140	sqlplus@drvl140 (TNS V1-V3)	9	54
+08:52	dru104a		22	54
+08:52	drvl141		8	48
+08:52	dru603a	JDBC Thin Client	7	42
+08:52	drvl243.mtnirancell.ir	JDBC Thin Client	9	41
+08:52	drvl675.mtnirancell.ir	JDBC Thin Client	11	37
+08:52	drl061	JDBC Thin Client	6	36
+08:52	drvl677.mtnirancell.ir	JDBC Thin Client	10	36
+08:52	drvl672.mtnirancell.ir	JDBC Thin Client	10	34
+08:52	drvl678.mtnirancell.ir	JDBC Thin Client	9	32
+08:52	drum711a	preUploadMW@drum711a (TNS V1-V3)	10	31
+08:52	drvl669.mtnirancell.ir	JDBC Thin Client	10	30
+08:52	drvl673.mtnirancell.ir	JDBC Thin Client	7	28
+08:52	drvl241.mtnirancell.ir	JDBC Thin Client	7	24
+08:52	drvl671.mtnirancell.ir	JDBC Thin Client	6	18
+08:52	drvl670.mtnirancell.ir	JDBC Thin Client	6	16
+08:53	drvl1078	sqlplus@drvl1078 (TNS V1-V3)	560	560
+08:53	drvl141	sqlplus@drvl141 (TNS V1-V3)	174	174
+08:53	drum711a.mtnirancell.ir		95	95
+08:53	drvl140	perl@drvl140 (TNS V1-V3)	32	32
+08:53	drvl720.mtnirancell.ir	JDBC Thin Client	23	23
+08:53	drvl722.mtnirancell.ir	JDBC Thin Client	23	23
+08:53	drvl719.mtnirancell.ir	JDBC Thin Client	20	20
+08:53	drum711a	UpdateDatabase@drum711a (TNS V1-V3)	19	19
+08:53	drvl665.mtnirancell.ir	JDBC Thin Client	18	18
+08:53	drvl666.mtnirancell.ir	JDBC Thin Client	14	14
+08:53	drvl240.mtnirancell.ir	JDBC Thin Client	13	13
+08:53	dru822a	sqlplus@dru822a (TNS V1-V3)	12	12
+08:53	drvl679.mtnirancell.ir	JDBC Thin Client	12	12
+08:53	drvl676.mtnirancell.ir	JDBC Thin Client	12	12
+08:53	drvl668.mtnirancell.ir	JDBC Thin Client	12	12
+08:53	drvl242.mtnirancell.ir	JDBC Thin Client	11	11
+08:53	drvl723.mtnirancell.ir	JDBC Thin Client	11	11
+08:53	t1vl286	JDBC Thin Client	10	10
+08:53	drvl372	JDBC Thin Client	10	10
+08:53	dru104a	DBMS_SCHEDULER	10	10
+08:53	drvl1078		10	10
+08:53	drvl140	sqlplus@drvl140 (TNS V1-V3)	10	10
+08:53	drvl667.mtnirancell.ir	JDBC Thin Client	9	9
+08:53	drvl141		8	8
+08:53	drvl721.mtnirancell.ir	JDBC Thin Client	8	8
+08:53	drvl669.mtnirancell.ir	JDBC Thin Client	7	7
+08:53	drl061	JDBC Thin Client	7	7
+08:53	dru603a	JDBC Thin Client	7	7
+08:53	drum711a	preUploadMW@drum711a (TNS V1-V3)	6	6
+08:53	drvl241.mtnirancell.ir	JDBC Thin Client	6	6
+08:53	drvl243.mtnirancell.ir	JDBC Thin Client	6	6
+08:53	dru822a	SpwanPrpdStmtInstances@dru822a (TNS V1-V3)	6	6

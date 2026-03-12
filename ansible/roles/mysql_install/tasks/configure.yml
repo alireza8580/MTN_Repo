@@ -1,0 +1,36 @@
+---
+# MySQL configuration tasks
+
+- name: Stop mysqld if running (default instance)
+  ansible.builtin.systemd:
+    name: mysqld
+    state: stopped
+  failed_when: false
+
+- name: Disable default mysqld service
+  ansible.builtin.systemd:
+    name: mysqld
+    enabled: no
+  failed_when: false
+
+- name: Deploy my.cnf configuration
+  ansible.builtin.template:
+    src: my.cnf.j2
+    dest: /etc/my.cnf
+    owner: mysql
+    group: mysql
+    mode: '0644'
+    backup: yes
+  notify: Reload systemd
+
+- name: Ensure systemd is reloaded
+  ansible.builtin.meta: flush_handlers
+
+- name: Check if MySQL data directory is initialized
+  ansible.builtin.stat:
+    path: "{{ mysql_data_dir }}/mysql"
+  register: mysql_initialized
+
+- name: Display initialization status
+  ansible.builtin.debug:
+    msg: "{{ 'MySQL already initialized' if mysql_initialized.stat.exists else 'MySQL needs initialization' }}"

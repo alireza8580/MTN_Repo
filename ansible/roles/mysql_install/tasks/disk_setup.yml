@@ -1,0 +1,81 @@
+---
+# Disk and LVM setup tasks
+# Only runs when mysql_disk_device is defined
+
+- name: Check if disk device exists
+  ansible.builtin.stat:
+    path: "{{ mysql_disk_device }}"
+  register: disk_stat
+
+- name: Fail if disk device doesn't exist
+  ansible.builtin.fail:
+    msg: "Disk device {{ mysql_disk_device }} does not exist"
+  when: not disk_stat.stat.exists
+
+- name: Check if disk is already in use
+  ansible.builtin.shell: |
+    lsblk -no FSTYPE {{ mysql_disk_device }} 2>/dev/null | head -1
+  register: disk_fstype
+  changed_when: false
+
+- name: Check if mount point exists and is mounted
+  ansible.builtin.shell: |
+    mountpoint -q {{ mysql_mount_point }} && echo "mounted" || echo "not mounted"
+  register: mount_check
+  changed_when: false
+
+- name: Skip disk setup if already configured
+  ansible.builtin.debug:
+    msg: "Disk {{ mysql_disk_device }} already has filesystem or mount point exists. Skipping disk setup."
+  when: disk_fstype.stdout | length > 0 or mount_check.stdout == "mounted"
+
+- name: Create Physical Volume
+  community.general.lvg:
+    vg: "{{ mysql_vg_name }}"
+    pvs: "{{ mysql_disk_device }}"
+    state: present
+  when: 
+    - disk_fstype.stdout | length == 0
+    - mount_check.stdout != "mounted"
+
+- name: Create Logical Volume
+  community.general.lvol:
+    vg: "{{ mysql_vg_name }}"
+    lv: "{{ mysql_lv_name }}"
+    size: 100%FREE
+    state: present
+  when: 
+    - disk_fstype.stdout | length == 0
+    - mount_check.stdout != "mounted"
+
+- name: Create filesystem
+  community.general.filesystem:
+    fstype: "{{ mysql_filesystem }}"
+    dev: "/dev/{{ mysql_vg_name }}/{{ mysql_lv_name }}"
+  when: 
+    - disk_fstype.stdout | length == 0
+    - mount_check.stdout != "mounted"
+
+- name: Create mount point directory
+  ansible.builtin.file:
+    path: "{{ mysql_mount_point }}"
+    state: directory
+    owner: mysql
+    group: mysql
+    mode: '0755'
+
+- name: Mount the filesystem
+  ansible.posix.mount:
+    path: "{{ mysql_mount_point }}"
+    src: "/dev/{{ mysql_vg_name }}/{{ mysql_lv_name }}"
+    fstype: "{{ mysql_filesystem }}"
+    opts: defaults,noatime
+    state: mounted
+
+- name: Set ownership on mount point
+  ansible.builtin.file:
+    path: "{{ mysql_mount_point }}"
+    owner: mysql
+    group: mysql
+    mode: '0755'
+    state: directory

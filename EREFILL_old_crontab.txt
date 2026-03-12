@@ -1,0 +1,4 @@
+0 2,5,8,11,14,17,20,23 * * * /oracle/dru103b/Schedule_ORA_OS_Job/maryam/EREFILL/EREFILL_Gather_Stat_scheduleA.scr    #Gather stats on EREFILL table
+0 5,11,17,23 * * * /oracle/dru103b/Schedule_ORA_OS_Job/maryam/EREFILL/EREFILL_Gather_Stat_scheduleB.scr              #Gather stats on EREFILL table
+0 11,23 * * * /oracle/dru103b/Schedule_ORA_OS_Job/maryam/EREFILL/EREFILL_Gather_Stat_scheduleC.scr                   #Gather stats on EREFILL table
+0 2 10 * * /oracle/dru103b/Schedule_ORA_OS_Job/maryam/EREFILL/EREFILL_Gather_Stat_monthly.scr                        #Gather stats on EREFILL table

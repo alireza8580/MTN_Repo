@@ -1,0 +1,28 @@
+#===============================================================================
+# EREFILL Gather Stats Crontab - Drl167
+# Server: Drl167 (EREFILL_EVENT, EREFILL_CORE PDBs)
+# User: oracle
+#
+# IMPORTANT: Replace SCRIPT_PATH with actual installation path, e.g.:
+#   /oracle/alireza/Schedule_ORA_OS_Job/drl167
+#===============================================================================
+
+# EREFILL Gather Stats - Schedule A (every 3 hours)
+# Tables: MFS_ETOPUP_USER_MASTER (CORE_CONFIG)
+0 2,5,8,11,14,17,20,23 * * * SCRIPT_PATH/erefill_scheduleA.scr
+
+# EREFILL Gather Stats - Schedule B (every 6 hours)
+# Tables: MFS_CDR_01/02, MFS_EDR_01/02, MFS_ETOPUP_THRESHOLD_CHECK
+0 5,11,17,23 * * * SCRIPT_PATH/erefill_scheduleB.scr
+
+# EREFILL Gather Stats - Schedule C (every 12 hours)
+# Tables: Partitioned tables (RETRY_TABLE, MFS_CC, MFS_ETOPUP_TRANSACTIONS, etc.)
+0 11,23 * * * SCRIPT_PATH/erefill_scheduleC.scr
+
+# EREFILL Gather Stats - Monthly EVENT (10th of month at 2AM)
+# Tables: 12 EVENT_DATA tables with granularity=>'GLOBAL'
+0 2 10 * * SCRIPT_PATH/erefill_monthly_event.scr
+
+# EREFILL Gather Stats - Monthly CORE (15th of month at 2AM)
+# Tables: 16 CORE tables (9 CORE_DATA + 7 CORE_CONFIG) with granularity=>'GLOBAL'
+0 2 15 * * SCRIPT_PATH/erefill_monthly_core.scr

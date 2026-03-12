@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body {
+    font-family: Calibri, Arial, sans-serif;
+    font-size: 11pt;
+    color: #1a1a1a;
+    line-height: 1.5;
+    max-width: 900px;
+    margin: 20px;
+}
+table {
+    border-collapse: collapse;
+    margin: 10px 0 16px 0;
+    font-size: 10pt;
+    font-family: Consolas, 'Courier New', monospace;
+}
+table th, table td {
+    border: 1px solid #999999;
+    padding: 4px 10px;
+    text-align: left;
+}
+table th {
+    background-color: #e8e8e8;
+    font-weight: bold;
+}
+.highlight-row {
+    background-color: #fff3cd !important;
+    font-weight: bold;
+}
+.mono {
+    font-family: Consolas, 'Courier New', monospace;
+    font-size: 10pt;
+    background-color: #f0f0f0;
+    padding: 1px 4px;
+}
+.blockquote {
+    margin: 8px 0 8px 20px;
+    padding: 8px 12px;
+    background-color: #f8f8f8;
+    border-left: 3px solid #999999;
+    font-family: Consolas, 'Courier New', monospace;
+    font-size: 10pt;
+    white-space: pre-wrap;
+}
+.action-box {
+    margin: 12px 0;
+    padding: 12px 16px;
+    background-color: #fff8e1;
+    border: 1px solid #e0c860;
+    border-left: 4px solid #d4a017;
+}
+.evidence-box {
+    margin: 8px 0;
+    padding: 8px 12px;
+    background-color: #f0f7ff;
+    border-left: 3px solid #4a90d9;
+}
+.chain-box {
+    margin: 8px 0 8px 20px;
+    padding: 8px 12px;
+    background-color: #f8f8f8;
+    border: 1px solid #dddddd;
+    font-family: Consolas, 'Courier New', monospace;
+    font-size: 10pt;
+    white-space: pre-wrap;
+}
+ul { margin: 4px 0; }
+li { margin-bottom: 4px; }
+strong { color: #000000; }
+.sig {
+    margin-top: 30px;
+    font-size: 10pt;
+    color: #555555;
+}
+</style>
+</head>
+<body>
+
+<p>Dear Erfan,</p>
+
+<p>Thank you for the March 7th and 8th AWR reports. We have completed ASH per-second analysis, AWR internal statistics comparison, and source code review. The root cause has been identified and it points to an application-initiated session. Before going into the evidence, we need clarification on a few items from your side, as the investigation has reached a point where only the application team can provide answers.</p>
+
+<div class="action-box">
+<p><strong>We need the following from the application team:</strong></p>
+<ol>
+<li>What process, script, or tool was executed <strong>from drvl1078</strong> as ABL_DBOBJECTS via SQL*Plus at approximately 08:47 on March 9th? This is the session that caused the entire outage.</li>
+<li>Was <strong>DBMS_LOGMNR</strong> (LogMiner), Flashback Transaction Query, or any redo-reading utility invoked from that server?</li>
+<li>Who scheduled <strong>PRC_RECON_REVOKING_DMS</strong> for execution on March 9th morning? This procedure does not appear in any other AWR we have (March 7, March 8, 17 Esfand).</li>
+<li>Can both the redo-scanning operation and PRC_RECON_REVOKING_DMS be rescheduled outside peak hours?</li>
+</ol>
+</div>
+
+<p>I should mention that as infrastructure DBAs, we have spent considerable time tracing application-level code execution, stored procedure source, and application server session behavior. This level of investigation into application logic is outside our normal scope of responsibility, and we did it only because the incident was assigned to us. The evidence below clearly shows the root cause is an application session, and we expect the application team to take ownership from here.</p>
+
+<p>Below is the full evidence.</p>
+
+<br>
+
+<!-- ===== CONCLUSION ===== -->
+<p><strong>Conclusion</strong></p>
+
+<p>A single session from application server <strong>drvl1078</strong> (SID 3082, schema ABL_DBOBJECTS, SQL*Plus) held a library cache mutex for <strong>36 continuous minutes</strong> (08:47 to 09:23) while scanning archived redo logs. This blocked <strong>2,878 sessions</strong> and generated <strong>109,483 wait events</strong> across all application servers. When the session finally released the mutex, the storm ended immediately.</p>
+
+<p>This session does not appear in any comparison AWR (March 7, March 8, 17 Esfand). It is the only difference between a normal day and the incident day. No DBA or infrastructure change was made on POST2P.</p>
+
+<br>
+
+<!-- ===== WORKLOAD ===== -->
+<p><strong>Workload comparison</strong></p>
+
+<p>You are correct that preUploadPK workload was normal on March 9th. We agree on this point:</p>
+
+<table>
+<tr><th>Date</th><th>preUploadPK Executions</th></tr>
+<tr><td>March 7</td><td>66,470,815</td></tr>
+<tr><td>March 8</td><td>28,098,251</td></tr>
+<tr><td>March 9</td><td>28,544,200 (comparable to March 8)</td></tr>
+</table>
+
+<p>But the same workload produced a completely different outcome on March 9th:</p>
+
+<table>
+<tr><th>Metric</th><th>March 7</th><th>March 8</th><th>March 9 (Incident)</th></tr>
+<tr><td>lib cache: mutex X</td><td>23 sec</td><td>49 sec</td><td class="highlight-row">4,977,019 sec</td></tr>
+<tr><td>% of DB Time</td><td>0.01%</td><td>0.02%</td><td class="highlight-row">93.36%</td></tr>
+<tr><td>Avg mutex wait</td><td>0 ms</td><td>0 ms</td><td class="highlight-row">5,599 ms</td></tr>
+<tr><td>DB Time</td><td>170,948 sec</td><td>208,261 sec</td><td class="highlight-row">5,331,216 sec</td></tr>
+</table>
+
+<p>That is a 100,000x increase in mutex wait time. Something that did not exist on March 7 or 8 was running on March 9. We found exactly what it was.</p>
+
+<br>
+
+<!-- ===== ROOT BLOCKER ===== -->
+<p><strong>The root blocker session</strong></p>
+
+<p>ASH data (POST2P, DBID 2771519206, Snap IDs 233938&ndash;233941) identifies one session as the root blocker:</p>
+
+<table>
+<tr><th>Attribute</th><th>Value</th></tr>
+<tr><td>SID / Serial#</td><td><strong>3082 / 44313</strong></td></tr>
+<tr><td>User Schema</td><td><strong>ABL_DBOBJECTS</strong> (user_id 267)</td></tr>
+<tr><td>Machine</td><td><strong>drvl1078</strong> (application server)</td></tr>
+<tr><td>Program</td><td>sqlplus@drvl1078 (TNS V1-V3)</td></tr>
+<tr><td>SQL ID</td><td><span class="mono">459f3z9u4fb3u</span></td></tr>
+<tr><td>SQL Text</td><td><span class="mono">select value$ from props$ where name = 'GLOBAL_DB_NAME'</span></td></tr>
+<tr><td>Wait Event</td><td>log file sequential read (redo log# 987952, 987953)</td></tr>
+<tr><td>First ASH sample</td><td>08:47:33</td></tr>
+<tr><td>Last ASH sample</td><td>09:23:03</td></tr>
+<tr><td>Duration</td><td><strong>~36 minutes</strong></td></tr>
+</table>
+
+<p>The SQL <span class="mono">select value$ from props$</span> is an Oracle internal recursive query against SYS.PROPS$. It fires during database link resolution, LogMiner init, or session bootstrap. Normally it completes in microseconds. Here it persisted for 36 minutes because the session was reading redo logs underneath.</p>
+
+<p>The redo block numbers increment systematically, confirming sequential redo scanning:</p>
+
+<table>
+<tr><th>Time</th><th>Event</th><th>Log#</th><th>Block#</th><th>Blocks</th></tr>
+<tr><td>08:47:33</td><td>log file sequential read</td><td>987952</td><td>681,984</td><td>2,048</td></tr>
+<tr><td>08:47:43</td><td>log file sequential read</td><td>987952</td><td>3,592,192</td><td>2,048</td></tr>
+<tr><td>08:47:53</td><td>log file sequential read</td><td>987952</td><td>6,311,936</td><td>2,048</td></tr>
+<tr><td>08:48:03</td><td>log file sequential read</td><td>987952</td><td>8,419,328</td><td>2,048</td></tr>
+<tr><td>08:48:13</td><td>ON CPU</td><td>987952</td><td>9,431,040</td><td>2,048</td></tr>
+<tr style="background-color:#fff3cd;"><td>08:49:25</td><td>ON CPU</td><td><strong>987953</strong></td><td>497,664</td><td>2,048</td></tr>
+<tr><td>08:49:35</td><td>ON CPU</td><td>987953</td><td>1,138,688</td><td>2,048</td></tr>
+<tr><td colspan="5"><em>continued through 08:53:09, then resumed 09:16&ndash;09:23 ON CPU</em></td></tr>
+</table>
+
+<p>This pattern (sequentially reading thousands of redo blocks across archived logs) is characteristic of DBMS_LOGMNR (LogMiner), Flashback Transaction Query, or a similar redo-mining operation. This is application-level behavior initiated from drvl1078, not a background database process.</p>
+
+<p>This behavior does <strong>not appear in ANY</strong> of the comparison AWRs: March 7, March 8, or 17 Esfand. It is unique to March 9.</p>
+
+<br>
+
+<!-- ===== P2 PROOF ===== -->
+<p><strong>P2 mutex decode (mathematical proof)</strong></p>
+
+<p>MMON_SLAVE (Session 322/45335) was blocked on <span class="mono">library cache: mutex X</span> across all 62 ASH samples with these parameters:</p>
+
+<div class="blockquote">P1 (idn)    = 1,950,821,498
+P2 (value)  = 13,237,089,206,272
+P3 (where)  = 124</div>
+
+<p>In Oracle 11.2, the holder SID is encoded in the upper 32 bits of P2:</p>
+
+<div class="evidence-box">
+<strong>TRUNC(13,237,089,206,272 / POWER(2,32)) = TRUNC(3082.06) = 3082</strong>
+</div>
+
+<p>This is not an interpretation. It is arithmetic from Oracle's internal mutex encoding. 62 consecutive ASH samples, all with the same P2, all decoding to Session 3082/44313 from drvl1078.</p>
+
+<p>Between 08:53 and 09:16, the ASH in-memory ring buffer was overwhelmed by 500+ concurrent waiting sessions. When sampling resumed at 09:16, Session 322 was <strong>still</strong> blocked by Session 3082 with the same P2 value, confirming the mutex was held continuously through that gap.</p>
+
+<br>
+
+<!-- ===== IMPACT ===== -->
+<p><strong>Blocking chain and impact</strong></p>
+
+<div class="chain-box">Session 3082/44313 (ABL_DBOBJECTS, drvl1078)
+    HOLDS library cache: mutex X
+    Directly blocks: 7,141 ASH wait events from 153 unique sessions
+        |
+        +-- Blocks Session 322/45335 (MMON_SLAVE, background)
+                WAITING for mutex held by 3082
+                Cascading blocks: 102,342 wait events from 2,878 unique sessions</div>
+
+<p>Impact per application server:</p>
+
+<table>
+<tr><th>Machine</th><th>Distinct Sessions</th><th>ASH Wait Samples</th></tr>
+<tr><td><strong>drvl1078</strong> (source of root blocker)</td><td>803</td><td>24,926</td></tr>
+<tr><td>drvl1078 (TT$ABILLITY_BATCH)</td><td>353</td><td>20,258</td></tr>
+<tr><td>drvl141</td><td>189</td><td>10,988</td></tr>
+<tr><td>drum711a</td><td>95</td><td>5,491</td></tr>
+<tr><td>dru822a</td><td>74</td><td>2,043</td></tr>
+<tr><td>JDBC pools (drvl240&ndash;255, drvl719&ndash;722, drvl665&ndash;668)</td><td>~50 per server</td><td>700&ndash;1,550 each</td></tr>
+<tr style="font-weight:bold;background-color:#f0f0f0;"><td>Total</td><td>2,878+ sessions</td><td>109,483+ wait events</td></tr>
+</table>
+
+<p>MMON_SLAVE being blocked also prevented the AWR snapshot at 09:00 from generating. That is why EM top activity shows a gap between 08:47 and 09:15. The monitoring system itself was blocked by this application session.</p>
+
+<br>
+
+<!-- ===== KGL STATS ===== -->
+<p><strong>Internal library cache statistics</strong></p>
+
+<p>AWR internal stats confirm catastrophic contention:</p>
+
+<table>
+<tr><th>Statistic</th><th>March 7 (normal)</th><th>March 9 (incident)</th><th>Increase</th></tr>
+<tr><td><span class="mono">kgllkdl1</span> (lock dealloc)</td><td>68,880 gets</td><td class="highlight-row">1,487,021,925 gets</td><td><strong>21,600x</strong></td></tr>
+<tr><td><span class="mono">kglhdgn1</span> (handle get)</td><td>78,331 gets</td><td class="highlight-row">936,986,368 gets</td><td><strong>12,000x</strong></td></tr>
+</table>
+
+<p>A 21,600x increase in lock deallocation and 12,000x increase in handle gets means the library cache was under massive contention. Same application workload, but one session (3082) was holding the mutex and forcing every other session to wait.</p>
+
+<br>
+
+<!-- ===== TIMELINE ===== -->
+<p><strong>Timeline (DDLs were secondary, not the trigger)</strong></p>
+
+<table>
+<tr><th>Time</th><th>Event</th></tr>
+<tr><td>08:30&ndash;08:46</td><td>Normal. ~20 sessions from drvl1078, ~20 from drvl141.</td></tr>
+<tr style="background-color:#fff3cd;font-weight:bold;"><td>08:47:12</td><td>Storm begins. MMON blocked by Session 3082.</td></tr>
+<tr><td>08:47:33</td><td>Session 3082 first sampled: log file sequential read, redo log# 987952</td></tr>
+<tr><td>08:48</td><td>drvl1078 sessions: 20 &rarr; 439. Cascade starts.</td></tr>
+<tr><td>08:52</td><td>Peak: 545 sessions from drvl1078. Load average 2,628.</td></tr>
+<tr><td>08:53&ndash;09:16</td><td>ASH buffer overwhelmed. Mutex still held.</td></tr>
+<tr><td>09:05</td><td>OEM alert: CPU 100%</td></tr>
+<tr><td>09:16:44</td><td>Session 1750/2249 appears with NO sql_id. It was waiting, blocked by the storm.</td></tr>
+<tr style="background-color:#d4edda;"><td>09:23:03</td><td>Session 3082 last ASH sample. Mutex released. Storm ends.</td></tr>
+<tr><td>09:23:14</td><td>Session 1750 starts DDLs: CREATE TABLE TMP_REVOKING_DMS_0</td></tr>
+<tr><td>09:24:48</td><td>CREATE TABLE TMP_REVOKING_DMS_1</td></tr>
+</table>
+
+<p>The DDLs started at 09:23:14, which is <strong>36 minutes after</strong> the storm began. Session 1750 was itself a victim of the storm. It sat with no sql_id from 09:16 to 09:23 because it could not execute anything while Session 3082 held the mutex. The DDLs ran after the storm ended, not before.</p>
+
+<br>
+
+<!-- ===== PROC ===== -->
+<p><strong>PRC_RECON_REVOKING_DMS</strong></p>
+
+<p>We retrieved the source from dba_source (owner ABL_DBOBJECTS). It is a billing/subscription procedure that drops and recreates TMP_REVOKING_DMS tables, joins with V_GSM_SERVICE_MAST, and calls Bulk_Revoke_Suspension. It references Change Request CR2028, DEFECT-20418, and DEFECT-20608. This is application-managed code. It does not appear in any comparison AWR. Its first appearance is during the incident window on March 9.</p>
+
+<br>
+
+<!-- ===== RESPONSES ===== -->
+<p><strong>Regarding your previous points:</strong></p>
+
+<p><strong>a) "No waiting event before 9:15 in EM top activity"</strong><br>
+The AWR snapshot at 09:00 did not generate because MMON_SLAVE was blocked by Session 3082. This is confirmed by 62 ASH samples. EM top activity only shows aggregated snapshot intervals and cannot display data for a snapshot that was never created. ASH per-second data (stored independently of AWR) proves the storm started at 08:47:12.</p>
+
+<p><strong>b) "Listener problems since 08:50"</strong><br>
+Listener degradation (20,840ms at 08:50:10) is a direct consequence of the mutex storm. Every new connection needs library cache access to parse SQL. When Session 3082 holds the mutex, connection establishment blocks, causing listener timeouts. The listener had no independent problem. It recovered the moment the mutex was released at 09:23.</p>
+
+<p><strong>c) "sbpost2p Data Guard issues since 03:18"</strong><br>
+Data Guard log shipping uses LGWR/ARCH processes and redo transport. These do not cause library cache: mutex X on the primary. The 5-hour gap between 03:18 and 08:47 further confirms no relationship.</p>
+
+<p><strong>d) "CPU load increased after 9:15, not before"</strong><br>
+During the storm, sessions were not consuming CPU. They were waiting on mutexes (Concurrency-class wait). The load average of 2,628 confirms massive process pileup, but CPU appears low because sessions are sleeping. When Session 3082 releases the mutex at 09:23, all 2,878+ queued sessions execute simultaneously, producing the CPU spike. This is expected behavior after a mutex release.</p>
+
+<br>
+
+<p>Based on everything above, we request that the incident be reassigned to the application team. The root cause is an application session from drvl1078 and all further investigation requires knowledge of what was running on that server. We have gone as far as we can from the database side.</p>
+
+<div class="sig">
+<p>Best Regards,</p>
+<p><strong>Alireza Aghajanzadeh Gheshlaghi</strong><br>
+Infrastructure Team Database Administrator<br>
+ITS Infrastructure Operation<br>
+Phone: 09106909975<br>
+09352106621 (DBA Standby)</p>
+</div>
+
+</body>
+</html>

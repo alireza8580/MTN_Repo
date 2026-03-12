@@ -1,0 +1,101 @@
+---
+# Default variables for mysql_install role
+# These can be overridden in inventory or playbook
+
+# MySQL version and port
+mysql_version: "8.4"
+mysql_port: 3306
+
+# Paths
+mysql_base_dir: /data
+mysql_data_dir: /data/3306/mysqlDB
+mysql_log_dir: /data/3306/log
+mysql_binlog_dir: /data/3306/BLfile
+mysql_socket_dir: /data/3306/socket
+mysql_socket: /data/3306/socket/mysql.sock
+mysql_pid_dir: /data/3306/PID
+mysql_audit_dir: /data/3306/audit
+mysql_tmp_dir: /data/3306/tmpdir
+mysql_plugin_dir: /usr/lib64/mysql/plugin
+mysql_cis_dir: /data/cis
+
+# DBA directories
+mysql_dba_dir: /data/dba_dir
+mysql_scripts_dir: /data/dba_dir/scripts
+mysql_sql_dir: /data/dba_dir/sql
+mysql_bin_dir: /data/bin
+
+# LVM Configuration
+# NOTE: LVM setup is done by UNIX team - these are for reference only
+# Set mysql_disk_device to enable disk setup (rarely needed)
+mysql_disk_device: ""  # Leave empty - UNIX team handles this
+mysql_vg_name: data_vg
+mysql_lv_name: data_lv
+mysql_mount_point: /data
+mysql_filesystem: xfs
+
+# RPM source location
+mysql_rpm_source: /net/dru112c/dba_data/dba-tools/mysql/8.4/el8
+
+# NFS Backup mount
+mysql_nfs_backup: ""  # e.g., dru112c:/db-bkp
+
+# System limits (requested from UNIX team)
+mysql_nofile_limit: 32000
+mysql_nproc_limit: 41000
+mysql_systemd_limit_nofile: 32000
+
+# MySQL root password (MUST be overridden - use Ansible Vault!)
+mysql_root_password: "CHANGE_ME"
+
+# Server identification
+mysql_server_id: "{{ ansible_hostname | regex_search('[0-9]+$') | default(1) }}"
+is_master: false
+is_backup_node: false
+
+# Character set
+mysql_character_set: utf8mb4
+mysql_collation: utf8mb4_general_ci
+
+# InnoDB settings
+mysql_innodb_log_file_size: 2G
+mysql_innodb_temp_max_size: 50G
+
+# Connection settings
+mysql_max_connections: 3000
+mysql_connect_timeout: 300
+mysql_table_open_cache: 4000
+
+# Slow query log
+mysql_slow_query_log: 1
+mysql_long_query_time: 10
+
+# Binary log settings
+mysql_binlog_expire_seconds: 604800
+mysql_max_binlog_size: 1073741824
+mysql_binlog_format: row
+mysql_sync_binlog: 1
+
+# Buffer sizes
+mysql_key_buffer_size: 256M
+mysql_max_allowed_packet: 1G
+mysql_tmp_table_size: 256M
+
+# Security settings (CIS)
+mysql_disabled_storage_engines: "MyISAM,BLACKHOLE,FEDERATED,ARCHIVE,MEMORY"
+mysql_gtid_mode: "ON"
+mysql_enforce_gtid_consistency: "ON"
+mysql_sql_require_primary_key: "on"
+
+# CIS Password Policy (2.7, 2.8, 7.4)
+mysql_default_password_lifetime: 365
+mysql_password_history: 5
+mysql_password_reuse_interval: 365
+
+# CIS Assessor
+cis_assessor_version: "4.56.0"
+cis_assessor_url: "http://10.224.210.61/cis/unix/DB/CIS-CAT-Assessor-Linux-jre-v{{ cis_assessor_version }}.tar.gz"
+cis_benchmark_file: "CIS_Oracle_MySQL_Enterprise_Edition_8.4_Benchmark_v1.0.0-xccdf.xml"
+
+# MEB (MySQL Enterprise Backup)
+mysql_meb_path: /opt/mysql/meb-4.1/bin

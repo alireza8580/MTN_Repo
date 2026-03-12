@@ -1,0 +1,156 @@
+---
+# CIS hardening tasks
+# Implements CIS MySQL 8.4 Benchmark controls
+
+# === CIS 3.1 - Data directory permissions ===
+- name: CIS 3.1 - Set data directory permissions to 750
+  ansible.builtin.file:
+    path: "{{ mysql_data_dir }}"
+    mode: '0750'
+    owner: mysql
+    group: mysql
+
+# === CIS 3.2 - Binary log permissions ===
+- name: CIS 3.2 - Find binary log files
+  ansible.builtin.find:
+    paths: "{{ mysql_binlog_dir }}"
+    patterns: "*"
+    file_type: file
+  register: binlog_files
+
+- name: CIS 3.2 - Set binary log file permissions to 660
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    mode: '0660'
+    owner: mysql
+    group: mysql
+  loop: "{{ binlog_files.files }}"
+  when: binlog_files.files | length > 0
+
+# === CIS 3.3 - Error log permissions ===
+- name: CIS 3.3 - Set error log file permissions to 600
+  ansible.builtin.file:
+    path: "{{ mysql_log_dir }}/mysqld.log"
+    mode: '0600'
+    owner: mysql
+    group: mysql
+  failed_when: false  # File may not exist yet
+
+# === CIS 3.4 - Slow query log permissions ===
+- name: CIS 3.4 - Set slow query log permissions to 660
+  ansible.builtin.file:
+    path: "{{ mysql_log_dir }}/mysql-slow.log"
+    mode: '0660'
+    owner: mysql
+    group: mysql
+  failed_when: false  # File may not exist yet
+
+# === CIS 3.8 - Plugin directory permissions ===
+- name: CIS 3.8 - Set plugin directory permissions to 550
+  ansible.builtin.file:
+    path: "{{ mysql_plugin_dir }}"
+    mode: '0550'
+    owner: mysql
+    group: mysql
+  become: yes
+
+# === CIS 3.9 - Audit log permissions ===
+- name: CIS 3.9 - Set audit log file permissions to 660
+  ansible.builtin.file:
+    path: "{{ mysql_audit_dir }}/audit.log"
+    mode: '0660'
+    owner: mysql
+    group: mysql
+  failed_when: false  # File may not exist yet
+
+# === CIS 2.7, 7.4 - Password lifetime ===
+- name: CIS 2.7/7.4 - Set default password lifetime
+  community.mysql.mysql_query:
+    query: "SET PERSIST default_password_lifetime = {{ mysql_default_password_lifetime }};"
+    login_unix_socket: "{{ mysql_socket }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  no_log: true
+
+# === CIS 2.8 - Password history ===
+- name: CIS 2.8 - Set password history
+  community.mysql.mysql_query:
+    query: "SET PERSIST password_history = {{ mysql_password_history }};"
+    login_unix_socket: "{{ mysql_socket }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  no_log: true
+
+- name: CIS 2.8 - Set password reuse interval
+  community.mysql.mysql_query:
+    query: "SET PERSIST password_reuse_interval = {{ mysql_password_reuse_interval }};"
+    login_unix_socket: "{{ mysql_socket }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  no_log: true
+
+# === Download and setup CIS Assessor ===
+- name: Check if CIS Assessor is installed
+  ansible.builtin.stat:
+    path: "{{ mysql_cis_dir }}/Assessor"
+  register: cis_assessor
+
+- name: Download CIS Assessor
+  ansible.builtin.get_url:
+    url: "{{ cis_assessor_url }}"
+    dest: "/tmp/cis-cat-assessor.tar.gz"
+    mode: '0644'
+  when: not cis_assessor.stat.exists
+
+- name: Extract CIS Assessor
+  ansible.builtin.unarchive:
+    src: "/tmp/cis-cat-assessor.tar.gz"
+    dest: "{{ mysql_cis_dir }}"
+    remote_src: yes
+    owner: mysql
+    group: mysql
+  when: not cis_assessor.stat.exists
+
+- name: Find extracted CIS Assessor directory
+  ansible.builtin.find:
+    paths: "{{ mysql_cis_dir }}"
+    patterns: "CIS-CAT-Assessor-*"
+    file_type: directory
+  register: cis_dir_find
+  when: not cis_assessor.stat.exists
+
+- name: Rename CIS Assessor directory
+  ansible.builtin.shell: |
+    mv "{{ mysql_cis_dir }}/CIS-CAT-Assessor-"* "{{ mysql_cis_dir }}/Assessor" 2>/dev/null || true
+  when: not cis_assessor.stat.exists
+  args:
+    executable: /bin/bash
+
+- name: Verify CIS benchmark file exists
+  ansible.builtin.stat:
+    path: "{{ mysql_cis_dir }}/Assessor/benchmarks/{{ cis_benchmark_file }}"
+  register: cis_benchmark
+
+- name: Display CIS benchmark status
+  ansible.builtin.debug:
+    msg: "CIS Benchmark file: {{ 'Found' if cis_benchmark.stat.exists | default(false) else 'NOT FOUND' }}"
+
+# === Deploy audit log cleanup script ===
+- name: Deploy audit log cleanup script
+  ansible.builtin.copy:
+    content: |
+      #!/bin/bash
+      # Clean up audit log files older than 1 day (1440 minutes)
+      /bin/find {{ mysql_audit_dir }}/ -mmin +1440 -type f -name "audit.*.log" -exec rm -vf {} +
+    dest: "{{ mysql_scripts_dir }}/audit_cleanup.sh"
+    owner: mysql
+    group: mysql
+    mode: '0775'
+
+- name: Schedule audit log cleanup cron
+  ansible.builtin.cron:
+    name: "MySQL audit log cleanup"
+    minute: "0"
+    hour: "*"
+    job: "{{ mysql_scripts_dir }}/audit_cleanup.sh"
+    user: mysql

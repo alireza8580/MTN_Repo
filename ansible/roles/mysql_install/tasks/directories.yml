@@ -1,0 +1,47 @@
+---
+# Create required MySQL directories
+
+- name: Create MySQL instance directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: mysql
+    group: mysql
+    mode: '0755'
+  loop:
+    - "{{ mysql_data_dir | dirname }}"  # /data/3306
+    - "{{ mysql_binlog_dir }}"           # /data/3306/BLfile
+    - "{{ mysql_socket_dir }}"           # /data/3306/socket
+    - "{{ mysql_log_dir }}"              # /data/3306/log
+    - "{{ mysql_pid_dir }}"              # /data/3306/PID
+    - "{{ mysql_audit_dir }}"            # /data/3306/audit
+    - "{{ mysql_tmp_dir }}"              # /data/3306/tmpdir
+
+- name: Create MySQL data directory with restricted permissions
+  ansible.builtin.file:
+    path: "{{ mysql_data_dir }}"
+    state: directory
+    owner: mysql
+    group: mysql
+    mode: '0750'  # CIS 3.1
+
+- name: Create DBA working directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: mysql
+    group: mysql
+    mode: '0755'
+  loop:
+    - "{{ mysql_dba_dir }}"
+    - "{{ mysql_scripts_dir }}"
+    - "{{ mysql_sql_dir }}"
+    - "{{ mysql_bin_dir }}"
+
+- name: Create CIS directory
+  ansible.builtin.file:
+    path: "{{ mysql_cis_dir }}"
+    state: directory
+    owner: mysql
+    group: mysql
+    mode: '0755'

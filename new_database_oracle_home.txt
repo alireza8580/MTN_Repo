@@ -1,0 +1,15 @@
+#first pdb
+export ORACLE_SID=erefill
+export ORACLE_HOME=/oracle/product/19.25/db_1
+export ORACLE_PDB_SID=erefill_event
+export PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch:$PATH
+export LD_LIBRARY_PATH=$ORACLE_HOME/lib:/lib
+export PS1="[\u@\h\[\033[01;32m\]($ORACLE_SID.$ORACLE_PDB_SID)\[\033[0m\] \W]\$ "
+
+
+#second pdb
+export ORACLE_SID=erefill
+export ORACLE_HOME=/oracle/product/19.25/db_1
+export ORACLE_PDB_SID=erefill_core
+export PATH=$ORACLE_HOME/bin:$ORACLE_HOME/OPatch:$PATH
+export LD_LIBRARY_PATH=$ORACLE_HOME/lib:/lib

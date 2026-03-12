@@ -1,0 +1,40 @@
+-- ============================================================================
+-- Query 13: SQL Text Lookup for Root Blocker Session's SQL ID
+-- ============================================================================
+-- Purpose: Retrieve the full SQL text for sql_id 459f3z9u4fb3u executed by
+--          the root blocker Session 3082/44313.
+-- Result:  Confirms the SQL is an internal Oracle dictionary query.
+-- Run on:  POST2P (DBID 2771519206), dru104a
+-- Date:    March 2026 (post-incident investigation)
+-- ============================================================================
+
+-- SQL Query:
+-- SELECT sql_id, DBMS_LOB.SUBSTR(sql_text, 4000, 1) sql_text
+-- FROM dba_hist_sqltext
+-- WHERE dbid = 2771519206
+--   AND sql_id = '459f3z9u4fb3u';
+
+-- Headers: SQL_ID | SQL_TEXT
+
+459f3z9u4fb3u	select value$ from props$ where name = 'GLOBAL_DB_NAME'
+
+-- ============================================================================
+-- Analysis:
+-- ============================================================================
+-- This is an Oracle internal query against SYS.PROPS$ — the system properties
+-- dictionary table. It retrieves the GLOBAL_DB_NAME, which is typically queried
+-- during:
+--   - Database link operations (resolving remote DB identity)
+--   - LogMiner initialization (identifying the source database)
+--   - Session logon (environment setup)
+--
+-- Under normal conditions, this query executes in microseconds. For Session
+-- 3082/44313, it was the ONLY sql_id captured across 59 ASH samples over
+-- 36 minutes — indicating the session was stuck in an internal operation loop
+-- (redo scanning) with this being the last/recurring SQL in the cursor cache.
+--
+-- This is NOT a query that a user or application would deliberately execute.
+-- It is a recursive SQL issued by Oracle's internal mechanisms, further
+-- confirming the operation was an internal database feature (LogMiner,
+-- Flashback, or similar).
+-- ============================================================================

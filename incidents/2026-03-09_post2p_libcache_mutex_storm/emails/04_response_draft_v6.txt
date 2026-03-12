@@ -1,0 +1,115 @@
+Dear Erfan,
+
+Thank you for providing the March 7th and 8th AWR reports. After thorough investigation including ASH (Active Session History) per-second analysis, we have identified the root blocker session and can now present the complete picture.
+
+---
+
+1. Workload Acknowledgment
+
+You are correct — the preUploadPK workload volume was normal on March 9th:
+- March 7: 66,470,815 executions
+- March 8: 28,098,251 executions
+- March 9: 28,544,200 executions (comparable to March 8)
+
+This is not the cause. However, with this SAME workload:
+
+                    March 7    March 8    March 9 (incident)
+lib cache mutex X   23 sec     49 sec     4,977,019 sec
+% of DB Time        0.01%      0.02%      93.36%
+Avg wait time       0 ms       0 ms       5,599 ms
+
+A 100,000x increase in mutex wait time with identical workload means something else changed on March 9th. We have found what that was.
+
+---
+
+2. Root Blocker Identified: Session 3082/44313
+
+ASH data for POST2P (DBID: 2771519206, Snap IDs: 233938-233941) identifies a single session as the root blocker:
+
+    SID/Serial#:  3082 / 44313
+    User:         ABL_DBOBJECTS (user_id 267)
+    Machine:      drvl1078  (application server)
+    Program:      sqlplus@drvl1078 (TNS V1-V3)
+    SQL ID:       459f3z9u4fb3u
+    SQL Text:     select value$ from props$ where name = 'GLOBAL_DB_NAME'
+    First seen:   08:47:33
+    Last seen:    09:23:03
+    Duration:     ~36 minutes
+
+This session held a library cache mutex exclusively while performing sequential redo log reads (log file sequential read on redo log# 987952-987953, block# incrementing by ~2048 per ASH sample). This pattern is consistent with an internal Oracle redo-scanning operation.
+
+---
+
+3. Mathematical Proof (P2 Decode)
+
+MMON_SLAVE (Session 322/45335) was blocked on "library cache: mutex X" with:
+    P1 = 1950821498
+    P2 = 13237089206272
+    P3 = 124
+
+In Oracle 11.2, the holder SID is encoded in P2's upper 32 bits:
+    TRUNC(13237089206272 / POWER(2,32)) = 3082
+
+This mathematically confirms SID 3082 was the mutex holder. We have 62 consecutive ASH samples (08:47:12 through 09:23:03) showing this same blocking relationship — every single sample points to Session 3082/44313 from drvl1078.
+
+Session 322 (MMON_SLAVE), while waiting for Session 3082, became the secondary blocker — accumulating 102,342 wait events from 2,878 unique sessions. This is the cascading chain that brought the database down.
+
+---
+
+4. Timeline Proves DDLs Were Secondary
+
+    08:47:12  — Storm BEGINS. Session 3082/44313 from drvl1078 starts holding mutex.
+                MMON_SLAVE (322) immediately blocked.
+    08:47:33  — Session 3082 observed reading redo logs (log file sequential read)
+    08:47     — Sessions from drvl1078 explode: 20 → 271 → 439 → 545 (peak at 08:52)
+    08:50:10  — Listener response time degrades to 20,840ms (consequence of DB contention)
+    09:16:44  — Session 1750/2249 (also drvl1078, ABL_DBOBJECTS) appears with NO sql_id
+                → this session was WAITING, not executing (blocked by the storm)
+    09:23:03  — Session 3082 releases mutex. Storm subsides.
+    09:23:14  — ONLY NOW does Session 1750 begin executing:
+                7x6qn1dz83c0k = CREATE TABLE TMP_REVOKING_DMS_0
+    09:24:48  — 265hrvacvmp0w = CREATE TABLE TMP_REVOKING_DMS_1
+
+The DDL operations (PRC_RECON_REVOKING_DMS) started at 09:23:14 — a full 36 minutes AFTER the storm began. Session 1750 was itself a VICTIM of the mutex storm (it sat idle with no sql_id from 09:16 to 09:23 waiting for the mutex to be released). The DDLs did not cause the storm.
+
+---
+
+5. Application Origin Confirmed
+
+We retrieved the source of PRC_RECON_REVOKING_DMS from dba_source. It is a billing/subscription management procedure that:
+- Creates temporary tables from CB_SUSPENDED_DTLS (Document Management System suspensions)
+- Joins with V_GSM_SERVICE_MAST for subscriber details
+- Loops through records calling Bulk_Revoke_Suspension
+- References Change Request CR2028 and Defects DEFECT-20418, DEFECT-20608
+
+This is 100% application-managed code under ABL_DBOBJECTS schema. No DBA infrastructure operation was involved.
+
+---
+
+6. Response to Previous Points
+
+a) "No waiting event before 9:15 AM in EM top activity" — The AWR snapshot at 09:00 did NOT generate because MMON was blocked by Session 3082. The EM graph shows only aggregated intervals. ASH per-second data proves the storm started at 08:47:12.
+
+b) "Listener problems since 08:50 — infrastructure issue" — Listener response degradation (20,840ms at 08:50:10) is a direct consequence of database-level mutex serialization. New connections require library cache access, which was blocked. The listener itself had no independent problem.
+
+c) "sbpost2p Data Guard issues since 03:18 AM" — The standby ORA-03113 at 03:18 is unrelated to the 08:47 library cache mutex storm on the primary. Data Guard log shipping does not cause library cache mutex contention.
+
+---
+
+7. Summary
+
+- The root blocker was Session 3082/44313, originating from application server drvl1078, user ABL_DBOBJECTS, running via sqlplus.
+- The session held a library cache mutex for 36 minutes while performing redo log reads, blocking MMON and cascading to all 2,878+ sessions.
+- This is confirmed by 62 ASH samples and P2 mathematical decode.
+- The DDLs (PRC_RECON_REVOKING_DMS) ran 36 minutes AFTER the storm and were themselves blocked by it.
+- No DBA/infrastructure operation was performed.
+
+Please identify what process/script was executed from drvl1078 as ABL_DBOBJECTS via SQL*Plus at approximately 08:47 on March 9th. Specifically, was any tool that reads archived redo logs (LogMiner, Flashback Transaction, or similar) invoked?
+
+Best Regards,
+
+Alireza Aghajanzadeh Gheshlaghi
+Infrastructure Team Database Administrator
+ITS Infrastructure Operation
+Phone: 09106909975
+09352106621 (DBA Standby)

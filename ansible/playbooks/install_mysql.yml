@@ -1,0 +1,59 @@
+---
+# MySQL 8.4 Installation Playbook for MTN IranCell
+# 
+# Usage:
+#   # Full installation
+#   ansible-playbook playbooks/install_mysql.yml -i inventory/mtn_mysql/hosts.yml --limit t3vl717
+#
+#   # Skip disk setup (already done)
+#   ansible-playbook playbooks/install_mysql.yml -i inventory/mtn_mysql/hosts.yml --skip-tags mysql_install:disk
+#
+#   # Only CIS hardening
+#   ansible-playbook playbooks/install_mysql.yml -i inventory/mtn_mysql/hosts.yml --tags mysql_install:cis
+#
+#   # Dry run
+#   ansible-playbook playbooks/install_mysql.yml -i inventory/mtn_mysql/hosts.yml --check
+
+- name: Install and Configure MySQL 8.4 Enterprise Edition
+  hosts: mysql_servers
+  become: yes
+  become_user: root
+  gather_facts: yes
+
+  pre_tasks:
+    - name: Verify target host
+      ansible.builtin.debug:
+        msg: "Installing MySQL {{ mysql_version }} on {{ ansible_hostname }}"
+
+    - name: Verify mysql_root_password is set
+      ansible.builtin.assert:
+        that:
+          - mysql_root_password is defined
+          - mysql_root_password != "CHANGE_ME"
+        fail_msg: "mysql_root_password must be set! Use Ansible Vault for production."
+
+  roles:
+    - role: mysql_install
+      tags:
+        - mysql_install
+
+  post_tasks:
+    - name: Display installation summary
+      ansible.builtin.debug:
+        msg: |
+          ============================================
+          MySQL Installation Complete
+          ============================================
+          Host: {{ ansible_hostname }}
+          Version: {{ mysql_version }}
+          Port: {{ mysql_port }}
+          Socket: {{ mysql_socket }}
+          Data Dir: {{ mysql_data_dir }}
+          Log Dir: {{ mysql_log_dir }}
+          
+          Login Path: sqlp6
+          Usage: mysql --login-path=sqlp6
+          
+          Service: mysqld@{{ mysql_port }}
+          Status: sudo systemctl status mysqld@{{ mysql_port }}
+          ============================================

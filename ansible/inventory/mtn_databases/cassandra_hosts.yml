@@ -1,0 +1,250 @@
+all:
+  children:
+    cassandra_servers:
+      children:
+        cassandra_prod:
+          hosts:
+            t1vl490:
+              ansible_host: 10.130.18.45
+              cassandra_port: 9042
+            t1vl491:
+              ansible_host: 10.130.18.46
+              cassandra_port: 9042
+            tedcbs-ops01:
+              ansible_host: 10.219.2.4
+              cassandra_port: 9042
+              cassandra_application: opscenters_cluster
+              cassandra_version: 6.7.7
+            tedcbs-ops02:
+              ansible_host: 10.219.2.5
+              cassandra_port: 9042
+            tedcbs-ops03:
+              ansible_host: 10.219.2.6
+              cassandra_port: 9042
+            tedcbs-cas01:
+              ansible_host: 10.219.2.11
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas02:
+              ansible_host: 10.219.2.12
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas03:
+              ansible_host: 10.219.2.13
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas04:
+              ansible_host: 10.219.2.14
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas05:
+              ansible_host: 10.219.2.15
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas06:
+              ansible_host: 10.219.2.16
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas07:
+              ansible_host: 10.219.2.17
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas08:
+              ansible_host: 10.219.2.18
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas09:
+              ansible_host: 10.219.2.19
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas10:
+              ansible_host: 10.219.2.20
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas11:
+              ansible_host: 10.219.2.21
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas12:
+              ansible_host: 10.219.2.22
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas13:
+              ansible_host: 10.219.2.23
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas14:
+              ansible_host: 10.219.2.24
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas15:
+              ansible_host: 10.219.2.25
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas16:
+              ansible_host: 10.219.2.26
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas17:
+              ansible_host: 10.219.2.27
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas18:
+              ansible_host: 10.219.2.28
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas19:
+              ansible_host: 10.219.2.29
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas20:
+              ansible_host: 10.219.2.30
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas21:
+              ansible_host: 10.219.2.31
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas22:
+              ansible_host: 10.219.2.32
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas23:
+              ansible_host: 10.219.2.33
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas24:
+              ansible_host: 10.219.2.34
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas25:
+              ansible_host: 10.219.2.35
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas26:
+              ansible_host: 10.219.2.36
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas27:
+              ansible_host: 10.219.2.37
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas28:
+              ansible_host: 10.219.2.38
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas29:
+              ansible_host: 10.219.2.39
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            tedcbs-cas30:
+              ansible_host: 10.219.2.40
+              cassandra_port: 9042
+              cassandra_application: dcbs
+              cassandra_version: 6.7.4
+            t3vl441:
+              ansible_host: 10.223.181.187
+              cassandra_port: 9042
+              cassandra_application: scheduledb
+              cassandra_version: 6.8.50
+            t3vl442:
+              ansible_host: 10.223.181.188
+              cassandra_port: 9042
+              cassandra_application: scheduledb
+              cassandra_version: 6.8.50
+            t3vl443:
+              ansible_host: 10.223.181.189
+              cassandra_port: 9042
+              cassandra_application: scheduledb
+              cassandra_version: 6.8.50
+            drvl1228:
+              ansible_host: 10.234.81.75
+              cassandra_port: 9042
+              cassandra_application: EMP
+              cassandra_version: 6.8.51
+            drvl1229:
+              ansible_host: 10.234.81.76
+              cassandra_port: 9042
+              cassandra_application: EMP
+              cassandra_version: 6.8.51
+            drvl1230:
+              ansible_host: 10.234.81.77
+              cassandra_port: 9042
+              cassandra_application: EMP
+              cassandra_version: 6.8.51
+        cassandra_uat:
+          hosts:
+            t1vl628:
+              ansible_host: 10.131.58.92
+            t1vl629:
+              ansible_host: 10.131.58.93
+            t1vl630:
+              ansible_host: 10.131.58.94
+            t1vl631:
+              ansible_host: 10.131.58.95
+            t1vl489:
+              ansible_host: 10.130.18.44
+              cassandra_port: 9042
+              cassandra_application: DCBSUAT
+              cassandra_version: 6.7.4
+            t1vl492:
+              ansible_host: 10.130.18.47
+            tedcbs-uat01:
+              ansible_host: 10.219.2.7
+              cassandra_port: 9042
+              cassandra_application: dse
+              cassandra_version: 6.8.50
+            tedcbs-uat02:
+              ansible_host: 10.219.2.8
+              cassandra_port: 9042
+              cassandra_application: dse
+              cassandra_version: 6.8.50
+            tedcbs-uat03:
+              ansible_host: 10.219.2.9
+              cassandra_port: 9042
+              cassandra_application: dse
+              cassandra_version: 6.8.50
+            t3vl438:
+              ansible_host: 10.223.181.184
+              cassandra_port: 9042
+              cassandra_application: scheduledb
+              cassandra_version: 6.8.50
+            t3vl439:
+              ansible_host: 10.223.181.185
+              cassandra_port: 9042
+              cassandra_application: scheduledb
+              cassandra_version: 6.8.50
+            t3vl440:
+              ansible_host: 10.223.181.186
+              cassandra_port: 9042
+              cassandra_application: scheduledb
+              cassandra_version: 6.8.50

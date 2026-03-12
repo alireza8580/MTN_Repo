@@ -1,0 +1,1497 @@
+all:
+  children:
+    mongo_servers:
+      children:
+        mongo_prod:
+          hosts:
+            drl048:
+              ansible_host: 10.133.126.25
+              mongo_port: 27001
+              mongo_role: mongod primary
+              mongo_application: IPTV-Prod
+              mongo_version: 3.2.6
+            drl047:
+              ansible_host: 10.133.126.24
+              mongo_port: 27000
+              mongo_role: mongod secondary
+              mongo_application: IPTV-Prod
+              mongo_version: 3.2.6
+            drvl196:
+              ansible_host: 10.133.126.26
+              mongo_port: 27002
+              mongo_role: arbiter
+              mongo_application: IPTV-Prod
+              mongo_version: 3.2.6
+            drl133:
+              ansible_host: 10.133.126.162
+              mongo_port: 30000
+              mongo_role: mongod secondary
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            t3mongo-db01:
+              ansible_host: 10.224.241.51
+              mongo_port: 40000
+              mongo_role: mongod secondary
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drl152:
+              ansible_host: 10.133.126.132
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drl134:
+              ansible_host: 10.133.126.163
+              mongo_port: 31000
+              mongo_role: mongod secondary
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            t3mongo-db02:
+              ansible_host: 10.224.241.52
+              mongo_port: 41000
+              mongo_role: mongod secondary
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drl153:
+              ansible_host: 10.133.126.133
+              mongo_port: 27100
+              mongo_role: mongod primary
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drl135:
+              ansible_host: 10.133.126.164
+              mongo_port: 32000
+              mongo_role: mongod secondary
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            t3mongo-db03:
+              ansible_host: 10.224.241.53
+              mongo_port: 42000
+              mongo_role: mongod secondary
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drl154:
+              ansible_host: 10.133.126.134
+              mongo_port: 27200
+              mongo_role: mongod primary
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drl136:
+              ansible_host: 10.133.126.165
+              mongo_port: 33000
+              mongo_role: mongod secondary
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            t3mongo-db04:
+              ansible_host: 10.224.241.54
+              mongo_port: 43000
+              mongo_role: mongod secondary
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drl155:
+              ansible_host: 10.133.126.135
+              mongo_port: 27300
+              mongo_role: mongod primary
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl237:
+              ansible_host: 10.133.126.49
+              mongo_port: 26060
+              mongo_role: mongos (CLM Reg)
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl238:
+              ansible_host: 10.133.126.50
+              mongo_port: 26060
+              mongo_role: mongos  (CLM Reg)
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl239:
+              ansible_host: 10.133.126.51
+              mongo_port: 26060
+              mongo_role: mongos  (CLM Reg)
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl240:
+              ansible_host: 10.133.126.52
+              mongo_port: 26060
+              mongo_role: mongos (Clm360)
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl241:
+              ansible_host: 10.133.126.53
+              mongo_port: 26060
+              mongo_role: mongos (Clm360)
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl242:
+              ansible_host: 10.133.126.54
+              mongo_port: 26060
+              mongo_role: mongos (Clm360)
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl243:
+              ansible_host: 10.133.126.55
+              mongo_port: 26060
+              mongo_role: mongos (Clm360)
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl244:
+              ansible_host: 10.133.126.56
+              mongo_port: 26060
+              mongo_role: mongos (Clm360)
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl245:
+              ansible_host: 10.133.126.57
+              mongo_port: 26060
+              mongo_role: mongos (Clm360)
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl246:
+              ansible_host: 10.133.126.58
+              mongo_port: 26060
+              mongo_role: mongos (CLM-SR(Service Request))
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl247:
+              ansible_host: 10.133.126.59
+              mongo_port: 26060
+              mongo_role: mongos (CLM-SR(Service Request))
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl248:
+              ansible_host: 10.133.126.60
+              mongo_port: 26060
+              mongo_role: mongos (CLM-SR(Service Request))
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl249:
+              ansible_host: 10.133.126.61
+              mongo_port: 26060
+              mongo_role: mongos (CLM-SR(Service Request))
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl250:
+              ansible_host: 10.133.126.62
+              mongo_port: 26060
+              mongo_role: mongos (CLM-SR(Service Request))
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl251:
+              ansible_host: 10.133.126.63
+              mongo_port: 26060
+              mongo_role: mongos (CLM-SR(Service Request))
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl252:
+              ansible_host: 10.133.126.64
+              mongo_port: 26060
+              mongo_role: mongos (CLM-SR(Service Request))
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl253:
+              ansible_host: 10.133.126.65
+              mongo_port: 26060
+              mongo_role: mongos (CLM-SR(Service Request))
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl254:
+              ansible_host: 10.133.126.66
+              mongo_port: 26060
+              mongo_role: mongos (CLM-SR(Service Request))
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl255:
+              ansible_host: 10.133.126.67
+              mongo_port: 26060
+              mongo_role: mongos (CLM-SR(Service Request))
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl347:
+              ansible_host: 10.133.126.176
+              mongo_port: 26060
+              mongo_role: mongos (TT SAAT)
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl348:
+              ansible_host: 10.133.126.177
+              mongo_port: 26060
+              mongo_role: mongos (TT SAAT)
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl373:
+              ansible_host: 10.133.126.203
+              mongo_port: 26060
+              mongo_role: mongos (Online Bolton)
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl375:
+              ansible_host: 10.133.126.205
+              mongo_port: 26060
+              mongo_role: mongos (Online Bolton)
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            t1vl290:
+              ansible_host: 10.130.212.162
+              mongo_port: 26060
+              mongo_role: mongos (Online Bolton)
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            t1vl292:
+              ansible_host: 10.130.212.164
+              mongo_port: 26060
+              mongo_role: mongos (Online Bolton)
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            t1vl169:
+              ansible_host: 10.130.212.20
+              mongo_port: 26060
+              mongo_role: mongos (CLM 360)
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            t1vl175:
+              ansible_host: 10.130.212.26
+              mongo_port: 26060
+              mongo_role: mongos (CLM Service Request)
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            t1vl166:
+              ansible_host: 10.130.212.17
+              mongo_port: 26060
+              mongo_role: mongos (CLM Registration)
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl646:
+              ansible_host: 10.133.126.48
+              mongo_port: 26060
+              mongo_role: mongos (for big data)
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl227:
+              ansible_host: 10.133.126.39
+              mongo_port: 26053
+              mongo_role: Config Server primary
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl226:
+              ansible_host: 10.133.126.38
+              mongo_port: 26050
+              mongo_role: Config Server secondary
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drvl228:
+              ansible_host: 10.133.126.40
+              mongo_port: 26054
+              mongo_role: Config Server secondary
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            t1vl155:
+              ansible_host: 10.130.212.6
+              mongo_port: 26055
+              mongo_role: Config Server secondary
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            t1vl156:
+              ansible_host: 10.130.212.7
+              mongo_port: 26056
+              mongo_role: Config Server secondary
+              mongo_application: CLM-Prod
+              mongo_version: 3.2.6
+            drl081:
+              ansible_host: 10.133.126.182
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_application: OPF (Operator Finder)
+              mongo_version: 3.2.6
+            drl082:
+              ansible_host: 10.133.126.183
+              mongo_port: 27001
+              mongo_role: mongod secondary
+              mongo_application: OPF (Operator Finder)
+              mongo_version: 3.2.6
+            drvl335:
+              ansible_host: 10.133.126.175
+              mongo_port: 27002
+              mongo_role: arbiter
+              mongo_application: OPF (Operator Finder)
+              mongo_version: 3.2.6
+            drvl398:
+              ansible_host: 10.132.65.35
+              mongo_port: 27017
+              mongo_role: mongod primary
+              mongo_application: Corporate webselfcare & Corporate webaxn App
+              mongo_version: 3.4.6
+            drvl399:
+              ansible_host: 10.132.65.36
+              mongo_port: 27018
+              mongo_role: mongod secondary
+              mongo_application: Corporate webselfcare & Corporate webaxn App
+              mongo_version: 3.4.6
+            t1vl306:
+              ansible_host: 10.131.65.161
+              mongo_port: 27019
+              mongo_role: mongod secondary
+              mongo_application: Corporate webselfcare & Corporate webaxn App
+              mongo_version: 3.4.6
+            drvl345:
+              ansible_host: 10.132.65.145
+              mongo_port: 27017
+              mongo_role: mongod primary
+              mongo_application: webselfcare
+              mongo_version: 3.2.6
+            drvl346:
+              ansible_host: 10.132.65.146
+              mongo_port: 27018
+              mongo_role: mongod secondary
+              mongo_application: webselfcare
+              mongo_version: 3.2.6
+            t1vl266:
+              ansible_host: 10.131.65.154
+              mongo_port: 27019
+              mongo_role: mongod secondary
+              mongo_application: webselfcare
+              mongo_version: 3.2.6
+            drvl424:
+              ansible_host: 10.133.126.150
+              mongo_port: 27005
+              mongo_role: mongod primary
+              mongo_application: UPC-Prod
+              mongo_version: 3.2.6
+            t1vl315:
+              ansible_host: 10.130.212.133
+              mongo_port: 27002
+              mongo_role: mongod secondary
+              mongo_application: UPC-Prod
+              mongo_version: 3.2.6
+            drvl966:
+              ansible_host: 10.133.126.151
+              mongo_port: 27004
+              mongo_role: mongod secondary
+              mongo_application: UPC-Prod
+              mongo_version: 3.2.6
+            drvl201:
+              ansible_host: 10.133.126.31
+              mongo_port: 27044
+              mongo_role: mongod primary
+              mongo_version: 3.2.6
+            drl111:
+              ansible_host: 10.133.126.127
+              mongo_port: 27100
+              mongo_role: mongod primary
+              mongo_application: EIA Operator Finder Audit
+              mongo_version: 3.2.6
+            drl110:
+              ansible_host: 10.133.126.126
+              mongo_port: 27000
+              mongo_role: mongod secondary
+              mongo_application: EIA Operator Finder Audit
+              mongo_version: 3.2.6
+            t1l046:
+              ansible_host: 10.130.212.48
+              mongo_port: 27200
+              mongo_role: mongod secondary
+              mongo_application: EIA Operator Finder Audit
+              mongo_version: 3.2.6
+            drl108:
+              ansible_host: 10.133.126.117
+              mongo_port: 28000
+              mongo_role: mongod primary
+              mongo_application: CLM Subscriptions
+              mongo_version: 3.2.6
+            drl109:
+              ansible_host: 10.133.126.118
+              mongo_port: 27003
+              mongo_role: arbiter
+              mongo_application: CLM Subscriptions
+              mongo_version: 3.2.6
+            t1vl243:
+              ansible_host: 10.130.212.143
+              mongo_port: 27000
+              mongo_role: mongod
+              mongo_application: CLM-Shard-TT team
+              mongo_version: 3.2.6
+            t1vl244:
+              ansible_host: 10.130.212.144
+              mongo_port: 27100
+              mongo_role: mongod
+              mongo_application: CLM-Shard-TT team
+              mongo_version: 3.2.6
+            t1vl245:
+              ansible_host: 10.130.212.145
+              mongo_port: 27200
+              mongo_role: mongod
+              mongo_application: CLM-Shard-TT team
+              mongo_version: 3.2.6
+            t1vl246:
+              ansible_host: 10.130.212.146
+              mongo_port: 27300
+              mongo_role: mongod
+              mongo_application: CLM-Shard-TT team
+              mongo_version: 3.2.6
+            t1vl240:
+              ansible_host: 10.130.212.140
+              mongo_port: 26050
+              mongo_role: Config Server
+              mongo_application: CLM-TT-configsvr
+              mongo_version: 3.2.6
+            t1vl241:
+              ansible_host: 10.130.212.141
+              mongo_port: 26051
+              mongo_role: Config Server
+              mongo_application: CLM-TT-configsvr
+              mongo_version: 3.2.6
+            t1vl242:
+              ansible_host: 10.130.212.142
+              mongo_port: 26052
+              mongo_role: Config Server
+              mongo_application: CLM-TT-configsvr
+              mongo_version: 3.2.6
+            drvl298:
+              ansible_host: 10.133.126.146
+              mongo_port: 9000
+              mongo_role: mongo ops
+              mongo_application: mongo ops
+              mongo_version: 3.6.0
+            t1vl646:
+              ansible_host: 10.130.18.66
+              mongo_port: 26060
+              mongo_role: mongos
+              mongo_application: DCLM
+              mongo_version: 4.2.8
+            t1vl647:
+              ansible_host: 10.130.18.67
+              mongo_port: 28100
+              mongo_role: mongod
+              mongo_application: DCLM
+              mongo_version: 4.2.8
+            t1vl648:
+              ansible_host: 10.130.18.68
+              mongo_port: 28200
+              mongo_role: mongod
+              mongo_application: DCLM
+              mongo_version: 4.2.8
+            t1vl649:
+              ansible_host: 10.130.18.69
+              mongo_port: 28300
+              mongo_role: mongod
+              mongo_application: DCLM
+              mongo_version: 4.2.8
+            t1vl650:
+              ansible_host: 10.130.18.70
+              mongo_port: 29000
+              mongo_role: Config Server (secondary)
+              mongo_application: DCLM
+              mongo_version: 4.2.8
+            t1vl651:
+              ansible_host: 10.130.18.71
+              mongo_port: 29100
+              mongo_role: Config Server (primary)
+              mongo_application: DCLM
+              mongo_version: 4.2.8
+            t1vl652:
+              ansible_host: 10.130.18.72
+              mongo_port: 29200
+              mongo_role: Config Server (secondary)
+              mongo_application: DCLM
+              mongo_version: 4.2.8
+            drvl647:
+              ansible_host: 10.132.57.45
+              mongo_port: 27019
+              mongo_role: mongod secondary
+              mongo_application: '?'
+              mongo_version: 4.2.8
+            drvl648:
+              ansible_host: 10.132.57.46
+              mongo_port: 27019
+              mongo_role: mongod primary
+              mongo_application: '?'
+              mongo_version: 4.2.8
+            drvl649:
+              ansible_host: 10.132.57.47
+              mongo_port: 27019
+              mongo_role: arbiter
+              mongo_application: '?'
+              mongo_version: 4.2.8
+            drvl731:
+              ansible_host: 10.219.2.210
+              mongo_port: 28000
+              mongo_role: mongod primary
+              mongo_application: DCLM
+              mongo_version: 6.0.3
+            drvl735:
+              ansible_host: 10.219.2.214
+              mongo_port: 30000
+              mongo_role: arbiter
+              mongo_application: DCLM
+              mongo_version: 6.0.3
+            drvl732:
+              ansible_host: 10.219.2.211
+              mongo_port: 28100
+              mongo_role: mongod primary
+              mongo_application: DCLM
+              mongo_version: 6.0.3
+            drvl736:
+              ansible_host: 10.219.2.215
+              mongo_port: 30100
+              mongo_role: arbiter
+              mongo_application: DCLM
+              mongo_version: 6.0.3
+            drvl733:
+              ansible_host: 10.219.2.212
+              mongo_port: 28200
+              mongo_role: mongod primary
+              mongo_application: DCLM
+              mongo_version: 6.0.3
+            drvl737:
+              ansible_host: 10.219.2.216
+              mongo_port: 30200
+              mongo_role: arbiter
+              mongo_application: DCLM
+              mongo_version: 6.0.3
+            drvl734:
+              ansible_host: 10.219.2.213
+              mongo_port: 28300
+              mongo_role: mongod primary
+              mongo_application: DCLM
+              mongo_version: 6.0.3
+            drvl738:
+              ansible_host: 10.219.2.217
+              mongo_port: 30300
+              mongo_role: arbiter
+              mongo_application: DCLM
+              mongo_version: 6.0.3
+            drvl739:
+              ansible_host: 10.219.2.218
+              mongo_port: 27000
+              mongo_role: Config Server (secondary)
+              mongo_application: DCLM
+              mongo_version: 6.0.3
+            drvl740:
+              ansible_host: 10.219.2.219
+              mongo_port: 27000
+              mongo_role: Config Server (secondary)
+              mongo_application: DCLM
+              mongo_version: 6.0.3
+            drvl741:
+              ansible_host: 10.219.2.220
+              mongo_port: 27000
+              mongo_role: Config Server (primary)
+              mongo_application: DCLM
+              mongo_version: 6.0.3
+            drvl742:
+              ansible_host: 10.219.2.221
+              mongo_port: 28000
+              mongo_role: mongod primary
+              mongo_application: Digital Catalog Management
+              mongo_version: 4.2.8
+            drvl743:
+              ansible_host: 10.219.2.222
+              mongo_port: 28100
+              mongo_role: mongod secondary
+              mongo_application: Digital Catalog Management
+              mongo_version: 4.2.8
+            drvl972:
+              ansible_host: 10.219.2.239
+              mongo_port: 28300
+              mongo_role: mongod secondary
+              mongo_application: Digital Catalog Management
+              mongo_version: 4.2.8
+            t3vl356:
+              ansible_host: 10.223.181.113
+              mongo_port: 28400
+              mongo_role: mongod secondary
+              mongo_application: Digital Catalog Management
+              mongo_version: 4.2.8
+            t3vl357:
+              ansible_host: 10.223.181.114
+              mongo_port: 28500
+              mongo_role: mongod secondary
+              mongo_application: Digital Catalog Management
+              mongo_version: 4.2.8
+            drvl744:
+              ansible_host: 10.219.2.223
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_version: 4.2.8
+            drvl745:
+              ansible_host: 10.219.2.224
+              mongo_port: 27200
+              mongo_role: arbiter
+              mongo_version: 4.2.8
+            teweb-mongo01:
+              ansible_host: 10.234.80.100
+              mongo_port: 27000
+              mongo_role: mongod secondary
+              mongo_application: Website prod
+              mongo_version: 4.4.2
+            teweb-mongo02:
+              ansible_host: 10.234.80.101
+              mongo_port: 27100
+              mongo_role: mongod secondary
+              mongo_application: Website prod
+              mongo_version: 4.4.2
+            teweb-mongo03:
+              ansible_host: 10.234.80.102
+              mongo_port: 27200
+              mongo_role: mongod secondary
+              mongo_application: Website prod
+              mongo_version: 4.4.2
+            t3vl018:
+              ansible_host: 10.224.249.7
+              mongo_port: 29000
+              mongo_role: mongod secondary
+              mongo_application: Website prod
+              mongo_version: 4.4.2
+            t3vl019:
+              ansible_host: 10.224.249.8
+              mongo_port: 29100
+              mongo_role: mongod secondary
+              mongo_application: Website prod
+              mongo_version: 4.4.2
+            t3vl148:
+              ansible_host: 10.224.249.16
+              mongo_port: 29200
+              mongo_role: mongod secondary
+              mongo_application: Website prod
+              mongo_version: 4.4.2
+            t3vl149:
+              ansible_host: 10.224.249.17
+              mongo_port: 29300
+              mongo_role: mongod secondary
+              mongo_application: Website prod
+              mongo_version: 4.4.2
+            esfvl052:
+              ansible_host: 10.226.81.39
+              mongo_port: 30000
+              mongo_role: mongod secondary
+              mongo_application: Website prod
+              mongo_version: 4.4.2
+            esfvl053:
+              ansible_host: 10.226.81.40
+              mongo_port: 30100
+              mongo_role: mongod secondary
+              mongo_application: Website prod
+              mongo_version: 4.4.2
+            t1vl743:
+              ansible_host: 10.224.237.12
+              mongo_port: 30000
+              mongo_role: mongod secondary
+              mongo_application: Website prod
+              mongo_version: 4.4.2
+            t1vl744:
+              ansible_host: 10.224.237.13
+              mongo_port: 30100
+              mongo_role: mongod secondary
+              mongo_application: Website prod
+              mongo_version: 4.4.2
+            drvl785:
+              ansible_host: 10.133.154.238
+              mongo_port: 28000
+              mongo_role: mongod primary
+              mongo_application: Rocketchat-ichat
+              mongo_version: 4.4.2
+            drvl786:
+              ansible_host: 10.133.154.239
+              mongo_port: 28100
+              mongo_role: mongod secondary
+              mongo_application: Rocketchat-ichat
+              mongo_version: 4.4.2
+            drvl787:
+              ansible_host: 10.133.154.240
+              mongo_port: 28200
+              mongo_role: mongod secondary
+              mongo_application: Rocketchat-ichat
+              mongo_version: 4.4.2
+            drvl959:
+              ansible_host: 10.234.233.37
+              mongo_port: 28000
+              mongo_role: mongod primary
+              mongo_application: Universal Login
+              mongo_version: 5.0.3
+            drvl960:
+              ansible_host: 10.234.233.38
+              mongo_port: 28100
+              mongo_role: mongod secondary
+              mongo_application: Universal Login
+              mongo_version: 5.0.3
+            drvl961:
+              ansible_host: 10.234.233.39
+              mongo_port: 28200
+              mongo_role: mongod secondary
+              mongo_application: Universal Login
+              mongo_version: 5.0.3
+            drl141:
+              ansible_host: 10.219.3.90
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_version: 4.4.6
+            drl158:
+              ansible_host: 10.219.3.160
+              mongo_port: 27100
+              mongo_role: mongod secondary
+              mongo_version: 4.4.6
+            t3dsps-db01:
+              ansible_host: 10.223.176.59
+              mongo_port: 27200
+              mongo_role: mongod secondary
+              mongo_version: 4.4.6
+            drl142:
+              ansible_host: 10.219.3.91
+              mongo_port: 28000
+              mongo_role: mongod primary
+              mongo_version: 4.4.6
+            drl159:
+              ansible_host: 10.219.3.161
+              mongo_port: 28100
+              mongo_role: mongod secondary
+              mongo_version: 4.4.6
+            t3dsps-db02:
+              ansible_host: 10.223.176.60
+              mongo_port: 28200
+              mongo_role: mongod secondary
+              mongo_version: 4.4.6
+            drvl929:
+              ansible_host: 10.219.3.96
+              mongo_port: 29000
+              mongo_role: Config Server (secondary)
+              mongo_version: 4.4.6
+            drvl930:
+              ansible_host: 10.219.3.97
+              mongo_port: 29100
+              mongo_role: Config Server (primary)
+              mongo_version: 4.4.6
+            drvl931:
+              ansible_host: 10.219.3.98
+              mongo_port: 29200
+              mongo_role: Config Server (secondary)
+              mongo_version: 4.4.6
+            drvl932:
+              ansible_host: 10.219.3.99
+              mongo_port: 30000
+              mongo_role: mongos servers
+              mongo_version: 4.4.6
+            drvl933:
+              ansible_host: 10.219.3.100
+              mongo_port: 30000
+              mongo_role: mongos servers
+              mongo_version: 4.4.6
+            drvl934:
+              ansible_host: 10.219.3.101
+              mongo_port: 30000
+              mongo_role: mongos servers
+              mongo_version: 4.4.6
+            t3vl055:
+              ansible_host: 10.224.241.35
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_version: 4.4.6
+            t3vl056:
+              ansible_host: 10.224.241.36
+              mongo_port: 27100
+              mongo_role: 'mongod secondry '
+              mongo_version: 4.4.6
+            t3vl057:
+              ansible_host: 10.224.241.37
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_version: 4.4.6
+            t3ngmycell-db02:
+              ansible_host: 10.224.241.193
+              mongo_port: 27100
+              mongo_role: mongod primary
+              mongo_application: myirancell
+              mongo_version: 4.4.2
+            t3ngmycell-db01:
+              ansible_host: 10.224.241.192
+              mongo_port: 27000
+              mongo_role: 'mongod secondry '
+              mongo_application: myirancell
+              mongo_version: 4.4.2
+            t3ngmycell-db03:
+              ansible_host: 10.224.241.190
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_application: myirancell
+              mongo_version: 4.4.2
+            drvl1245:
+              ansible_host: 10.234.81.132
+              mongo_port: 27300
+              mongo_role: 'mongod secondry '
+              mongo_application: myirancell
+              mongo_version: 4.4.2
+            drvl1246:
+              ansible_host: 10.234.81.133
+              mongo_port: 27400
+              mongo_role: 'mongod secondry '
+              mongo_application: myirancell
+              mongo_version: 4.4.2
+            esfvl079:
+              ansible_host: 10.226.81.49
+              mongo_port: 27500
+              mongo_role: mongod secondry  (DR)
+              mongo_application: myirancell
+              mongo_version: 4.4.2
+            esfvl080:
+              ansible_host: 10.226.81.50
+              mongo_port: 27600
+              mongo_role: mongod secondry  (DR)
+              mongo_application: myirancell
+              mongo_version: 4.4.2
+            t3dclm-bomdb01:
+              ansible_host: 10.223.176.11
+              mongo_port: 28100
+              mongo_role: shard BOM
+              mongo_version: 6.0.3
+            t3dclm-bomdb02:
+              ansible_host: 10.223.176.12
+              mongo_port: 28200
+              mongo_role: shard BOM
+              mongo_version: 6.0.3
+            t3dclm-bomdb03:
+              ansible_host: 10.223.176.13
+              mongo_port: 28300
+              mongo_role: shard BOM
+              mongo_version: 6.0.3
+            t3dclm-bomdb04:
+              ansible_host: 10.223.176.14
+              mongo_port: 28400
+              mongo_role: shard BOM
+              mongo_version: 6.0.3
+            t3dclm-bomdb05:
+              ansible_host: 10.223.176.15
+              mongo_port: 28500
+              mongo_role: shard BOM
+              mongo_version: 6.0.3
+            t3dclm-bomdb06:
+              ansible_host: 10.223.176.16
+              mongo_port: 28600
+              mongo_role: shard BOM
+              mongo_version: 6.0.3
+            t3dclm-bomdb07:
+              ansible_host: 10.223.176.17
+              mongo_port: 28700
+              mongo_role: shard BOM
+              mongo_version: 6.0.3
+            t3dclm-bomdb08:
+              ansible_host: 10.223.176.18
+              mongo_port: 28800
+              mongo_role: shard BOM
+              mongo_version: 6.0.3
+            t3dclm-bomdb09:
+              ansible_host: 10.223.176.19
+              mongo_port: 28900
+              mongo_role: shard BOM
+              mongo_version: 6.0.3
+            t3dclm-config01:
+              ansible_host: 10.223.176.6
+              mongo_port: 27000
+              mongo_role: config server
+              mongo_version: 6.0.3
+            t3dclm-config02:
+              ansible_host: 10.223.176.7
+              mongo_port: 27000
+              mongo_role: config server
+              mongo_version: 6.0.3
+            t3dclm-config03:
+              ansible_host: 10.223.176.8
+              mongo_port: 27000
+              mongo_role: config server
+              mongo_version: 6.0.3
+            t3dclm-config04:
+              ansible_host: 10.223.176.9
+              mongo_port: 27000
+              mongo_role: config server
+              mongo_version: 6.0.3
+            t3dclm-config05:
+              ansible_host: 10.223.176.10
+              mongo_port: 27000
+              mongo_role: config server
+              mongo_version: 6.0.3
+            t3dclm-mongos01:
+              ansible_host: 10.223.176.20
+              mongo_port: 26000
+              mongo_role: mongos
+              mongo_version: 6.0.3
+            t3dclm-mongos02:
+              ansible_host: 10.223.176.21
+              mongo_port: 26000
+              mongo_role: mongos
+              mongo_version: 6.0.3
+            t3dclm-mongos03:
+              ansible_host: 10.223.176.22
+              mongo_port: 26000
+              mongo_role: mongos
+              mongo_version: 6.0.3
+            t3dclm-mongos04:
+              ansible_host: 10.223.176.23
+              mongo_port: 26000
+              mongo_role: mongos
+              mongo_version: 6.0.3
+            drvl1028:
+              ansible_host: 10.234.81.61
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_application: SHGW
+              mongo_version: 6.0.8
+            drvl1029:
+              ansible_host: 10.234.81.62
+              mongo_port: 27000
+              mongo_role: 'mongod secondry '
+              mongo_application: SHGW
+              mongo_version: 6.0.8
+            drvl1030:
+              ansible_host: 10.234.81.63
+              mongo_port: 27000
+              mongo_role: 'mongod secondry '
+              mongo_application: SHGW
+              mongo_version: 6.0.8
+            t3vl341:
+              ansible_host: 10.223.181.107
+              mongo_port: 27100
+              mongo_role: 'mongod secondry '
+              mongo_application: SHGW
+              mongo_version: 6.0.8
+            t3vl342:
+              ansible_host: 10.223.181.108
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_application: SHGW
+              mongo_version: 6.0.8
+            drvl1031:
+              ansible_host: 10.234.233.134
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_version: 4.4.25
+            drvl1032:
+              ansible_host: 10.234.233.135
+              mongo_port: 27100
+              mongo_role: 'mongod secondry '
+              mongo_version: 4.4.25
+            t1vl787:
+              ansible_host: 10.224.237.19
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_version: 4.4.25
+            t3call-db04:
+              ansible_host: 10.223.181.64
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_application: Ticketing
+              mongo_version: 6.0.8
+            t3call-db05:
+              ansible_host: 10.223.181.65
+              mongo_port: 27100
+              mongo_role: 'mongod secondry '
+              mongo_application: Ticketing
+              mongo_version: 6.0.8
+            t3call-db06:
+              ansible_host: 10.223.181.66
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_application: Ticketing
+              mongo_version: 6.0.8
+            drvl1067:
+              ansible_host: 10.234.233.156
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_application: Sales Points GIS
+              mongo_version: 6.0.8
+            drvl1068:
+              ansible_host: 10.234.233.157
+              mongo_port: 27100
+              mongo_role: 'mongod secondry '
+              mongo_application: Sales Points GIS
+              mongo_version: 6.0.8
+            drvl1069:
+              ansible_host: 10.234.233.158
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_application: Sales Points GIS
+              mongo_version: 6.0.8
+            t3vl339:
+              ansible_host: 10.223.181.105
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_application: FTTX-OSS
+              mongo_version: 6.0.8
+            t3vl340:
+              ansible_host: 10.223.181.106
+              mongo_port: 27100
+              mongo_role: 'mongod secondry '
+              mongo_application: FTTX-OSS
+              mongo_version: 6.0.8
+            drvl1098:
+              ansible_host: 10.223.181.107
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_application: FTTX-OSS
+              mongo_version: 6.0.8
+            esfvl039:
+              ansible_host: 10.226.81.26
+              mongo_port: 27300
+              mongo_role: mongod secondry (DR)
+              mongo_application: FTTX-OSS
+              mongo_version: 6.0.8
+            esfvl040:
+              ansible_host: 10.226.81.27
+              mongo_port: 27400
+              mongo_role: mongod secondry (DR)
+              mongo_application: FTTX-OSS
+              mongo_version: 6.0.8
+            esfvl041:
+              ansible_host: 10.226.81.28
+              mongo_port: 27500
+              mongo_role: mongod secondry (DR)
+              mongo_application: FTTX-OSS
+              mongo_version: 6.0.8
+            drvl1154:
+              ansible_host: 10.234.233.187
+              mongo_port: 27000
+              mongo_application: ICARE
+              mongo_version: 6.0.8
+            esfvl017:
+              ansible_host: 10.226.81.13
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_application: MTNI Website
+              mongo_version: 6.0.8
+            esfvl018:
+              ansible_host: 10.226.81.14
+              mongo_port: 27100
+              mongo_role: 'mongod secondry '
+              mongo_application: MTNI Website
+              mongo_version: 6.0.8
+            esfvl019:
+              ansible_host: 10.226.81.15
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_application: MTNI Website
+              mongo_version: 6.0.8
+            t3vl503:
+              ansible_host: 10.223.176.85
+              mongo_port: 27300
+              mongo_role: 'mongod secondry '
+              mongo_application: MTNI Website
+              mongo_version: 6.0.8
+            t3vl504:
+              ansible_host: 10.223.176.86
+              mongo_port: 27400
+              mongo_role: 'mongod secondry '
+              mongo_application: MTNI Website
+              mongo_version: 6.0.8
+            drvl1249:
+              ansible_host: 10.234.81.137
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_application: Shine
+              mongo_version: 6.0.8
+            drvl1250:
+              ansible_host: 10.234.81.138
+              mongo_port: 27100
+              mongo_role: 'mongod secondry '
+              mongo_application: Shine
+              mongo_version: 6.0.8
+            drvl1251:
+              ansible_host: 10.234.81.139
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_application: Shine
+              mongo_version: 6.0.8
+            t1vl854:
+              ansible_host: 10.224.237.65
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_application: emp
+              mongo_version: 6.0.8
+            t1vl855:
+              ansible_host: 10.224.237.66
+              mongo_port: 27100
+              mongo_role: 'mongod secondry '
+              mongo_application: emp
+              mongo_version: 6.0.9
+            t1vl856:
+              ansible_host: 10.224.237.67
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_application: emp
+              mongo_version: 6.0.10
+            t3vl487:
+              ansible_host: 10.223.181.246
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_application: ftth
+              mongo_version: 6.0.8
+            t3vl488:
+              ansible_host: 10.223.181.247
+              mongo_port: 27100
+              mongo_role: 'mongod secondry '
+              mongo_application: ftth
+              mongo_version: 6.0.8
+            t3vl489:
+              ansible_host: 10.223.181.248
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_application: ftth
+              mongo_version: 6.0.8
+            drvl1307:
+              ansible_host: 10.234.81.186
+              mongo_port: 27300
+              mongo_role: mongod secondry (DR)
+              mongo_application: ftth
+              mongo_version: 6.0.8
+            drvl1308:
+              ansible_host: 10.234.81.187
+              mongo_port: 27400
+              mongo_role: mongod secondry (DR)
+              mongo_application: ftth
+              mongo_version: 6.0.8
+            t3vl548:
+              ansible_host: 10.225.34.30
+              mongo_port: 27000
+              mongo_role: mongod
+              mongo_application: ATS
+              mongo_version: 6.0.8
+            t3vl594:
+              ansible_host: 10.223.176.112
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_application: ats platform
+              mongo_version: 8.0.12
+            t3vl595:
+              ansible_host: 10.223.176.113
+              mongo_port: 27100
+              mongo_role: 'mongod secondry '
+              mongo_application: ats platform
+              mongo_version: 8.0.12
+            t3vl596:
+              ansible_host: 10.223.176.114
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_application: ats platform
+              mongo_version: 8.0.12
+            t3vl617:
+              ansible_host: 10.223.176.135
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_application: ISS
+            t3vl618:
+              ansible_host: 10.223.176.136
+              mongo_port: 27100
+              mongo_role: 'mongod secondry '
+              mongo_application: ISS
+            t3vl619:
+              ansible_host: 10.223.176.137
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_application: ISS
+            t3vl697:
+              ansible_host: 10.225.34.100
+              mongo_port: 27100
+              mongo_role: mongod primary
+              mongo_application: yelloadwise
+              mongo_version: 8.0.12
+            t3vl698:
+              ansible_host: 10.225.34.101
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_application: yelloadwise
+              mongo_version: 8.0.12
+            t3vl656:
+              ansible_host: 10.225.34.35
+              mongo_port: 27000
+              mongo_role: 'mongod secondry '
+              mongo_application: yelloadwise
+              mongo_version: 8.0.12
+        mongo_uat:
+          hosts:
+            t1vl203:
+              ansible_host: 10.130.212.50
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_application: CLM-UAT
+              mongo_version: 3.2.6
+            t1vl223:
+              ansible_host: 10.130.212.70
+              mongo_port: 27001
+              mongo_role: mongod secondary
+              mongo_application: CLM-UAT
+              mongo_version: 3.2.6
+            t1vl224:
+              ansible_host: 10.130.212.71
+              mongo_port: 28100
+              mongo_role: mongod primary
+              mongo_application: CLM-UAT
+              mongo_version: 3.2.6
+            t1vl204:
+              ansible_host: 10.130.212.51
+              mongo_port: 29000
+              mongo_role: mongod secondary
+              mongo_application: CLM-UAT
+              mongo_version: 3.2.6
+            t1vl205:
+              ansible_host: 10.130.212.52
+              mongo_port: 27200
+              mongo_role: mongod primary
+              mongo_application: CLM-UAT
+              mongo_version: 3.2.6
+            t1vl226:
+              ansible_host: 10.130.212.73
+              mongo_port: 27003
+              mongo_role: arbiter
+              mongo_application: CLM-UAT
+              mongo_version: 3.2.6
+            t1vl206:
+              ansible_host: 10.130.212.53
+              mongo_port: 27300
+              mongo_role: mongod primary
+              mongo_application: CLM-UAT
+              mongo_version: 3.2.6
+            t1vl227:
+              ansible_host: 10.130.212.74
+              mongo_port: 27004
+              mongo_role: arbiter
+              mongo_application: CLM-UAT
+              mongo_version: 3.2.6
+            t1vl207:
+              ansible_host: 10.130.212.54
+              mongo_port: 26060
+              mongo_role: mongos
+              mongo_application: CLM-UAT
+              mongo_version: 3.2.6
+            t1vl208:
+              ansible_host: 10.130.212.55
+              mongo_port: 26060
+              mongo_role: mongos (for bigdata)
+              mongo_application: CLM-UAT
+              mongo_version: 3.2.6
+            t1vl209:
+              ansible_host: 10.130.212.56
+              mongo_port: 26060
+              mongo_role: mongos
+              mongo_application: CLM-UAT
+              mongo_version: 3.2.6
+            drvl200:
+              ansible_host: 10.133.126.30
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_application: UPC-UAT
+              mongo_version: 3.2.6
+            drvl201:
+              ansible_host: 10.133.126.31
+              mongo_port: 28100
+              mongo_role: arbiter
+              mongo_version: 3.2.6
+            drvl776:
+              ansible_host: 10.132.57.103
+              mongo_port: 28000
+              mongo_role: mongod primary
+              mongo_application: Website UAT
+              mongo_version: 4.4.2
+            drvl777:
+              ansible_host: 10.132.57.104
+              mongo_port: 28100
+              mongo_role: mongod secondary
+              mongo_application: Website UAT
+              mongo_version: 4.4.2
+            drvl778:
+              ansible_host: 10.132.57.105
+              mongo_port: 28200
+              mongo_role: mongod secondary
+              mongo_application: Website UAT
+              mongo_version: 4.4.2
+            t3vl012:
+              ansible_host: 10.224.243.15
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_version: 4.4.6
+            t3vl013:
+              ansible_host: 10.224.243.16
+              mongo_port: 28000
+              mongo_role: mongod secondary
+              mongo_version: 4.4.6
+            t3vl014:
+              ansible_host: 10.224.243.17
+              mongo_port: 29000
+              mongo_role: arbiter
+              mongo_version: 4.4.6
+            t3vl164:
+              ansible_host: 10.224.249.22
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_version: 4.4.2
+            t3vl165:
+              ansible_host: 10.224.249.23
+              mongo_port: 27100
+              mongo_role: 'mongod secondry '
+              mongo_version: 4.4.2
+            t3vl166:
+              ansible_host: 10.224.249.24
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_version: 4.4.2
+            t3ngmycell-uat08:
+              ansible_host: 10.224.241.138
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_application: myirancell
+              mongo_version: 4.4.2
+            t3ngmycell-uat11:
+              ansible_host: 10.224.241.128
+              mongo_port: 27100
+              mongo_role: 'mongod secondry '
+              mongo_application: myirancell
+              mongo_version: 4.4.2
+            t3ngmycell-uat12:
+              ansible_host: 10.224.241.129
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_application: myirancell
+              mongo_version: 4.4.2
+            t1vl755:
+              ansible_host: 10.130.18.79
+              mongo_port: 27000
+              mongo_role: shard DCLM
+              mongo_version: 6.0.3
+            t1vl756:
+              ansible_host: 10.130.18.80
+              mongo_port: 27000
+              mongo_role: shard DCLM
+              mongo_version: 6.0.3
+            t1vl757:
+              ansible_host: 10.130.18.81
+              mongo_port: 27000
+              mongo_role: shard DCLM
+              mongo_version: 6.0.3
+            t1vl758:
+              ansible_host: 10.130.18.82
+              mongo_port: 27000
+              mongo_role: shard DCLM
+              mongo_version: 6.0.3
+            t1vl759:
+              ansible_host: 10.130.18.83
+              mongo_port: 27000
+              mongo_role: config server
+              mongo_version: 6.0.3
+            t1vl760:
+              ansible_host: 10.130.18.84
+              mongo_port: 27000
+              mongo_role: config server
+              mongo_version: 6.0.3
+            t1vl761:
+              ansible_host: 10.130.18.85
+              mongo_port: 27000
+              mongo_role: config server
+              mongo_version: 6.0.3
+            t1vl762:
+              ansible_host: 10.130.18.86
+              mongo_port: 27000
+              mongo_role: mongos
+              mongo_version: 6.0.3
+            drvl1061:
+              ansible_host: 10.234.233.150
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_application: ShahkarGW MongoDB Replica set
+              mongo_version: 6.0.8
+            drvl1062:
+              ansible_host: 10.234.233.151
+              mongo_port: 27100
+              mongo_role: 'mongod secondry '
+              mongo_application: ShahkarGW MongoDB Replica set
+              mongo_version: 6.0.8
+            drvl1063:
+              ansible_host: 10.234.233.152
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_application: ShahkarGW MongoDB Replica set
+              mongo_version: 6.0.8
+            drvl1075:
+              ansible_host: 10.234.233.162
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_application: Sales Points GIS
+              mongo_version: 6.0.8
+            drvl1076:
+              ansible_host: 10.234.233.163
+              mongo_port: 27100
+              mongo_role: 'mongod secondry '
+              mongo_application: Sales Points GIS
+              mongo_version: 6.0.8
+            drvl1077:
+              ansible_host: 10.234.233.164
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_application: Sales Points GIS
+              mongo_version: 6.0.8
+            t3vl302:
+              ansible_host: 10.223.176.61
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_application: OSS FTTX
+              mongo_version: 6.0.8
+            t3vl303:
+              ansible_host: 10.223.176.62
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_application: OSS FTTX
+              mongo_version: 6.0.8
+            t3vl424:
+              ansible_host: 10.223.181.172
+              mongo_port: 27000
+              mongo_role: mongod
+              mongo_application: ftth_CRM
+              mongo_version: 6.0.8
+            drvl1252:
+              ansible_host: 10.234.81.140
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_application: Shine
+              mongo_version: 6.0.8
+            drvl1253:
+              ansible_host: 10.234.81.141
+              mongo_port: 27100
+              mongo_role: 'mongod secondry '
+              mongo_application: Shine
+              mongo_version: 6.0.8
+            drvl1254:
+              ansible_host: 10.234.81.142
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_application: Shine
+              mongo_version: 6.0.8
+            twdpos-testdb05:
+              ansible_host: 10.221.21.25
+              mongo_port: 27000
+              mongo_role: mongod primary
+              mongo_application: DPOS
+              mongo_version: 8.0.12
+            t3vl644:
+              ansible_host: 10.223.176.154
+              mongo_port: 27100
+              mongo_role: 'mongod secondry '
+              mongo_application: DPOS
+              mongo_version: 8.0.12
+            t3vl645:
+              ansible_host: 10.223.176.155
+              mongo_port: 27200
+              mongo_role: 'mongod secondry '
+              mongo_application: DPOS
+              mongo_version: 8.0.12
+            t3vl547:
+              ansible_host: 10.225.34.29
+              mongo_port: 27000
+              mongo_role: mongod
+              mongo_application: ATS
+              mongo_version: 6.0.8
+            drvl1317:
+              ansible_host: 10.235.19.19
+              mongo_port: 27000
+              mongo_role: mongod
+              mongo_application: DG Commerce
+              mongo_version: 6.0.8
+            t3vl616:
+              ansible_host: 10.223.176.134
+              mongo_port: 27000
+              mongo_role: mongod
+              mongo_application: ISS

@@ -1,0 +1,49 @@
+-- ============================================================================
+-- Query 12: All SQL IDs Executed by Root Blocker Session 3082/44313
+-- ============================================================================
+-- Purpose: Identify every distinct SQL executed by the root blocker session
+--          during the incident window to determine what operation was running.
+-- Result:  Only ONE sql_id found — 459f3z9u4fb3u (SELECT), confirming the
+--          session was performing an internal/recursive operation that produced
+--          no additional visible sql_ids in ASH.
+-- Run on:  POST2P (DBID 2771519206), dru104a
+-- Date:    March 2026 (post-incident investigation)
+-- ============================================================================
+
+-- SQL Query:
+-- SELECT sql_id, sql_opname, COUNT(*) samples,
+--        MIN(TO_CHAR(sample_time, 'HH24:MI:SS')) first_seen,
+--        MAX(TO_CHAR(sample_time, 'HH24:MI:SS')) last_seen
+-- FROM dba_hist_active_sess_history
+-- WHERE dbid = 2771519206
+--   AND instance_number = 1
+--   AND snap_id BETWEEN 233938 AND 233941
+--   AND session_id = 3082
+--   AND session_serial# = 44313
+-- GROUP BY sql_id, sql_opname
+-- ORDER BY MIN(sample_time);
+
+-- Headers: SQL_ID | SQL_OPNAME | SAMPLES | FIRST_SEEN | LAST_SEEN
+
+459f3z9u4fb3u	SELECT	59	08:47:33	09:23:03
+
+-- ============================================================================
+-- Analysis:
+-- ============================================================================
+-- Only ONE sql_id was captured for session 3082/44313 across 59 ASH samples
+-- spanning 08:47:33 to 09:23:03 (~36 minutes).
+--
+-- sql_id 459f3z9u4fb3u = "select value$ from props$ where name = 'GLOBAL_DB_NAME'"
+-- This is an Oracle internal/recursive SQL typically fired during:
+--   1. Database link resolution
+--   2. DBMS_LOGMNR initialization
+--   3. Session initialization/logon
+--
+-- The fact that NO OTHER sql_id appears means the actual operation (e.g., LogMiner,
+-- Flashback, or PL/SQL procedure) was running internally and its SQL wasn't
+-- visible in ASH — only this recursive dictionary lookup was captured.
+--
+-- Combined with the evidence from query 11 (log file sequential read on redo
+-- logs 987952-987953), this confirms an internal redo-scanning operation was
+-- running under this session.
+-- ============================================================================

@@ -1,0 +1,39 @@
+#!/bin/bash
+#===============================================================================
+# MFS_REPORT Gather Stats - Monthly (10th of month at 2AM)
+# Server: Drl168
+# PDB: MFS_REPORT
+# Schema: APP_USER
+# Higher DEGREE for comprehensive monthly stats
+# Cron: 0 2 10 * *
+#===============================================================================
+
+# Source configuration
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source ${SCRIPT_DIR}/mfs_report_config.env
+
+# Cleanup logs older than 30 days
+cleanup_old_logs
+
+# Tables processed in monthly job
+TABLES="MFS_EDR_DAILY,MFS_RPT_FACT,MFS_RPT_SERVICE_FACT,MFS_RPT_RECON_FACT,MFS_RPT_HOURLY_FACT"
+LOG_FILE="${LOG_DIR}/monthly.log"
+
+log_message "Monthly Gather Stats Started"
+START_TIME=$(date +%s)
+
+# Run monthly stats for MFS_REPORT PDB
+export ORACLE_PDB_SID=${PDB_MFS_REPORT}
+${ORACLE_HOME}/bin/sqlplus -S / as sysdba @${SCRIPT_DIR}/mfs_report_monthly_gen.sql $SCRIPT_DIR 2>&1 | tee ${LOG_FILE}
+SQL_STATUS=${PIPESTATUS[0]}
+
+END_TIME=$(date +%s)
+ELAPSED=$((END_TIME - START_TIME))
+
+if [ $SQL_STATUS -eq 0 ]; then
+    log_message "Monthly Gather Stats Completed Successfully (Elapsed: $(format_duration $ELAPSED))"
+    send_success_email "Monthly Gather Stats" "$LOG_FILE"
+else
+    log_message "Monthly FAILED"
+    send_email "Monthly FAILED" "Monthly gather stats failed at $(date)\nElapsed: $(format_duration $ELAPSED)" "$LOG_FILE"
+fi

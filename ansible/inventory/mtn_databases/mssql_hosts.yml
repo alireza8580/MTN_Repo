@@ -1,0 +1,163 @@
+all:
+  children:
+    mssql_servers:
+      children:
+        mssql_prod:
+          hosts:
+            T1W022:
+              ansible_host: 10.131.59.190
+              mssql_port: 1433
+              mssql_application: Intel
+              mssql_version: SQL Server 2017
+            t1w059:
+              ansible_host: 10.131.59.226
+              mssql_port: 1433
+              mssql_application: Portal
+              mssql_version: SQL Server 2014
+            t1w095:
+              ansible_host: 10.131.59.166
+              mssql_port: 1433
+              mssql_application: IAM
+              mssql_version: SQL Server 2014
+            T1W102:
+              ansible_host: 10.131.59.141
+              mssql_port: 1433
+              mssql_application: Sharepoint
+              mssql_version: SQL Server 2017
+            T1W108:
+              ansible_host: 10.131.59.176
+              mssql_port: 1433
+              mssql_application: Secretariat Project Delivery
+              mssql_version: SQL Server 2017
+            T1W108\CR:
+              ansible_host: 10.131.59.176
+              mssql_port: 55368
+              mssql_application: DBA Team, SQL Configuration DB
+              mssql_version: SQL Server 2019
+            T1W109:
+              ansible_host: 10.131.59.178
+              mssql_port: 1433
+              mssql_application: Sharepoint
+              mssql_version: SQL Server 2017
+            T1W111:
+              ansible_host: 10.131.59.145
+              mssql_port: 1433
+              mssql_application: CR
+              mssql_version: SQL Server 2017
+            T3VW036:
+              ansible_host: 10.224.210.42
+              mssql_port: 1433
+              mssql_application: DigitalWalletDB
+              mssql_version: SQL Server 2020
+            T3VW037:
+              ansible_host: 10.224.210.44
+              mssql_port: 1433
+              mssql_application: DigitalWalletDB
+              mssql_version: SQL Server 2020
+            T3W015:
+              ansible_host: 10.224.210.44
+              mssql_port: 1433
+              mssql_application: DigitalWalletDB
+              mssql_version: SQL Server 2019
+            tevw585:
+              ansible_host: 10.132.59.193
+              mssql_port: 1433
+              mssql_application: DigitalWalletDB
+              mssql_version: SQL Server 2020
+            TEW003:
+              ansible_host: 10.132.59.140
+              mssql_port: 1433
+              mssql_application: VI
+              mssql_version: SQL Server 2017
+            tew095:
+              ansible_host: 10.133.64.92
+              mssql_port: 1433
+              mssql_application: Portal
+              mssql_version: SQL Server 2014
+            TEW113:
+              ansible_host: 10.133.64.25
+              mssql_port: 1433
+              mssql_application: WiFi Hotspot Captive Portal project Service
+              mssql_version: SQL Server 2017
+            TEW115:
+              ansible_host: 10.133.64.49
+              mssql_port: 1433
+              mssql_application: TX_invoicing_CPG
+              mssql_version: SQL Server 2017
+            TEW115\CS:
+              ansible_host: 10.133.64.49
+              mssql_port: 54777
+              mssql_application: Secretariat Project Delivery
+              mssql_version: SQL Server 2017
+            TEW116:
+              ansible_host: 10.133.64.50
+              mssql_port: 1433
+              mssql_application: Veeam one Database (t3vm098)
+              mssql_version: SQL Server 2017
+            TEW119:
+              ansible_host: 10.132.59.146
+              mssql_port: 1433
+              mssql_application: Marketing
+              mssql_version: SQL Server 2017
+            TEW124:
+              ansible_host: 10.132.59.191
+              mssql_port: 1433
+              mssql_application: Marketing
+              mssql_version: SQL Server 2019
+        mssql_uat:
+          hosts:
+            T1VW126:
+              ansible_host: 10.131.59.197
+              mssql_port: 1433
+              mssql_application: Portal
+              mssql_version: SQL Server 2012
+            T1VW165:
+              ansible_host: 10.131.59.214
+              mssql_port: 1433
+              mssql_application: VDI Database
+              mssql_version: SQL Server 2017
+            T1VW166:
+              ansible_host: 10.131.59.215
+              mssql_port: 1433
+              mssql_application: VDI Database
+              mssql_version: SQL Server 2017
+            T1VW174:
+              ansible_host: 10.131.58.143
+              mssql_port: 1433
+              mssql_application: VDI Database
+              mssql_version: SQL Server 2014
+            T1VW339:
+              ansible_host: 10.131.59.148
+              mssql_port: 1433
+              mssql_application: DBA Team, SQL Configuration DB
+              mssql_version: SQL Server 2019
+            T1VW341:
+              ansible_host: 10.131.59.147
+              mssql_port: 1433
+              mssql_application: DBA Team, SQL Configuration DB
+              mssql_version: SQL Server 2019
+            T1VW427:
+              ansible_host: 10.131.59.142
+              mssql_port: 1433
+              mssql_application: DBA Team, SQL Configuration DB
+              mssql_version: SQL Server 2019
+            T3VW235:
+              ansible_host: 10.224.210.235
+              mssql_port: 1433
+              mssql_application: FIN
+              mssql_version: SQL Server 2022
+            TEVW218:
+              ansible_host: 10.133.64.175
+              mssql_port: 1433
+              mssql_application: Time attendance
+              mssql_version: SQL Server 2014
+            TEVWT06:
+              ansible_host: 10.132.59.172
+              mssql_port: 1433
+              mssql_application: VDI Database
+              mssql_version: SQL Server 2017
+            TEVWT07:
+              ansible_host: 10.132.59.173
+              mssql_port: 1433
+              mssql_application: DBA Team, SQL Configuration DB
+              mssql_version: SQL Server 2017

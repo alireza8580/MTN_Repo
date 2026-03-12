@@ -1,6 +1,6 @@
 {
   "Erfan Heidari": {
-    "total_days": 2,
+    "total_days": 4,
     "requests": [
       {
         "date": "2025-12-22",
@@ -9,6 +9,14 @@
       {
         "date": "2025-12-27",
         "content": "morakhasi saat 14:00 ta 16:00"
+      },
+      {
+        "date": "2026-01-05",
+        "content": "<@736498592168280114> man az morakhasi ke darkhast dadam baraye sobh estefadeh nakardam va payamam r"
+      },
+      {
+        "date": "2026-02-24",
+        "content": "<@736498592168280114> khanoom slm, baraye saat 14 ta 16 morakhasi mikhastam \nOkeye?"
       }
     ]
   },
@@ -57,11 +65,23 @@
     ]
   },
   "Keivan Sadeghi": {
-    "total_days": 1,
+    "total_days": 4,
     "requests": [
       {
         "date": "2025-12-27",
         "content": "morakhasi mikhastam 11:45 ta 13"
+      },
+      {
+        "date": "2025-12-31",
+        "content": "morakhasi mikhastam az 10:30 ta 12:00"
+      },
+      {
+        "date": "2026-02-15",
+        "content": "morakhasi az saat 11:15 ta 15:00"
+      },
+      {
+        "date": "2026-02-21",
+        "content": "farda ro morakhasi  mikhastam, age emkan dare"
       }
     ]
   },
@@ -71,6 +91,50 @@
       {
         "date": "2025-12-28",
         "content": "morakhasi az 13:50 ta 17:00"
+      }
+    ]
+  },
+  "Maryam Yousefi": {
+    "total_days": 2,
+    "requests": [
+      {
+        "date": "2025-12-29",
+        "content": "salam sob bekheir\nman ye mosaferat mikham beram ke tarikh 20-21-22-23-24 niaz be morakhasi dare\nba e"
+      },
+      {
+        "date": "2025-12-30",
+        "content": "Morakhasi 12 ta 14"
+      }
+    ]
+  },
+  "Ehsan Yousefi": {
+    "total_days": 1,
+    "requests": [
+      {
+        "date": "2025-12-30",
+        "content": "morakhasi az saat 15:00 ta 17:00"
+      }
+    ]
+  },
+  "Mohsen Roudsaz": {
+    "total_days": 1,
+    "requests": [
+      {
+        "date": "2026-01-06",
+        "content": "morekhasi mikham az 14 ta 18"
+      }
+    ]
+  },
+  "Yassin Alivand": {
+    "total_days": 2,
+    "requests": [
+      {
+        "date": "2026-02-14",
+        "content": "morakhasi az saat 15:00 ta 17:14"
+      },
+      {
+        "date": "2026-02-24",
+        "content": "مرخصی 6 اسفند"
       }
     ]
   }

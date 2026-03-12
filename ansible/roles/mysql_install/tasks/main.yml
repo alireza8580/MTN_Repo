@@ -1,0 +1,71 @@
+---
+# Main tasks file for mysql_install role
+# Orchestrates all installation steps
+
+- name: Include prerequisites tasks
+  ansible.builtin.include_tasks: prerequisites.yml
+  tags:
+    - mysql_install
+    - mysql_install:prerequisites
+
+- name: Include disk/LVM setup tasks
+  ansible.builtin.include_tasks: disk_setup.yml
+  when: mysql_disk_device | length > 0
+  tags:
+    - mysql_install
+    - mysql_install:disk
+
+- name: Include directory creation tasks
+  ansible.builtin.include_tasks: directories.yml
+  tags:
+    - mysql_install
+    - mysql_install:directories
+
+- name: Include package installation tasks
+  ansible.builtin.include_tasks: packages.yml
+  tags:
+    - mysql_install
+    - mysql_install:packages
+
+- name: Include configuration tasks
+  ansible.builtin.include_tasks: configure.yml
+  tags:
+    - mysql_install
+    - mysql_install:configure
+
+- name: Include service management tasks
+  ansible.builtin.include_tasks: service.yml
+  tags:
+    - mysql_install
+    - mysql_install:service
+
+- name: Include secure installation tasks
+  ansible.builtin.include_tasks: secure_installation.yml
+  tags:
+    - mysql_install
+    - mysql_install:secure
+
+- name: Include CIS hardening tasks
+  ansible.builtin.include_tasks: cis_hardening.yml
+  tags:
+    - mysql_install
+    - mysql_install:cis
+
+- name: Include user setup tasks
+  ansible.builtin.include_tasks: users.yml
+  tags:
+    - mysql_install
+    - mysql_install:users
+
+- name: Include shell configuration tasks
+  ansible.builtin.include_tasks: shell_config.yml
+  tags:
+    - mysql_install
+    - mysql_install:shell
+
+- name: Include backup setup tasks
+  ansible.builtin.include_tasks: backup.yml
+  when: is_backup_node | bool
+  tags:
+    - mysql_install
+    - mysql_install:backup

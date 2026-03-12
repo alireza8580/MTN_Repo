@@ -1,0 +1,39 @@
+#!/bin/bash
+#===============================================================================
+# EREFILL Gather Stats - Schedule A (Every 3 hours)
+# Server: Drl167
+# PDB: EREFILL_CORE
+# Schema: CORE_CONFIG
+# Tables: MFS_ETOPUP_USER_MASTER
+# Cron: 0 2,5,8,11,14,17,20,23 * * *
+#===============================================================================
+
+# Source configuration
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source ${SCRIPT_DIR}/erefill_config.env
+
+# Cleanup logs older than 30 days
+cleanup_old_logs
+
+# Tables processed in this schedule
+TABLES="MFS_ETOPUP_USER_MASTER"
+LOG_FILE="${LOG_DIR}/scheduleA.log"
+
+log_message "Schedule A Started"
+START_TIME=$(date +%s)
+
+# Run stats for EREFILL_CORE PDB
+export ORACLE_PDB_SID=${PDB_EREFILL_CORE}
+${ORACLE_HOME}/bin/sqlplus -S / as sysdba @${SCRIPT_DIR}/erefill_scheduleA.sql 2>&1 | tee "$LOG_FILE"
+SQL_STATUS=${PIPESTATUS[0]}
+
+END_TIME=$(date +%s)
+ELAPSED=$((END_TIME - START_TIME))
+
+if [ $SQL_STATUS -eq 0 ]; then
+    log_message "Schedule A Completed Successfully (Elapsed: $(format_duration $ELAPSED))"
+    send_success_email "Schedule A" "$LOG_FILE"
+else
+    log_message "Schedule A FAILED"
+    send_email "Schedule A FAILED" "Gather stats failed at $(date)\nElapsed: $(format_duration $ELAPSED)" "$LOG_FILE"
+fi

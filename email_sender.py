@@ -75,7 +75,14 @@ def create_date_specific_csv(date_str):
 
 
 def get_ews_account():
-    """Connect to Exchange using EWS"""
+    """Connect to Exchange using EWS.
+    
+    Returns:
+        Account: EWS account object if successful, None otherwise.
+    
+    Raises:
+        None: All exceptions are caught and logged.
+    """
     if not EWS_PASSWORD:
         print("ERROR: SMTP_PASSWORD environment variable not set!")
         return None
@@ -90,8 +97,12 @@ def get_ews_account():
             access_type=DELEGATE
         )
         return account
+    except (ConnectionError, TimeoutError) as e:
+        print(f"ERROR: Network error connecting to Exchange: {e}")
+        return None
     except Exception as e:
-        print(f"ERROR connecting to Exchange: {e}")
+        # Log the exception type for debugging
+        print(f"ERROR connecting to Exchange ({type(e).__name__}): {e}")
         return None
 
 
@@ -399,8 +410,19 @@ def create_daily_email_body(date_str, summary):
 
 
 def send_email(subject, body_html, to_emails, cc_emails=None, bcc_emails=None, attachment_path=None):
-    """Send email via Exchange Web Services (EWS)"""
+    """Send email via Exchange Web Services (EWS).
     
+    Args:
+        subject: Email subject line.
+        body_html: HTML content for email body.
+        to_emails: List of recipient email addresses.
+        cc_emails: Optional list of CC recipients.
+        bcc_emails: Optional list of BCC recipients.
+        attachment_path: Optional path to file attachment.
+    
+    Returns:
+        bool: True if email sent successfully, False otherwise.
+    """
     account = get_ews_account()
     if not account:
         return False
@@ -440,8 +462,14 @@ def send_email(subject, body_html, to_emails, cc_emails=None, bcc_emails=None, a
             print(f"  BCC: {', '.join(bcc_emails)}")
         return True
     
+    except (ConnectionError, TimeoutError) as e:
+        print(f"ERROR: Network error sending email: {e}")
+        return False
+    except IOError as e:
+        print(f"ERROR: File error with attachment: {e}")
+        return False
     except Exception as e:
-        print(f"ERROR sending email: {e}")
+        print(f"ERROR sending email ({type(e).__name__}): {e}")
         return False
 
 

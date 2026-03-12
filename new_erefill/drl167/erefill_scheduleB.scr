@@ -1,0 +1,68 @@
+#!/bin/bash
+#===============================================================================
+# EREFILL Gather Stats - Schedule B (Every 6 hours)
+# Server: Drl167
+# PDBs: EREFILL_EVENT, EREFILL_CORE
+# Schemas: EVENT_DATA (CDR/EDR tables), CORE_DATA (THRESHOLD_CHECK)
+# Cron: 0 5,11,17,23 * * *
+#===============================================================================
+
+# Source configuration
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source ${SCRIPT_DIR}/erefill_config.env
+
+# Cleanup logs older than 30 days
+cleanup_old_logs
+
+# Tables processed in this schedule
+TABLES_EVENT="MFS_CDR_01,MFS_CDR_02,MFS_EDR_01,MFS_EDR_02"
+TABLES_CORE="MFS_ETOPUP_THRESHOLD_CHECK"
+ALL_TABLES="${TABLES_EVENT},${TABLES_CORE}"
+
+# Log files for this schedule
+COMBINED_LOG="${LOG_DIR}/scheduleB.log"
+
+log_message "Schedule B Started"
+START_TIME=$(date +%s)
+FAILED_PARTS=""
+
+# Clear combined log
+> "$COMBINED_LOG"
+
+#------------------------------------------------------------------------------
+# Part 1: EREFILL_EVENT PDB - CDR/EDR tables
+#------------------------------------------------------------------------------
+echo "=== EREFILL_EVENT PDB ===" >> "$COMBINED_LOG"
+export ORACLE_PDB_SID=${PDB_EREFILL_EVENT}
+${ORACLE_HOME}/bin/sqlplus -S / as sysdba @${SCRIPT_DIR}/erefill_scheduleB.sql 2>&1 | tee -a ${COMBINED_LOG}
+SQL_STATUS1=${PIPESTATUS[0]}
+
+if [ $SQL_STATUS1 -ne 0 ]; then
+    log_message "Schedule B (EVENT) FAILED"
+    FAILED_PARTS+="EVENT "
+fi
+
+#------------------------------------------------------------------------------
+# Part 2: EREFILL_CORE PDB - THRESHOLD_CHECK table
+#------------------------------------------------------------------------------
+echo "" >> "$COMBINED_LOG"
+echo "=== EREFILL_CORE PDB ===" >> "$COMBINED_LOG"
+export ORACLE_PDB_SID=${PDB_EREFILL_CORE}
+${ORACLE_HOME}/bin/sqlplus -S / as sysdba @${SCRIPT_DIR}/erefill_scheduleB_core.sql 2>&1 | tee -a ${COMBINED_LOG}
+SQL_STATUS2=${PIPESTATUS[0]}
+
+if [ $SQL_STATUS2 -ne 0 ]; then
+    log_message "Schedule B (CORE) FAILED"
+    FAILED_PARTS+="CORE "
+fi
+
+END_TIME=$(date +%s)
+ELAPSED=$((END_TIME - START_TIME))
+
+if [ -z "$FAILED_PARTS" ]; then
+    log_message "Schedule B Completed Successfully (Elapsed: $(format_duration $ELAPSED))"
+    send_success_email "Schedule B" "$COMBINED_LOG" "EREFILL"
+else
+    log_message "Schedule B FAILED (Parts: $FAILED_PARTS)"
+    send_email "Schedule B FAILED ($FAILED_PARTS)" "Gather stats failed at $(date)\nElapsed: $(format_duration $ELAPSED)\nFailed: $FAILED_PARTS" "$COMBINED_LOG"
+fi

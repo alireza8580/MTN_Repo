@@ -1,0 +1,17 @@
+# Database Size Collector Requirements
+# Install with: pip install -r requirements.txt
+
+# YAML parsing for Ansible inventory
+PyYAML>=5.0
+
+# Oracle database connectivity (choose one)
+oracledb>=1.0.0
+
+# Alternative: cx_Oracle (older, requires Oracle Instant Client)
+# cx_Oracle>=8.0
+
+# Optional: pandas for data analysis
+# pandas>=1.0.0
+
+# Optional: openpyxl for Excel export
+# openpyxl>=3.0.0

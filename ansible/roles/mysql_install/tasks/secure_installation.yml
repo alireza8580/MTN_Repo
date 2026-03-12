@@ -1,0 +1,82 @@
+---
+# MySQL secure installation tasks
+
+- name: Get temporary root password from log
+  ansible.builtin.shell: |
+    grep 'temporary password' {{ mysql_log_dir }}/mysqld.log | tail -1 | awk '{print $NF}'
+  register: temp_password
+  changed_when: false
+  no_log: true
+
+- name: Check if root password is already set
+  ansible.builtin.shell: |
+    mysql --socket={{ mysql_socket }} -u root -p'{{ mysql_root_password }}' -e "SELECT 1;" 2>/dev/null && echo "password_set" || echo "needs_setup"
+  register: password_check
+  changed_when: false
+  no_log: true
+  failed_when: false
+
+- name: Set root password (first time setup)
+  ansible.builtin.shell: |
+    mysql --socket={{ mysql_socket }} -u root -p'{{ temp_password.stdout }}' --connect-expired-password -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ mysql_root_password }}';"
+  when: 
+    - password_check.stdout != "password_set"
+    - temp_password.stdout | length > 0
+  no_log: true
+
+- name: Remove anonymous users
+  community.mysql.mysql_user:
+    name: ''
+    host_all: yes
+    state: absent
+    login_unix_socket: "{{ mysql_socket }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  when: password_check.stdout == "password_set" or temp_password.stdout | length > 0
+
+- name: Remove test database
+  community.mysql.mysql_db:
+    name: test
+    state: absent
+    login_unix_socket: "{{ mysql_socket }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  when: password_check.stdout == "password_set" or temp_password.stdout | length > 0
+
+- name: Disable remote root login
+  community.mysql.mysql_user:
+    name: root
+    host: "{{ item }}"
+    state: absent
+    login_unix_socket: "{{ mysql_socket }}"
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  loop:
+    - "{{ ansible_hostname }}"
+    - "127.0.0.1"
+    - "::1"
+  when: password_check.stdout == "password_set" or temp_password.stdout | length > 0
+  failed_when: false
+
+- name: Configure mysql_config_editor for root user (login-path: sqlp6)
+  ansible.builtin.shell: |
+    mysql_config_editor set --login-path=sqlp6 \
+      --socket={{ mysql_socket }} \
+      --user=root \
+      --password << EOF
+    {{ mysql_root_password }}
+    EOF
+  become: yes
+  become_user: mysql
+  no_log: true
+  args:
+    executable: /bin/bash
+
+- name: Set mysql history to /dev/null
+  ansible.builtin.file:
+    src: /dev/null
+    dest: /data/.mysql_history
+    state: link
+    force: yes
+    owner: mysql
+    group: mysql

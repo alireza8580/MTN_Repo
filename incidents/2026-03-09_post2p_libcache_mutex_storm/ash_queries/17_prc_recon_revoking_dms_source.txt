@@ -1,0 +1,239 @@
+-- ============================================================================
+-- Query 17: Source Code of PRC_RECON_REVOKING_DMS Procedure
+-- ============================================================================
+-- Purpose: Retrieve the full source code of the procedure that executed the
+--          DDLs (CREATE TABLE TMP_REVOKING_DMS_0/1) during the incident.
+--          This procedure was called by Session 1750/2249 from drvl1078.
+-- Result:  A billing/subscription management procedure that:
+--          1. Creates temp tables from CB_SUSPENDED_DTLS
+--          2. Joins with V_GSM_SERVICE_MAST for subscriber details
+--          3. Loops through records calling Bulk_Revoke_Suspension
+--          4. Calls REVOKE_SOFT_SUSPEND_SERVICE for soft suspensions
+--          This is an APPLICATION procedure, NOT a DBA operation.
+-- Run on:  POST2P (DBID 2771519206), dru104a
+-- Date:    March 2026 (post-incident investigation)
+-- ============================================================================
+
+-- SQL Query:
+-- SELECT line, text
+-- FROM dba_source
+-- WHERE owner = 'ABL_DBOBJECTS'
+--   AND name = 'PRC_RECON_REVOKING_DMS'
+--   AND type = 'PROCEDURE'
+-- ORDER BY line;
+
+-- Headers: LINE | TEXT
+
+1	PROCEDURE               PRC_RECON_REVOKING_DMS
+2	AS
+3	   
+4	 
+5	 --V_STR                VARCHAR2(4000) := 'RECON_DONE';
+6	 --out_File            UTL_FILE.FILE_TYPE;
+7	 l_success_flag_n  NUMBER(10);
+8	l_err_code_v  VARCHAR2(200);
+9	l_err_mesg_v  VARCHAR2(200);
+10	   l_rev_soft_susp_service         CLOB;           --added for CR2028   
+11	   o_rev_soft_suspend_service      XMLTYPE;        --added for CR2028
+12	l_susp_ross_flg_v          VARCHAR2(1);
+13	l_hard_count_n    NUMBER;
+14	l_order_ref_no_v                varchar2(20);  --added for DEFECT-20418
+15	l_count_n                 NUMBER;
+16	l_soft_count_n            NUMBER;
+17	BEGIN
+18	
+19	EXECUTE IMMEDIATE 'ALTER SESSION SET NLS_CALENDAR = ''GREGORIAN''';
+20	
+21	   BEGIN
+22	      EXECUTE IMMEDIATE 'DROP TABLE ABL_DBOBJECTS.TMP_REVOKING_DMS_0 PURGE';
+23	   EXCEPTION
+24	      WHEN OTHERS
+25	      THEN
+26	         IF SQLCODE != -942
+27	         THEN
+28	            RAISE;
+29	         END IF;
+30	   END;
+31	
+32	   EXECUTE IMMEDIATE
+33	      ' CREATE TABLE ABL_DBOBJECTS.TMP_REVOKING_DMS_0 NOLOGGING AS 
+34	    select ACCOUNT_LINK_CODE_N ,SUSPENDED_REASON_V , ORDER_REF_NO_V from cb_suspended_dtls  
+35	where REACTIVATED_FLG_V=''N''
+36	AND SUSPENDED_REASON_V=''B_DCMT''';
+37	
+38	
+39	
+40	   BEGIN
+41	      EXECUTE IMMEDIATE
+42	         'DROP TABLE ABL_DBOBJECTS.TMP_REVOKING_DMS_1 PURGE';
+43	   EXCEPTION
+44	      WHEN OTHERS
+45	      THEN
+46	         IF SQLCODE != -942
+47	         THEN
+48	            RAISE;
+49	         END IF;
+50	   END;
+51	
+52	
+53	
+54	   EXECUTE IMMEDIATE
+55	      'CREATE TABLE ABL_DBOBJECTS.TMP_REVOKING_DMS_1
+56	NOLOGGING
+57	
+58	AS
+59	  select mobl_num_voice_v,a.account_link_code_n,contract_type_v,account_code_n,subscriber_category_v, subscriber_sub_category_v,status_code_v,ORDER_REF_NO_V
+60	 from v_gsm_service_mast a ,TMP_REVOKING_DMS_0 b
+61	
+62	where profile_type_v=''I''
+63	and a.account_link_code_n=b.account_link_code_n
+64	AND ( status_code_v=''SP'' OR (STATUS_CODE_V in (''AC'',''PA'') AND VALIDITY_GRACE_DAYS_N=1))
+65	and a.mobl_num_voice_v is not null
+66	AND REG_FORM_RECEIVED_FLAG_V=''Y'' AND MMS_DOC_RECIVED_FLAG_V=''Y'' AND DMS_VERIFIED_FLAG_V=''Y'' AND DMS_RECIVED_FLAG_V=''Y''';
+67	
+68	 SELECT KEY_VALUE_V
+69	  INTO  l_susp_ross_flg_v 
+70	 FROM CB_FEATURE_CONTROL_KEYS 
+71	 where KEY_CODE_V='CR2028';
+72	
+73	for i in (select distinct(ACCOUNT_LINK_CODE_N) ACCOUNT_LINK_CODE_N,CONTRACT_TYPE_V,ACCOUNT_CODE_N,SUBSCRIBER_CATEGORY_V,SUBSCRIBER_SUB_CATEGORY_V,ORDER_REF_NO_V,MOBL_NUM_VOICE_V from TMP_REVOKING_DMS_1)
+74	loop
+75	
+76	
+77	      SELECT COUNT(1)                               
+78	      INTO l_hard_count_n
+79	       FROM CB_SUSPENDED_DTLS  A 
+80	      WHERE ACCOUNT_LINK_CODE_N=i.ACCOUNT_LINK_CODE_N
+81	        AND SUSPENSION_FLG_V='H'
+82	        AND suspended_reason_v='B_DCMT'
+83	        AND  A.REACTIVATED_FLG_V='N';
+84	        
+85	      SELECT COUNT(1)
+86	        INTO l_count_n
+87	        FROM CB_SUBS_POS_SERVICES 
+88	      WHERE SERV_ACC_LINK_CODE_N =i.ACCOUNT_LINK_CODE_N
+89	        AND SERVICE_KEY_CODE_V IN ('SUSP','SOSS','RESP','ROSS')
+90	        AND STATUS_OPTN_V='Q';
+91	        
+92	       SELECT COUNT(1)                               
+93	        INTO l_soft_count_n
+94	        FROM CB_SUSPENDED_DTLS  A 
+95	      WHERE ACCOUNT_LINK_CODE_N=i.ACCOUNT_LINK_CODE_N
+96	        AND SUSPENSION_FLG_V='S'
+97	        AND suspended_reason_v='B_DCMT'
+98	        AND  A.REACTIVATED_FLG_V='N';
+99	    
+100	
+101	 IF l_count_n =0 and (l_susp_ross_flg_v ='N' OR l_hard_count_n>=1)  --modified for CR2028
+102	 THEN
+103	 
+104	 Bulk_Revoke_Suspension(i.ACCOUNT_LINK_CODE_N,            -- service acc link code
+105	                                           'B_DCMT',                               -- reason Code
+106	                                            SYSDATE,                            -- reactivation date
+107	                                            i.CONTRACT_TYPE_V,                -- contract type
+108	                                            i.ACCOUNT_CODE_N,                 -- invoice account code
+109	                                            i.SUBSCRIBER_CATEGORY_V,          -- subscriber category
+110	                                            i.SUBSCRIBER_SUB_CATEGORY_V,      -- subscriber sub category
+111	                                            null,                    -- first name of subscriber
+112	                                            3916,                           -- user code
+113	                                            NULL,                               -- location code
+114	                                            'SP',                  -- service status
+115	                                            l_success_flag_n,                   -- 1->success or 0->failure
+116	                                            l_err_code_v,                       -- Error code
+117	                                            l_err_mesg_v  ,
+118	                                            'N',
+119	                                            i.ORDER_REF_NO_V
+120	                                                                  -- Error message
+121	                                           );
+122	 ELSIF l_count_n =0 and  l_susp_ross_flg_v ='Y' --added for DEFECT-20608
+123	   AND l_soft_count_n>0
+124	 THEN
+125	 
+126	 
+127	   -- start added for DEFECT-20418
+128	                                
+129	     l_order_ref_no_v:=GET_SUSP_ORDER_REF_FNC(i.ACCOUNT_LINK_CODE_N
+130	                                    , 'S'
+131	                                    , 3916
+132	                                    , 'B_DCMT');
+133	 
+134	   ---- End added for DEFECT-20418  
+135	 
+136	 
+137	                                           
+138	   l_rev_soft_susp_service := '<EVENT>
+139	                          <REQUEST EXTERNAL_USER=' || '"abl_dms"' || '
+140	                                   SUSPEND_ON=' || '"' || to_char(SYSDATE,'DD-MM-YYYY HH24:MI:SS','nls_calendar=gregorian') || '"' || '
+141	                                   SUSPEND_REASON=' || '"B_DCMT"' || '
+142	                                   OFFER_CODE=""
+143	                                   COMMENTS=""
+144	                                   ORDER_REF_NUM=' || '"' || l_order_ref_no_v || '"' || '                                               
+145	                                   COMMIT_FLAG=' || '"N"' || '
+146	                                   EXTERNAL_REFERENCE=""
+147	                                   EXTERNAL_APPLICATION=' || '"abl_dms"' || '
+148	                                   ENTITY_ID=' || '"' || '98' || i.mobl_num_voice_v || '"' || '/>
+149	                      </EVENT>';
+150	
+151	                      EXECUTE IMMEDIATE
+152	                         'BEGIN REVOKE_SOFT_SUSPEND_SERVICE(:1,:2,:3,:4,:5,:6,:7); END;'
+153	                       USING IN XMLTYPE(l_rev_soft_susp_service),
+154	                             IN 3916,
+155	                             IN '',
+156	                             IN i.mobl_num_voice_v,
+157	                             IN 1,
+158	                             OUT o_rev_soft_suspend_service,
+159	                             OUT l_success_flag_n;
+160	                             
+161	                             
+162	                             
+163	                             insert into TMP_REVOKING_DMS_a
+164	                             select i.mobl_num_voice_v,l_order_ref_no_v from dual;
+165	                             commit;
+166	 END IF;
+167	                                           
+168	 end loop;
+169	 commit;
+170	                                           
+171	                                      
+172	   
+173	END;
+
+-- ============================================================================
+-- Analysis:
+-- ============================================================================
+-- PRC_RECON_REVOKING_DMS is a BILLING/SUBSCRIPTION MANAGEMENT procedure that:
+--
+-- 1. DROPS and CREATES temp table TMP_REVOKING_DMS_0 from CB_SUSPENDED_DTLS
+--    (subscribers with SUSPENDED_REASON = 'B_DCMT' and not reactivated)
+--
+-- 2. DROPS and CREATES temp table TMP_REVOKING_DMS_1 by joining with
+--    V_GSM_SERVICE_MAST (subscriber details like mobile number, account, status)
+--
+-- 3. LOOPS through each subscriber record and either:
+--    a. Calls Bulk_Revoke_Suspension — for hard suspensions (SUSPENSION_FLG='H')
+--    b. Builds XML and calls REVOKE_SOFT_SUSPEND_SERVICE — for soft suspensions (CR2028)
+--
+-- KEY OBSERVATIONS:
+--
+-- a) This is an APPLICATION procedure owned by ABL_DBOBJECTS schema — NOT a DBA tool.
+--    It manages DMS (Document Management System) suspension/reactivation for subscribers.
+--
+-- b) uses EXECUTE IMMEDIATE for DDLs (DROP/CREATE TABLE) — these DDLs invalidate
+--    shared pool cursors and can contribute to library cache contention.
+--
+-- c) The DDLs ran at 09:23 (Session 1750), 36 minutes AFTER the storm started.
+--    The procedure was likely triggered by a scheduler job from drvl1078.
+--
+-- d) The procedure does NOT contain LogMiner calls — confirming the redo scanning
+--    by session 3082 was from a DIFFERENT operation (possibly another script running
+--    in the same sqlplus session or a different tool from drvl1078).
+--
+-- e) Tables referenced: CB_SUSPENDED_DTLS, V_GSM_SERVICE_MAST, CB_FEATURE_CONTROL_KEYS,
+--    CB_SUBS_POS_SERVICES — all billing schema objects.
+--
+-- f) References: CR2028 (Change Request), DEFECT-20418, DEFECT-20608 — application defects.
+--
+-- CONCLUSION: This procedure is 100% application-owned. Its DDLs are a secondary
+-- contributor to the incident but NOT the root cause (which was Session 3082's
+-- redo-scanning operation starting at 08:47).
+-- ============================================================================

@@ -1,0 +1,17 @@
+---
+# Role metadata for mysql_install
+
+galaxy_info:
+  role_name: mysql_install
+  author: MTN IranCell DBA Team
+  description: Install and configure MySQL 8.4 Enterprise Edition with CIS hardening
+  company: MTN IranCell
+  license: proprietary
+  min_ansible_version: "2.12"
+  platforms:
+    - name: EL
+      versions:
+        - "8"
+        - "9"
+
+dependencies: []

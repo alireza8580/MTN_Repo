@@ -1,0 +1,646 @@
+**********check SDS mysql version, we don't support mysql 5.7 anymore and only mysql 8.x is supported **********
+>>>>>>> after checking the SDS, ask application team to provide below details
+
+  + DB name
+  + App Username
+  + App Server IP Address
+  + Required Permissions
+  + Environment Type (Production or UAT)
+  + character_set_server and collation_server (if they have not specified in SDS)
+  + Service Class type and importance of this service
+===========================================================================================================================================================
+===========================================================================================================================================================
+
+>>>>>>>>>> send email to UNIX team to go through following steps
+	+ Install required MySQL RPMs under /net/dru112c/dba_data/dba-tools/mysql/8.4/el8/*rpm
+	+ mount NFS --> dru112c:/db-bkp or t1u103d:/T1_dbbkp or t3dba-bkup01:/mysql_bk
+	+ set hard limit of open files to 32000
+    + set hard limit of max user process 41000
+    + configure mailx
+    + grant crontab permission to mysql user
+    + set /data as home folder on mysql user
+    + Sudo access for mysql user on following commands:
+        - systemctl status/stop/start/restart/reload/disable/enable mysqld
+        - systemctl status/stop/start/restart/reload/disable/enable mysqld@3306
+        - /data/cis/Assessor/Assessor-CLI.sh * (for CIS benchmark)
+        - chmod 550 /usr/lib64/mysql/plugin (for CIS 3.8)
+        - chown mysql:mysql /usr/lib64/mysql/plugin (for CIS 3.8)
+    + set LimitNOFILE to 32000 in /usr/lib/systemd/system/mysqld@.service 
+
+
+>>>>>>>>>> after UNIX team activity, check if they have been set properly
+>>>>>>>>>> check the crontab permission for mysql user:::
+crontab -e
+
+>>>>>>>>>> check mailx for mysql, replace your email with hossein's email in below command:::
+shell>
+mailx -s test isdcdba@mtnirancell.ir <<EOF
+test
+EOF
+
+>>>>>>>>>> check systemd unit
+$ cat /usr/lib/systemd/system/mysqld@.service | grep LimitNOFILE
+LimitNOFILE = 32000
+
+>>>>>>>>>> check the limit for mysql user::
+>>>>>>>>>> "open file" should be 32000 and "max user processes" should be 41000
+$ ulimit -a | grep "open files"
+open files                      (-n) 32000
+$ ulimit -a | grep "max user processes"
+max user processes              (-u) 41000
+
+
+>>>>>>> check mysql user home folder, it should be /data
+$ cat /etc/passwd | grep mysql
+mysql:x:27:27:MySQL Server:/data:/bin/bash
+
+[mysql@drvl986 ~]$ ls -ld /etc/my.cnf
+-rw-r--r-- 1 mysql mysql 1361 May 31 12:01 /etc/my.cnf
+
+>>>>>>>>>> verify sudo access for CIS benchmark (requested from UNIX team):
+sudo -l | grep -E "Assessor-CLI|plugin"
+# Expected: Should show /data/cis/Assessor/Assessor-CLI.sh and chmod/chown for plugin dir
+
+>>>>>>>>>> unix team usually start mysqld for their 
+>>>>>>>>>> based on our policy we should disable mysqld service and enable mysqld@3306 service
+>>>>>>>>>> if service is up then stop mysqld service
+>>>>>>>>>> disable mysqld service
+>>>>>>>>>> enable mysqld@3306
+>>>>>>>>>> and remove all related directories with caution
+************ please pay attention and make sure that you are connected to correct server ***********
+sudo /bin/systemctl stop mysqld
+sudo /bin/systemctl disable mysqld
+sudo /bin/systemctl status mysqld
+sudo /bin/systemctl enable mysqld@3306
+sudo /bin/systemctl status mysqld@3306
+
+cd /data
+***** remove all files and directories under /data (please be cautious)
+
+>>>>>>>>>> then create following directories
+shell>
+mkdir -pv /data/3306/{BLfile,socket,log,mysqlDB,PID,audit,tmpdir}
+mkdir -pv $HOME/dba_dir/scripts $HOME/bin $HOME/dba_dir/sql
+mkdir -pv /data/cis
+
+>>>>>>>>>> set file permissions (CIS 3.1)
+chmod 750 /data/3306/mysqlDB
+
+
+#We run CIS at the end not here! (line 601)
+cd /data
+curl -O http://10.224.210.61/cis/unix/DB/CIS-CAT-Assessor-Linux-jre-v4.56.0.tar.gz
+tar xvf CIS-CAT-Assessor-Linux-jre-v4.56.0.tar.gz
+mv CIS-CAT-Assessor-Linux*0 cis
+
+
+>>>>>>>>>> verify CIS benchmark file exists:
+ls /data/cis/Assessor/benchmarks/CIS_Oracle_MySQL_Enterprise_Edition_8.4_Benchmark_v1.0.0-xccdf.xml
+
+---------------------------------------------------------------------------------
+shell>
+vi ~/.bash_profile
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+        . ~/.bashrc
+fi
+export PS1="[\u@\h \W]$ "
+export PATH=$PATH:/usr/bin
+export PATH=$HOME/bin:$PATH:/opt/mysql/meb-4.1/bin
+cd $HOME/dba_dir/sql
+alias sqlp6='mysql --login-path=sqlp6'
+alias stop06="sudo /bin/systemctl stop mysqld@3306"
+alias start06="sudo /bin/systemctl start mysqld@3306"
+alias restart06="sudo /bin/systemctl restart mysqld@3306"
+alias status06="sudo /bin/systemctl status mysqld@3306"
+
+shell>
+source ~/.bash_profile
+---------------------------------------------------------------------------------
+>>>>>>>>>> you should clear config file and add proper details for #DBA_Spec and #SDS_Spec (#SEC_Spec will be added later)
+>>>>>>>>>> please pay attention to the notes and there is not need to copy notes in config file
+
+shell>
+vi /etc/my.cnf
+[mysqld@3306]
+#DBA_Spec
+##innodb_dedicated_server=1  (recently has been commented and must not be applied)
+datadir=/data/3306/mysqlDB
+tmpdir=/data/3306/tmpdir
+socket=/data/3306/socket/mysql.sock
+log_error=/data/3306/log/mysqld.log
+pid_file=/data/3306/PID/mysqld.pid
+#####you can set server_id based on last three digits of server name. e.g. for drvl973 you can set server_id=973
+server_id=973
+###we should use this format:/data/BLfile/hostname-bin e.g. /data/BLfile/drvl973-bin or /data/BLfile/drvl973-relay-bin
+log_bin=/data/3306/BLfile/drvl973-bin
+relay_log=/data/3306/BLfile/drvl973-relay-bin
+###we should use this format: /data/mysqlDB/hostname-bin.index e.g. /data/mysqlDB/drvl973-bin.index or /data/mysqlDB/drvl973-relay-bin.index
+log_bin_index=/data/3306/mysqlDB/drvl973-bin.index
+relay_log_index=/data/3306/mysqlDB/drvl973-relay-bin.index
+binlog_expire_logs_seconds=604800
+max_binlog_size=1073741824
+binlog_format=row
+sync_binlog=1
+innodb_flush_log_at_trx_commit=1
+disabled_storage_engines="MyISAM,BLACKHOLE,FEDERATED,ARCHIVE,MEMORY"
+enforce_gtid_consistency=ON
+gtid_mode=ON
+innodb_temp_data_file_path = ibtmp1:12M:autoextend:max:50G
+slow_query_log = 1
+slow_query_log_file = /data/3306/log/mysql-slow.log
+long_query_time = 10
+sql_require_primary_key=on
+
+
+#SDS_Spec
+### please review SDS and add related parameters after analyzing them
+character_set_server=utf8mb4
+collation_server=utf8mb4_general_ci
+innodb_default_row_format=DYNAMIC
+innodb_log_file_size=2G
+#query_cache_size=512M    (NOTE: query_cache removed in MySQL 8.0+)
+key_buffer_size=256M
+max_allowed_packet=1G
+table_open_cache=4000
+connect_timeout=300
+max_connections=3000
+tmp_table_size=256M
+innodb_file_per_table=1
+
+
+---------------------------------------------------------------------------------
+>>>>>> start mysqld service :::
+start06
+
+
+>>>>>> find temporary password for root user::::
+grep 'temporary password ' /data/3306/log/mysqld.log
+
+>>>>>> run mysql_secure_installation and reset root's password::::
+mysql_secure_installation -S /data/3306/socket/mysql.sock
+enter temporary password in error log
+
+
+R0L3#dbAhs_2021
+R0L3#dbAhs_2021
+N
+y
+y
+y
+y
+
+---------------------------------------------------------------------------------
+>>>>>> set mysql history to /dev/null:::
+shell>
+ln -sf /dev/null ~/.mysql_history
+---------------------------------------------------------------------------------
+>>>>>> set mysql_config_editor for root user:::
+shell>
+mysql_config_editor set -uroot -p -G sqlp6 -S /data/3306/socket/mysql.sock
+mysql_config_editor set -umysqlbackup -p -G bkp6 -S /data/3306/socket/mysql.sock
+
+Enter password:
+R0L3#dbAhs_2021
+
+>>>>> check
+mysql_config_editor print --all
+sqlp6
+
+
+---------------------------------------------------------------------------------
+>>>>>>>>>> install Connection Control plugin (CIS 2.18 - brute-force protection)
+sqlp6
+INSTALL PLUGIN CONNECTION_CONTROL SONAME 'connection_control.so';
+INSTALL PLUGIN CONNECTION_CONTROL_FAILED_LOGIN_ATTEMPTS SONAME 'connection_control.so';
+SELECT PLUGIN_NAME, PLUGIN_STATUS FROM INFORMATION_SCHEMA.PLUGINS WHERE PLUGIN_NAME LIKE 'connection%';
+exit
+
+>>>>>>>>>> edit /etc/my.cnf and add security parameters under #DBA_Spec then restart the MySQL server
+vi /etc/my.cnf
+#SEC_Spec
+local_infile=OFF
+log-raw=OFF
+log_timestamps=SYSTEM
+validate_password.policy=2
+validate_password.dictionary_file=/data/3306/mysqlDB/dictpass.txt
+validate_password.length=14
+
+#CIS Enhancement - CIS Benchmark Compliance Parameters (v1.0.0)
+## CIS 7.1: Secure authentication plugin
+authentication_policy=caching_sha2_password
+## CIS 2.18: Connection Control (brute-force protection)
+## NOTE: Install plugin FIRST in CIS HARDENING section (PART 3), then these params take effect
+connection_control_failed_connections_threshold=3
+connection_control_min_connection_delay=1000
+connection_control_max_connection_delay=86400
+
+>>>>> create dictionary file 
+touch /data/3306/mysqlDB/dictpass.txt
+
+>>>>> restart MySQL service to apply security parameters:::::
+
+restart06
+status06
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+>>>>>> enable Audit
+sqlp6 
+use mysql
+source /usr/share/mysql-8.4/audit_log_filter_linux_install.sql
+exit
+
+mysqladmin --login-path=sqlp6 version
+sqlp6
+SELECT PLUGIN_NAME, PLUGIN_STATUS
+        FROM INFORMATION_SCHEMA.PLUGINS
+        WHERE PLUGIN_NAME LIKE 'audit%';
+		
++-------------+---------------+
+| PLUGIN_NAME | PLUGIN_STATUS |
++-------------+---------------+
+| audit_log   | ACTIVE        |
++-------------+---------------+
+exit
+
+>>>>> add follow parameters under #SEC_Spec 
+vi /etc/my.cnf
+audit_log_file=/data/3306/audit/audit.log
+audit_log_rotate_on_size=512M
+audit-log=FORCE_PLUS_PERMANENT
+audit_log_format=JSON
+
+restart06
+status06
+
+sqlp6
+SELECT audit_log_filter_set_filter('log_all', '{ "filter": { "log": true } }');
+
++-------------------------------------------------------------------------+
+| audit_log_filter_set_filter('log_all', '{ "filter": { "log": true } }') |
++-------------------------------------------------------------------------+
+| OK                                                                      |
++-------------------------------------------------------------------------+
+
+
+
+SELECT audit_log_filter_set_user('%', 'log_all');
++-------------------------------------------+
+| audit_log_filter_set_user('%', 'log_all') |
++-------------------------------------------+
+| OK                                        |
++-------------------------------------------+
+exit
+
+>>>>> checking audit log generation
+sqlp6
+show databases;
+exit
+
+cat /data/3306/audit/audit.log
+
+>>>>>>>>>> set file permissions for logs and binlogs (CIS 3.2, 3.3, 3.4, 3.9)
+chmod 660 /data/3306/BLfile/*
+chmod 600 /data/3306/log/mysqld.log
+chmod 660 /data/3306/log/mysql-slow.log
+chmod 660 /data/3306/audit/audit.log
+
+>>>>>>>>>> set plugin directory permissions (CIS 3.8 - requires sudo from UNIX team)
+sudo chmod 550 /usr/lib64/mysql/plugin
+sudo chown mysql:mysql /usr/lib64/mysql/plugin
+
+>>>>>> scheduler Audit Log cleanup
+vi /data/dba_dir/scripts/audit_cleanup.sh
+
+/bin/find /data/3306/audit/  -mmin +1440 -type f -name "audit.*.log" -exec rm -vf {} +
+
+chmod 775 /data/dba_dir/scripts/audit_cleanup.sh
+
+crontab -e
+0 * * * *   /data/dba_dir/scripts/audit_cleanup.sh                     #cleaning audit log files older than 1 day (1440 min)
+---------------------------------------------------------------------------------
+>>>>>> configure backup:::::
+>>>>>> create backup script file, please pick correct NFS for BASE_DIR (/db-bkp or /T1_dbbkp):::
+>>>>>> if you are using /T1_dbbkp or local FS for backup path, you should comment following "IF" conditions
+>>>>>> As tape backup has not been implemented on these paths so there is no need to take TAPE backup
+>>>>>> if [[ $dn -eq 6 ]]; then RETENTION=1; TAPE=tape; fi
+>>>>>> create mysqlbackup user
+>>>>>> please note that "don't set backup on primary node" never
+
+vi $HOME/dba_dir/scripts/MEB3306.sh
+#!/bin/bash
+##check port
+PORT=3306
+SQLP_PORT=sqlp6
+##
+#below added 20200919
+RETENTION=3
+#
+dn=$(date +%w)
+FHOST=$(hostname | cut -c1-2)
+#waiting for t1 nfs 20201230
+case $FHOST in te|dr) NFS=/db-bkp ;; tw|t1) NFS=/T1_dbbkp ;; t3) NFS=/mysql_bk ;; esac
+#### if /T1_dbbkp or local FS are used for backup path, please commment below "IF" condition
+if [[ $dn -eq 6 ]]; then
+RETENTION=1
+TAPE=tape
+fi
+BASE_DIR=${NFS}/${TAPE}/$(hostname -a)/$PORT
+export PATH=/var/lib/mysql/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/bin:/usr/bin:/var/lib/mysql/bin:/usr/lib64/qt-3.3/bin:/usr/kerberos/sbin:/usr/kerberos/bin
+export PATH=$HOME/bin:$PATH:$(readlink -f /opt/mysql/meb*/bin)
+CURRENT_DAY_DATE=$(date +%y%m%d)
+CURRENT_DAY_DATE_DIR=${BASE_DIR}/meb/${CURRENT_DAY_DATE}
+LOG_DIR=${BASE_DIR}/meb/bkp_logs
+LOG_FILE=$LOG_DIR/backup_${CURRENT_DAY_DATE}.log
+if [[ ! -d "${CURRENT_DAY_DATE_DIR}" ]]; then
+mkdir -pv ${CURRENT_DAY_DATE_DIR}
+else
+echo "${CURRENT_DAY_DATE_DIR} already exists"
+mailx -s "MySQL $TAPE backup on $(hostname -a) $PORT Failed,$TAPE bkp already exist" isdcdba@mtnirancell.ir<<<"$(echo ${CURRENT_DAY_DATE_DIR}) already exists"
+exit 1
+fi
+[[ ! -d $LOG_DIR ]] && mkdir -pv $LOG_DIR
+
+##check mysql_config_editor
+index_loc=$(mysql --login-path=$SQLP_PORT -s -N -e "show variables like 'log_bin_index'" | awk '{print $2}')
+KEYRING=$(mysql --login-path=$SQLP_PORT -s -N -e "show variables like 'keyring_file_data'" | awk '{print $2}')
+mysqlbackup --login-path=$SQLP_PORT --skip-relaylog --log-bin-index=${index_loc} --backup-dir=${CURRENT_DAY_DATE_DIR} --read-threads=3 --process-threads=6 --write-threads=3 backup-and-apply-log &> ${LOG_FILE}
+##check mysql_config_editor
+
+DUMP_STATUS=$?
+
+if [ $DUMP_STATUS -eq 0 ]; then
+#below changed 20201230
+if [[ ! -z "${KEYRING}" ]]; then
+echo "copying ${KEYRING} to ${CURRENT_DAY_DATE_DIR}"
+cp ${KEYRING} ${CURRENT_DAY_DATE_DIR}
+fi
+find ${BASE_DIR} -mindepth 1 -maxdepth 2 -type d -mtime +$RETENTION | grep -v "meb/bkp_logs" | tee -a ${LOG_FILE}  |  xargs rm -rf
+find ${BASE_DIR} -mindepth 1 -mtime +60 -type f | grep "meb/bkp_logs" | xargs rm -rfv >> ${LOG_FILE}
+
+mailx -a ${LOG_FILE} -s "MySQL $TAPE backup successfully completed on $(hostname -a) $PORT Report `date +%c`" isdcdba@mtnirancell.ir<<EOF 2>/dev/null
+Good
+EOF
+
+else
+mailx -a ${LOG_FILE} -s "MySQL $TAPE backup Failed on $(hostname -a) $PORT Report `date +%c`" isdcdba@mtnirancell.ir<<EOF 2>/dev/null
+Failed fu
+EOF
+fi
+
+
+>>>>>> grant required privilege to backup file :::::
+
+shell>
+chmod u+x $HOME/dba_dir/scripts/MEB3306.sh
+
+>>>>>> execute backup for test:::::
+
+$HOME/dba_dir/scripts/MEB3306.sh
+
+>>>>> schedule backup in crontab based on support team requirement interval and schedule of the backup differs for each database:::::
+***********always configure backup on second node
+crontab -e
+################New Backup Script###################
+0 16 * * * $HOME/dba_dir/scripts/MEB3306.sh
+####################################################
+
+>>>>> check related backup directory on NFS and backup log and make sure everything is fine
+cd /db-bkp/$(hostname)/3306/meb
+less /db-bkp/$(hostname)/3306/meb/bkp_logs/backup_$(date +%y%m%d).log
+---------------------------------------------------------------------------------
+>>>>>> add this backup in list of "MySQL Last Backup Report" report in db4-test server wit following format
+	user,pass,hostname,dbname,tablename,port_number
+	e.g. monitoruser,mon12user#MTNnew,t1vl699,mysql,backup_history,3306
+
+sqlp6
+create user monitoruser@`10.0.0.0/8` identified by 'mon12user#MTNnew';
+GRANT SELECT ON mysql.backup_history TO monitoruser@`10.0.0.0/8`;
+exit
+
+>>> connect to db4-test (10.132.58.125)
+[root@db4-test ~]# vi /var/lib/mysql/report_bk/host_info.csv
+
+>>> add following line to end of the file, you just have to replace hostname or port if it's necessary
+monitoruser,mon12user#MTNnew,host_name,mysql,backup_history,3306
+
+
+>>> run following command in db4-test and check if it's added to the report (it will send an email with an excel file attached to it)
+[root@db4-test ~]# /var/lib/mysql/report_bk/initial_load.py && /var/lib/mysql/report_bk/bash_script/max_bkp.sh
+
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+NOTE
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Please deploy this part whenever we have to enable encryption
+>>>>>>Enabling Encryption (TDE)
+
+1- Add following lines to /etc/my.cnf   (vi /etc/my.cnf)
+
+#######Encryption########
+default_table_encryption=ON
+early-plugin-load=keyring_file.so
+
+2- restart06
+
+3- sqlp6
+ALTER TABLESPACE mysql ENCRYPTION = 'Y';
+exit
+
+4- Edit backup script and change backup command with following one:
+
+vi $HOME/dba_dir/scripts/MEB3306.sh
+
+mysqlbackup --login-path=$SQLP_PORT --skip-relaylog --log-bin-index=${index_loc} --encrypt-password="encryptpass" --backup-dir=${CURRENT_DAY_DATE_DIR} --read-threads=3 --process-threads=6 --write-threads=3 backup-and-apply-log &> ${LOG_FILE}
+
+---------------------------------------------------------------------------------
+
+
+>>>>>> config MySQL monitoring :::
+>>>>> send email to zabbix team to add the node to dashboard. there is not need to add UAT databases to Zabbix dashboard
+username: zabbix_monitor
+password: Mv_4#jkdV42_5DqSaXZ4
+
+sqlp6
+create user zabbix_monitor@`10.0.0.0/8` identified by 'Mv_4#jkdV42_5DqSaXZ4';
+GRANT PROCESS, SHOW DATABASES, REPLICATION CLIENT, SHOW VIEW ON *.* TO `zabbix_monitor`@`10.0.0.0/8`;
+GRANT SELECT ON mysql.slave_master_info TO zabbix_monitor@`10.0.0.0/8`;
+GRANT SELECT ON mysql_innodb_cluster_metadata.* TO zabbix_monitor@`10.0.0.0/8`;
+GRANT SELECT ON performance_schema.* TO zabbix_monitor@`10.0.0.0/8`;
+exit
+
+#TODO
+#DETECT zabbix source ranges (currently 10.223.211.206 10.131.57.27)
+
+---------------------------------------------------------------------------------
+>>>>> You should create database, user and required privileges which is specified by application team:::::
+sqlp6
+create database x;
+create user 'app_username'@'app_server_ip_address' identified by "EATprod#123azjj_my";
+grant all privileges on x.* to 'app_username'@'app_server_ip_address';
+revoke drop on x.* from 'app_username'@'app_server_ip_address';
+exit
+
+*******useful hints (in case)::::::
+CREATE DATABASE dbname CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+---------------------------------------------------------------------------------
+>>>> add releated DB to dblist
+
+add hostname to below files on drvl835:
+
+/data/dba_dir/sql/Script/IPShosts_list
+/data/dba_dir/sql/Script/IPShosts_list_all
+
+===============================================================================================================================================
+>>>>>>> create drop procedure::::::::::
+
+sqlp6
+create database dba;
+
+###create procedure###
+delimiter //
+create procedure dba.truncdrop(dbn varchar(1000),tbd varchar(1000),op varchar(1000),tt varchar(1000),pn varchar(1000))
+al: begin
+if (lower(dbn)='performance_schema' or lower(dbn)='mysql' or lower(dbn)='sys' ) then
+select 'you cannot drop system tables';
+leave al;
+end if;
+    case 
+     when upper(op)='TRUNCATE' and upper(tt)='TABLE'
+        THEN
+        SET @truncatetable = CONCAT ('TRUNCATE TABLE ',dbn,'.', tbd);
+        PREPARE trunctbl FROM @truncatetable;
+        EXECUTE trunctbl ;
+        show warnings;
+        DEALLOCATE PREPARE trunctbl ;
+    when upper(op)='DROP' and upper(tt)='VIEW'
+        THEN
+        SET @dropview = CONCAT ('DROP VIEW ',dbn,'.', tbd);
+        PREPARE dropview_exe FROM @dropview;
+        EXECUTE dropview_exe ;
+        show warnings;
+        DEALLOCATE PREPARE dropview_exe ;    
+        
+    when upper(op)='DROP' and upper(tt)='TABLE'
+        THEN
+        SET @droptable = CONCAT ('DROP TABLE IF EXISTS ',dbn,'.', tbd);
+        PREPARE droptbl FROM @droptable;
+        EXECUTE droptbl ;
+        show warnings;
+        DEALLOCATE PREPARE droptbl ;
+    when upper(op)='TRUNCATE' and upper(tt)='PARTITION'
+    THEN
+        SET @truncpart = CONCAT ('alter table ',dbn,'.', tbd,' truncate partition ',pn);
+        PREPARE truncppart FROM @truncpart;
+        EXECUTE truncppart ;
+        show warnings;
+        DEALLOCATE PREPARE truncppart ;
+    when upper(op)='DROP' and upper(tt)='PARTITION'
+    THEN
+        SET @droppart = CONCAT ('alter table ',dbn,'.', tbd,' drop partition ',pn);
+        PREPARE dropppart FROM @droppart;
+        EXECUTE dropppart ;
+        show warnings;
+        DEALLOCATE PREPARE dropppart ;
+    else 
+        select 'Usage is: First parameter as database name,Second parameter as table name or view name ,Third parameter as operation,Fourth parameter as object type that can be table or view or partition,Fifth parameter as partition name';
+    END case ;
+end;
+//
+delimiter ;
+exit
+
+>>>>>>> If app team needs to have DROP privilege, we should grant following access::::::
+>>>>>>> remember! we don't grant DROP privileges to anyone, they must use this procedure::::::
+
+sqlp6
+grant execute on PROCEDURE dba.truncdrop to <application_user>;
+exit
+
+
+>>>>>>> how to use this procedure? you can send following instruction to app team::::::
+
+For non-partitioned tables:
+call dba.truncdrop('DB_Name','Table_Name','truncate or drop','table','');
+e.g.
+call dba.truncdrop('testdb','test_table','truncate','table','');
+call dba.truncdrop('testdb','test_table','drop','table','');
+
+For partitioned tables:
+call dba.truncdrop('DB_Name','Table_Name','truncate or drop','partition','partition_name');
+e.g.
+call dba.truncdrop('testdb','test_table','truncate','partition','p2');
+call dba.truncdrop('testdb','test_table','drop','partition','p2');
+
+For views:
+call dba.truncdrop('DB_Name','View_name','drop','view','');
+
+===============================================================================================================================================
+===============================================================================================================================================
+CIS BENCHMARK ASSESSMENT
+===============================================================================================================================================
+===============================================================================================================================================
+
+>>>>>>>>>> Create CIS benchmark user
+sqlp6
+create user `benchmark_cis_usr`@`127.0.0.1` identified by 'Tt_123456789_cc';
+grant all privileges on *.* to benchmark_cis_usr@`127.0.0.1` with grant option; 
+##### for db4-test / create below user on db with ip of db4-test 
+create user `benchmark_cis_usr`@`10.132.58.125` identified by 'Tt_123456789_cc';
+grant all privileges on *.* to `benchmark_cis_usr`@`10.132.58.125` with grant option; 
+exit
+
+>>>>>>>>>> Run CIS assessment
+sudo /data/cis/Assessor/Assessor-CLI.sh -b /data/cis/Assessor/benchmarks/CIS_Oracle_MySQL_Enterprise_Edition_8.4_Benchmark_v1.0.0-xccdf.xml -nrf -u https://10.130.219.51/CCPD/api/reports/upload -ui -D xccdf_org.cisecurity_value_jdbc.url='jdbc:mysql://127.0.0.1:3306/mysql?user=benchmark_cis_usr&password=Tt_123456789_cc&useSSL=false&allowPublicKeyRetrieval=true'
+
+>>>>>>>>>> Record score:
+         Score Earned: ___
+    Maximum Available: ___
+                Total: ___%
+
+>>>>>>>>>> Report results:
+Put scores on: https://docs.google.com/spreadsheets/d/1YN9UV6-CLk6oGTOBTkmB-h0dhHPKduA9XzjIqDPxlzk/edit?gid=0#gid=0
+Email maryam aghahadi (maryam.aghah@mtnirancell.ir): "We ran CIS on below servers. Please share HTML file with us."
+
+===================================================================================
+CIS CONTROLS ADDRESSED IN THIS INSTALLATION
+===================================================================================
+| CIS 2.18 | Connection Control plugin installed (brute-force protection)         |
+| CIS 3.1  | datadir permissions set to 750                                       |
+| CIS 3.2  | log_bin files permissions set to 660                                 |
+| CIS 3.3  | log_error permissions set to 660                                     |
+| CIS 3.4  | slow_query_log permissions set to 660                                |
+| CIS 3.8  | Plugin directory owned by root with 755                              |
+| CIS 3.9  | audit_log_file permissions set to 660                                |
+| CIS 4.5  | skip-grant-tables NOT set (verified)                                 |
+| CIS 7.1  | authentication_policy=caching_sha2_password in my.cnf                |
+| CIS 7.6  | Wildcard hostname users reviewed                                     |
+===================================================================================
+
+===================================================================================
+SKIPPED CIS ITEMS (require SSL infrastructure or break apps)
+===================================================================================
+| CIS 2.7 & 7.4 | Password Lifetime - breaks applications                        |
+| CIS 2.8       | Require Current Password - breaks password reset               |
+| CIS 3.10      | MySQL Keyring - requires TDE infrastructure                    |
+| CIS 8.1       | require_secure_transport - requires SSL infrastructure         |
+| CIS 8.2       | User SSL enforcement - requires SSL infrastructure             |
+| CIS 9.2       | Replication SSL - requires SSL infrastructure                  |
+===================================================================================
+
+>>>>>>>>>> Verify wildcard users (CIS 7.6) - review if acceptable:
+sqlp6
+SELECT user, host FROM mysql.user WHERE host = '%';
+exit
+
+if it is defined with % rename it like below:
+rename user XXX to XXX@`10.0.0.0/8`;
+
+===============================================================================================================================================
+END OF INSTALLATION
+===============================================================================================================================================
+

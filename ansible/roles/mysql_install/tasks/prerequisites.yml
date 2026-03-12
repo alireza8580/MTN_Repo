@@ -1,0 +1,85 @@
+---
+# Prerequisites check and system configuration
+# These are typically done by UNIX team, but we verify and apply if possible
+
+- name: Check system limits - open files
+  ansible.builtin.shell: |
+    ulimit -n
+  become: yes
+  become_user: mysql
+  register: ulimit_nofile
+  changed_when: false
+
+- name: Display current open files limit
+  ansible.builtin.debug:
+    msg: "Current open files limit: {{ ulimit_nofile.stdout }}"
+
+- name: Check system limits - max user processes
+  ansible.builtin.shell: |
+    ulimit -u
+  become: yes
+  become_user: mysql
+  register: ulimit_nproc
+  changed_when: false
+
+- name: Display current max user processes limit
+  ansible.builtin.debug:
+    msg: "Current max user processes limit: {{ ulimit_nproc.stdout }}"
+
+- name: Verify mysql user home directory
+  ansible.builtin.shell: |
+    getent passwd mysql | cut -d: -f6
+  register: mysql_home
+  changed_when: false
+
+- name: Check if mysql home is /data
+  ansible.builtin.assert:
+    that:
+      - mysql_home.stdout == '/data'
+    fail_msg: "MySQL user home should be /data, but is {{ mysql_home.stdout }}. Request UNIX team to fix."
+    success_msg: "MySQL user home directory is correctly set to /data"
+
+- name: Check if crontab is available for mysql user
+  ansible.builtin.shell: |
+    crontab -l 2>&1 || echo "no crontab"
+  become: yes
+  become_user: mysql
+  register: crontab_check
+  changed_when: false
+  failed_when: "'not allowed' in crontab_check.stderr"
+
+- name: Display crontab status
+  ansible.builtin.debug:
+    msg: "Crontab access: {{ 'Available' if 'not allowed' not in crontab_check.stderr else 'NOT AVAILABLE - Request UNIX team' }}"
+
+- name: Check mailx availability
+  ansible.builtin.command: which mailx
+  register: mailx_check
+  changed_when: false
+  failed_when: false
+
+- name: Display mailx status
+  ansible.builtin.debug:
+    msg: "mailx: {{ 'Available' if mailx_check.rc == 0 else 'NOT INSTALLED - Request UNIX team' }}"
+
+- name: Check systemd service file for LimitNOFILE
+  ansible.builtin.shell: |
+    grep -E "^LimitNOFILE" /usr/lib/systemd/system/mysqld@.service 2>/dev/null || echo "not set"
+  register: systemd_nofile
+  changed_when: false
+
+- name: Display systemd LimitNOFILE
+  ansible.builtin.debug:
+    msg: "systemd LimitNOFILE: {{ systemd_nofile.stdout }}"
+
+- name: Verify sudo access for required commands
+  ansible.builtin.shell: |
+    sudo -l 2>/dev/null | grep -E "(mysqld|Assessor-CLI|plugin)" || echo "limited sudo"
+  become: yes
+  become_user: mysql
+  register: sudo_check
+  changed_when: false
+
+- name: Display sudo permissions
+  ansible.builtin.debug:
+    msg: "Sudo access: {{ sudo_check.stdout_lines }}"

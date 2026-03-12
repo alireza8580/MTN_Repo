@@ -1,0 +1,324 @@
+all:
+  children:
+    mysql_servers:
+      hosts: {}
+      children:
+        mysql_prod:
+          hosts:
+            t3vl448:
+              ansible_host: 10.223.181.195
+              mysql_port: 3306
+              mysql_role: standalone
+              mysql_application: NWG-Finance-BTS-Powerbills-API
+            drvl1187:
+              ansible_host: 10.234.233.214
+              mysql_port: 3306
+              mysql_role: PRIMARY
+              mysql_application: Zabbix Monitoring (UMP)
+            drvl1188:
+              ansible_host: 10.234.233.215
+              mysql_port: 3306
+              mysql_role: SECONDARY
+              mysql_application: Zabbix Monitoring (UMP)
+            t1vl870:
+              ansible_host: 10.224.237.60
+              mysql_port: 3306
+              mysql_role: SECONDARY
+              mysql_application: Zabbix Monitoring (UMP)
+            t3vl446:
+              ansible_host: 10.223.181.193
+              mysql_port: 3306
+              mysql_role: standalone
+              mysql_application: KMDB
+            drvl1220:
+              ansible_host: 10.234.233.248
+              mysql_port: 3306
+              mysql_role: standalone
+              mysql_application: iCheckin
+            drvl1208:
+              ansible_host: 10.234.233.238
+              mysql_port: 3306
+              mysql_role: PRIMARY
+              mysql_application: Zabbix Monitoring Tool
+            drvl1209:
+              ansible_host: 10.234.233.239
+              mysql_port: 3306
+              mysql_role: SECONDARY
+              mysql_application: Zabbix Monitoring Tool
+            t1vl872:
+              ansible_host: 10.224.237.85
+              mysql_port: 3306
+              mysql_role: SECONDARY
+              mysql_application: Zabbix Monitoring Tool
+            drvl1233:
+              ansible_host: 10.234.81.80
+              mysql_port: 3306
+              mysql_role: standalone
+              mysql_application: Social CRM
+            t1vl876:
+              ansible_host: 10.224.237.89
+              mysql_port: 3306
+              mysql_role: standalone
+              mysql_application: iCM
+            esfvl014:
+              ansible_host: 10.226.81.10
+              mysql_port: 3306
+              mysql_role: PRIMARY
+              mysql_application: MTNI Website
+            esfvl015:
+              ansible_host: 10.226.81.11
+              mysql_port: 3306
+              mysql_role: SECONDARY
+              mysql_application: MTNI Website
+            esfvl016:
+              ansible_host: 10.226.81.12
+              mysql_port: 3306
+              mysql_role: SECONDARY
+              mysql_application: MTNI Website
+            t3vl500:
+              ansible_host: 10.223.176.82
+              mysql_port: 3306
+              mysql_role: PRIMARY
+              mysql_application: MTNI Website
+            t3vl501:
+              ansible_host: 10.223.176.83
+              mysql_port: 3306
+              mysql_role: SECONDARY
+              mysql_application: MTNI Website
+            t3vl502:
+              ansible_host: 10.223.176.84
+              mysql_port: 3306
+              mysql_role: SECONDARY
+              mysql_application: MTNI Website
+            t3vl497:
+              ansible_host: 10.223.181.199
+              mysql_port: 3306
+              mysql_role: standalone
+              mysql_application: Mybusiness New
+            esfvl071:
+              ansible_host: 10.226.81.41
+              mysql_port: 3306
+              mysql_role: SECONDARY
+              mysql_application: Monitoring
+            esfvl072:
+              ansible_host: 10.226.81.42
+              mysql_port: 3306
+              mysql_role: PRIMARY
+              mysql_application: Monitoring
+            esfvl073:
+              ansible_host: 10.226.81.43
+              mysql_port: 3306
+              mysql_role: SECONDARY
+              mysql_application: Monitoring
+            t1vl881:
+              ansible_host: 10.224.237.99
+              mysql_port: 3306
+              mysql_role: PRIMARY
+              mysql_application: Monitoring (UMP)
+            t1vl882:
+              ansible_host: 10.224.237.100
+              mysql_port: 3306
+              mysql_role: SECONDARY
+              mysql_application: Monitoring (UMP)
+            drvl1295:
+              ansible_host: 10.224.237.101
+              mysql_port: 3306
+              mysql_role: SECONDARY
+              mysql_application: Monitoring (UMP)
+            t1vl868:
+              ansible_host: 10.224.237.84
+              mysql_port: 3306
+              mysql_role: PRIMARY
+              mysql_application: Zabbix Monitoring Tool
+            drvl1145:
+              ansible_host: 10.234.233.177
+              mysql_port: 3306
+              mysql_role: SECONDARY
+              mysql_application: Zabbix Monitoring Tool
+            drvl1191:
+              ansible_host: 10.234.233.219
+              mysql_port: 3306
+              mysql_role: standalone
+              mysql_application: BDM
+            t3vl541:
+              ansible_host: 10.223.181.216
+              mysql_port: 3306
+              mysql_role: standalone
+              mysql_application: IP-WAN NMS service
+            drvl1312:
+              ansible_host: 10.234.81.191
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: DevOps Portal
+            T3VL544:
+              ansible_host: 10.255.34.26
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: phpIPAM
+            t3vl589:
+              ansible_host: 10.223.176.109
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: RBT AI
+            t3vl637:
+              ansible_host: 10.223.176.64
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: EAT
+            t3vl633:
+              ansible_host: 10.223.176.149
+              mysql_port: 3306
+              mysql_role: PRIMARY
+              mysql_application: MTNI Website
+            t3vl634:
+              ansible_host: 10.223.176.150
+              mysql_port: 3306
+              mysql_role: SECONDARY
+              mysql_application: MTNI Website
+            t3vl635:
+              ansible_host: 10.223.176.151
+              mysql_port: 3306
+              mysql_role: SECONDARY
+              mysql_application: MTNI Website
+            t3vl649:
+              ansible_host: 10.225.34.68
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: CPG Digitalization
+            t3vl646:
+              ansible_host: 10.225.34.33
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: DG Commerce
+            t3vl662:
+              ansible_host: 10.223.176.162
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: NooranOSS
+            t3vl567:
+              ansible_host: 10.225.34.47
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: ATS
+            t3vl684:
+              ansible_host: 10.225.34.89
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: ATS AI
+            t3vl691:
+              ansible_host: 10.225.34.96
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: IPMO
+            t3vl700:
+              ansible_host: 10.225.34.103
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: WFM
+            t3vl711:
+              ansible_host: 10.225.34.113
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: DCN
+            t3vl704:
+              ansible_host: 10.225.34.107
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: Audit RBT AI
+            t1vl885:
+              ansible_host: 10.224.237.103
+              mysql_port: 3306
+              mysql_role: standalone
+              mysql_application: Irancell Blog
+        mysql_uat:
+          hosts:
+            t3vl447:
+              ansible_host: 10.223.181.194
+              mysql_port: 3306
+              mysql_role: standalone
+              mysql_application: KMDB
+            drvl1219:
+              ansible_host: 10.234.233.247
+              mysql_port: 3306
+              mysql_role: standalone
+              mysql_application: iCheckin
+            t1vl875:
+              ansible_host: 10.224.237.88
+              mysql_port: 3306
+              mysql_role: standalone
+              mysql_application: iCM
+            drvl1190:
+              ansible_host: 10.234.233.218
+              mysql_port: 3306
+              mysql_role: standalone
+              mysql_application: BDM
+            drvl1311:
+              ansible_host: 10.234.81.190
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: DevOps Portal
+            t3vl543:
+              ansible_host: 10.225.34.24
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: ATS
+            t3vl588:
+              ansible_host: 10.223.176.108
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: RBT AI
+            drvl1309:
+              ansible_host: 10.234.81.188
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: Delsa NMS
+            t3vl636:
+              ansible_host: 10.223.176.63
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: EAT
+            t3vl628:
+              ansible_host: 10.223.176.146
+              mysql_port: 3306
+              mysql_role: PRIMARY
+              mysql_application: MTNI Website
+            t3vl629:
+              ansible_host: 10.223.176.147
+              mysql_port: 3306
+              mysql_role: SECONDARY
+              mysql_application: MTNI Website
+            t3vl630:
+              ansible_host: 10.223.176.148
+              mysql_port: 3306
+              mysql_role: SECONDARY
+              mysql_application: MTNI Website
+            t3vl648:
+              ansible_host: 10.225.34.67
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: CPG Digitalization
+            t3vl683:
+              ansible_host: 10.225.34.88
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: ATS AI
+            t3vl690:
+              ansible_host: 10.225.34.95
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: IPMO
+            t3vl699:
+              ansible_host: 10.225.34.102
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: WFM
+            t3vl703:
+              ansible_host: 10.225.34.106
+              mysql_port: 3306
+              mysql_role: Single
+              mysql_application: Audit RBT AI
+            t1vl884:
+              ansible_host: 10.224.237.102
+              mysql_port: 3306
+              mysql_role: standalone
+              mysql_application: Irancell Blog

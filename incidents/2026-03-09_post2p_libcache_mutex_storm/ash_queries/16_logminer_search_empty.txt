@@ -1,0 +1,54 @@
+-- ============================================================================
+-- Query 16: LogMiner (DBMS_LOGMNR) SQL Text Search — EMPTY RESULT
+-- ============================================================================
+-- Purpose: Search for any SQL text containing "LOGMNR" in the incident window
+--          to determine if LogMiner was being used by Session 3082 or any other
+--          session during the storm.
+-- Result:  NO ROWS RETURNED — no sql_text in dba_hist_sqltext contains "LOGMNR"
+--          for the incident snap range.
+-- Run on:  POST2P (DBID 2771519206), dru104a
+-- Date:    March 2026 (post-incident investigation)
+-- ============================================================================
+
+-- SQL Query:
+-- SELECT DBMS_LOB.SUBSTR(t.sql_text, 4000, 1) sql_text,
+--        h.sql_id, h.session_id, h.session_serial#,
+--        MIN(TO_CHAR(h.sample_time, 'HH24:MI:SS')) first_seen
+-- FROM dba_hist_active_sess_history h
+-- JOIN dba_hist_sqltext t ON t.sql_id = h.sql_id AND t.dbid = h.dbid
+-- WHERE h.dbid = 2771519206
+--   AND h.snap_id BETWEEN 233938 AND 233941
+--   AND UPPER(DBMS_LOB.SUBSTR(t.sql_text, 4000, 1)) LIKE '%LOGMNR%'
+-- GROUP BY DBMS_LOB.SUBSTR(t.sql_text, 4000, 1), h.sql_id, h.session_id, h.session_serial#
+-- ORDER BY MIN(h.sample_time);
+
+-- Result: no rows selected
+
+-- ============================================================================
+-- Analysis:
+-- ============================================================================
+-- The absence of LOGMNR in SQL text does NOT rule out LogMiner usage:
+--
+-- 1. If LogMiner was called via DBMS_LOGMNR PL/SQL API, the package calls
+--    (DBMS_LOGMNR.START_LOGMNR, ADD_LOGFILE, etc.) would appear as PL/SQL
+--    blocks in ASH, NOT as separate SQL statements.
+--
+-- 2. Session 3082's ONLY visible sql_id (459f3z9u4fb3u) is a props$ query —
+--    this is a recursive SQL fired internally. The actual PL/SQL call that
+--    invoked it would need V$SQL or V$SESSION (not available historically).
+--
+-- 3. Alternatively, the redo scanning could be from:
+--    - Flashback Transaction Query
+--    - Data Pump operations
+--    - Streams/GoldenGate internal operations
+--    - A custom PL/SQL procedure that reads redo manually
+--
+-- 4. The most telling evidence remains:
+--    - Sequential redo log reading (log# 987952→987953, block# incrementing)
+--    - props$ dictionary lookup (typical of LogMiner init)
+--    - Mutex held during redo I/O
+--
+-- CONCLUSION: While we cannot confirm LogMiner definitively from SQL text alone,
+-- the behavioral pattern strongly matches. Labs team should be asked what
+-- operation ran from drvl1078 at ~08:47 on March 9.
+-- ============================================================================

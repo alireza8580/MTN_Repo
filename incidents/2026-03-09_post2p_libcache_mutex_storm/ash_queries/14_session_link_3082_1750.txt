@@ -1,0 +1,64 @@
+-- ============================================================================
+-- Query 14: Session Link — Sessions 3082 and 1750 from drvl1078
+-- ============================================================================
+-- Purpose: Determine the relationship between root blocker Session 3082/44313
+--          (redo scanning, mutex holder) and Session 1750/2249 (DDL executor).
+--          Both sessions originate from the same machine (drvl1078) and use the
+--          same user (ABL_DBOBJECTS) via the same program (sqlplus).
+-- Result:  Separate sessions (different serial#s), but from same origin.
+--          Session 1750 appeared at 09:16 with no sql_id (likely waiting for
+--          mutex), then executed DDLs at 09:23 after Session 3082 released.
+-- Note:    The 'process' column had to be removed from the query as it was not
+--          available in dba_hist_active_sess_history for this version.
+-- Run on:  POST2P (DBID 2771519206), dru104a
+-- Date:    March 2026 (post-incident investigation)
+-- ============================================================================
+
+-- SQL Query:
+-- SELECT session_id, session_serial#,
+--        MIN(TO_CHAR(sample_time, 'HH24:MI:SS')) first_seen,
+--        MAX(TO_CHAR(sample_time, 'HH24:MI:SS')) last_seen,
+--        sql_id, machine, program
+-- FROM dba_hist_active_sess_history
+-- WHERE dbid = 2771519206
+--   AND instance_number = 1
+--   AND snap_id BETWEEN 233938 AND 233941
+--   AND session_id IN (3082, 1750)
+--   AND machine = 'drvl1078'
+-- GROUP BY session_id, session_serial#, sql_id, machine, program
+-- ORDER BY session_id, MIN(sample_time);
+
+-- Headers: SESSION_ID | SESSION_SERIAL# | FIRST_SEEN | LAST_SEEN | SQL_ID | MACHINE | PROGRAM
+
+1750	2249	09:16:44	09:23:03		drvl1078	sqlplus@drvl1078 (TNS V1-V3)
+1750	2249	09:23:14	09:24:38	7x6qn1dz83c0k	drvl1078	sqlplus@drvl1078 (TNS V1-V3)
+1750	2249	09:24:48	09:26:50	265hrvacvmp0w	drvl1078	sqlplus@drvl1078 (TNS V1-V3)
+3082	44313	08:47:33	09:23:03	459f3z9u4fb3u	drvl1078	sqlplus@drvl1078 (TNS V1-V3)
+
+-- ============================================================================
+-- Analysis:
+-- ============================================================================
+-- Session 3082/44313 (root blocker):
+--   - Active from 08:47:33 to 09:23:03
+--   - Running sql_id 459f3z9u4fb3u (select value$ from props$)
+--   - Held library cache mutex for entire duration
+--
+-- Session 1750/2249 (DDL executor):
+--   - First appeared at 09:16:44 with NO sql_id (empty) — indicates the session
+--     was active but NOT executing SQL, most likely WAITING on library cache
+--     mutex held by Session 3082
+--   - At 09:23:14 (after 3082 released the mutex), began executing:
+--     * 7x6qn1dz83c0k = CREATE TABLE TMP_REVOKING_DMS_0 NOLOGGING AS SELECT ...
+--     * 265hrvacvmp0w  = CREATE TABLE TMP_REVOKING_DMS_1 NOLOGGING AS SELECT ...
+--   - These DDLs are part of PRC_RECON_REVOKING_DMS procedure
+--
+-- KEY FINDINGS:
+-- 1. Sessions 3082 and 1750 are DIFFERENT sessions (different serial#s)
+-- 2. Both originate from drvl1078 using sqlplus (TNS V1-V3) — likely the same
+--    script or job scheduler on the application server
+-- 3. Session 1750 was blocked for ~7 minutes (09:16-09:23) before it could run DDLs
+-- 4. Session 3082 was the ROOT CAUSE (08:47), Session 1750's DDLs were SECONDARY
+--    — they couldn't even execute until the mutex was released
+-- 5. The timeline proves: redo-scanning (3082) → mutex storm → DDLs queued (1750)
+--    → mutex released (09:23) → DDLs execute → storm subsides
+-- ============================================================================

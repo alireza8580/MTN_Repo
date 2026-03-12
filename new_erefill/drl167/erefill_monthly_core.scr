@@ -1,0 +1,34 @@
+#!/bin/bash
+#===============================================================================
+# EREFILL Gather Stats - Monthly (15th of month at 2AM)
+# Server: Drl167
+# PDB: EREFILL_CORE (16 tables: 9 CORE_DATA + 7 CORE_CONFIG)
+# granularity => 'GLOBAL' for full structure stats
+# Cron: 0 2 15 * *
+#===============================================================================
+
+# Source configuration
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source ${SCRIPT_DIR}/erefill_config.env
+
+# Cleanup logs older than 30 days
+cleanup_old_logs
+
+log_message "Monthly Gather Stats (CORE) Started"
+
+LOG_FILE="${LOG_DIR}/monthly_core.log"
+
+#------------------------------------------------------------------------------
+# EREFILL_CORE PDB - Monthly GLOBAL stats
+#------------------------------------------------------------------------------
+export ORACLE_PDB_SID=${PDB_EREFILL_CORE}
+${ORACLE_HOME}/bin/sqlplus -S / as sysdba @${SCRIPT_DIR}/erefill_monthly_gen_core.sql $SCRIPT_DIR 2>&1 | tee ${LOG_FILE}
+SQL_STATUS=${PIPESTATUS[0]}
+
+if [ $SQL_STATUS -eq 0 ]; then
+    log_message "Monthly Gather Stats (CORE) Completed Successfully"
+    send_success_email "Monthly Gather Stats (CORE)" "${LOG_FILE}"
+else
+    log_message "Monthly Gather Stats (CORE) FAILED"
+    send_email "Monthly Gather Stats (CORE) FAILED" "Gather stats failed at $(date)" "${LOG_FILE}"
+fi

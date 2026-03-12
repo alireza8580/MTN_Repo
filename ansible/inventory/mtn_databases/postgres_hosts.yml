@@ -1,0 +1,475 @@
+all:
+  children:
+    postgres_servers:
+      children:
+        postgres_prod:
+          hosts:
+            t3vl407:
+              ansible_host: 10.223.181.153
+              postgres_application: cvm postgreSQL
+              postgres_version: '16.3'
+            t3vl421:
+              ansible_host: 10.223.181.165
+              postgres_application: logto
+              postgres_version: '16.3'
+            drvl1164:
+              ansible_host: 10.234.233.198
+              postgres_port: 5432
+              postgres_application: FTTX OSS
+              postgres_version: '16.3'
+            drvl1165:
+              ansible_host: 10.234.233.199
+              postgres_port: 5432
+              postgres_application: FTTX OSS
+              postgres_version: '16.3'
+            drvl1166:
+              ansible_host: 10.234.233.200
+              postgres_port: 5432
+              postgres_application: FTTX OSS
+              postgres_version: '16.3'
+            t3vl428:
+              ansible_host: 10.223.181.176
+              postgres_port: 5432
+              postgres_application: ISIGHT
+              postgres_version: '16.3'
+            esfvl011:
+              ansible_host: 10.226.81.7
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: ESB
+              postgres_version: '16.3'
+            esfvl012:
+              ansible_host: 10.226.81.8
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: ESB
+              postgres_version: '16.3'
+            esfvl013:
+              ansible_host: 10.226.81.9
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: ESB
+              postgres_version: '16.3'
+            t3vl484:
+              ansible_host: 10.223.181.243
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: Credit Lending Platform
+              postgres_version: '16.3'
+            t3vl485:
+              ansible_host: 10.223.181.244
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: Credit Lending Platform
+              postgres_version: '16.3'
+            drvl1272:
+              ansible_host: 10.234.81.157
+              postgres_port: 5432
+              postgres_role: Secondary(DR)
+              postgres_application: Credit Lending Platform
+              postgres_version: '16.3'
+            t3vl478:
+              ansible_host: 10.223.181.237
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: API Management
+              postgres_version: '16.3'
+            t3vl479:
+              ansible_host: 10.223.181.238
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: API Management
+              postgres_version: '16.3'
+            t3vl480:
+              ansible_host: 10.223.181.239
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: API Management
+              postgres_version: '16.3'
+            t3vl472:
+              ansible_host: 10.223.181.231
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: DG Commerce
+              postgres_version: '16.3'
+            t3vl473:
+              ansible_host: 10.223.181.232
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: DG Commerce
+              postgres_version: '16.3'
+            t3vl474:
+              ansible_host: 10.223.181.233
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: DG Commerce
+              postgres_version: '16.3'
+            t3vl493:
+              ansible_host: 10.223.181.252
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: CMP
+              postgres_version: '16.3'
+            t3vl494:
+              ansible_host: 10.223.181.253
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: CMP
+              postgres_version: '16.3'
+            t3vl495:
+              ansible_host: 10.223.181.254
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: CMP
+              postgres_version: '16.3'
+            t1vl850:
+              ansible_host: 10.224.237.93
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: CSP
+              postgres_version: '16.3'
+            t1vl851:
+              ansible_host: 10.224.237.94
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: CSP
+              postgres_version: '16.3'
+            t1vl852:
+              ansible_host: 10.224.237.95
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: CSP
+              postgres_version: '16.3'
+            drvl1255:
+              ansible_host: 10.234.81.143
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: DPOS
+              postgres_version: '16.3'
+            esfvl024:
+              ansible_host: 10.226.81.20
+              postgres_port: 5432
+              postgres_role: Secondary(DR)
+              postgres_application: DPOS
+              postgres_version: '16.3'
+            drvl1256:
+              ansible_host: 10.234.81.144
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: DPOS
+              postgres_version: '16.3'
+            esfvl025:
+              ansible_host: 10.226.81.21
+              postgres_port: 5432
+              postgres_role: Secondary(DR)
+              postgres_application: DPOS
+              postgres_version: '16.3'
+            drvl1257:
+              ansible_host: 10.234.81.145
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: DPOS
+              postgres_version: '16.3'
+            esfvl026:
+              ansible_host: 10.226.81.22
+              postgres_port: 5432
+              postgres_role: Secondary(DR)
+              postgres_application: DPOS
+              postgres_version: '16.3'
+            drvl1258:
+              ansible_host: 10.234.81.146
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: DPOS
+              postgres_version: '16.3'
+            esfvl027:
+              ansible_host: 10.226.81.23
+              postgres_port: 5432
+              postgres_role: Secondary(DR)
+              postgres_application: DPOS
+              postgres_version: '16.3'
+            t1vl857:
+              ansible_host: 10.221.21.27
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: eshop
+              postgres_version: '16.3'
+            t1vl858:
+              ansible_host: 10.221.21.28
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: eshop
+              postgres_version: '16.3'
+            drvl1270:
+              ansible_host: 10.218.244.81
+              postgres_port: 5432
+              postgres_role: Secondary(DR)
+              postgres_application: eshop
+              postgres_version: '16.3'
+            drvl1271:
+              ansible_host: 10.218.244.82
+              postgres_port: 5432
+              postgres_role: Secondary(DR)
+              postgres_application: eshop
+              postgres_version: '16.3'
+            t3vl531:
+              ansible_host: 10.224.241.78
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: Market Place
+              postgres_version: '16.3'
+            t3vl532:
+              ansible_host: 10.224.241.79
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: Market Place
+              postgres_version: '16.3'
+            T3VL549:
+              ansible_host: 10.225.34.31
+              postgres_port: 5432
+              postgres_role: Single
+              postgres_application: yelloadwise
+              postgres_version: '16.3'
+            drvl1316:
+              ansible_host: 10.235.19.18
+              postgres_port: 5432
+              postgres_role: Single
+              postgres_application: Discount platform
+              postgres_version: '16.3'
+            t1vl894:
+              ansible_host: 10.224.237.112
+              postgres_port: 5432
+              postgres_role: Single
+              postgres_application: mkt_cvm_acquisition
+              postgres_version: '18.0'
+            t3vl641:
+              ansible_host: 10.223.176.153
+              postgres_port: 5432
+              postgres_role: Single
+              postgres_application: ISS
+              postgres_version: '18.0'
+            drvl1310:
+              ansible_host: 10.234.81.189
+              postgres_port: 5432
+              postgres_role: Single
+              postgres_application: iMation
+              postgres_version: '18.0'
+            t3vl519:
+              ansible_host: 10.223.176.97
+              postgres_port: 5432
+              postgres_role: Single
+              postgres_application: FTTx Dashboard
+              postgres_version: '18'
+        postgres_uat:
+          hosts:
+            t3vl408:
+              ansible_host: 10.223.181.154
+              postgres_application: FTTX OSS
+              postgres_version: '16.3'
+            t3vl420:
+              ansible_host: 10.223.181.164
+              postgres_application: logto
+              postgres_version: '16.3'
+            t3vl427:
+              ansible_host: 10.223.181.175
+              postgres_port: 5432
+              postgres_application: ISIGHT
+              postgres_version: '16.3'
+            t3vl498:
+              ansible_host: 10.223.181.200
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: Marketplace
+              postgres_version: '16.3'
+            t3vl657:
+              ansible_host: 10.225.34.72
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: Marketplace
+              postgres_version: '16.3'
+            esfvl010:
+              ansible_host: 10.226.81.6
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: ESB
+              postgres_version: '16.3'
+            esfvl028:
+              ansible_host: 10.226.81.24
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: ESB
+              postgres_version: '16.3'
+            esfvl029:
+              ansible_host: 10.226.81.25
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: ESB
+              postgres_version: '16.3'
+            t3vl481:
+              ansible_host: 10.223.181.240
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: Credit Lending Platform
+              postgres_version: '16.3'
+            t3vl482:
+              ansible_host: 10.223.181.241
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: Credit Lending Platform
+              postgres_version: '16.3'
+            t3vl483:
+              ansible_host: 10.223.181.242
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: Credit Lending Platform
+              postgres_version: '16.3'
+            t3vl469:
+              ansible_host: 10.223.181.228
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: DG Commerce
+              postgres_version: '16.3'
+            t3vl470:
+              ansible_host: 10.223.181.229
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: DG Commerce
+              postgres_version: '16.3'
+            t3vl471:
+              ansible_host: 10.223.181.230
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: DG Commerce
+              postgres_version: '16.3'
+            t1vl847:
+              ansible_host: 10.224.237.90
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: CSP
+              postgres_version: '16.3'
+            t1vl848:
+              ansible_host: 10.224.237.91
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: CSP
+              postgres_version: '16.3'
+            t1vl849:
+              ansible_host: 10.224.237.92
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: CSP
+              postgres_version: '16.3'
+            t3vl490:
+              ansible_host: 10.223.181.249
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: CMP
+              postgres_version: '16.3'
+            t3vl491:
+              ansible_host: 10.223.181.250
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: CMP
+              postgres_version: '16.3'
+            t3vl492:
+              ansible_host: 10.223.181.251
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: CMP
+              postgres_version: '16.3'
+            twdpos-testdb03:
+              ansible_host: 10.221.21.23
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: DPOS
+              postgres_version: '16.3'
+            twdpos-testdb04:
+              ansible_host: 10.221.21.24
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: DPOS
+              postgres_version: '16.3'
+            esfvl077:
+              ansible_host: 10.226.81.47
+              postgres_port: 5432
+              postgres_role: Secondary(DR)
+              postgres_application: DPOS
+              postgres_version: '16.3'
+            t3vl475:
+              ansible_host: 10.223.181.234
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: API Management
+              postgres_version: '16.3'
+            t3vl476:
+              ansible_host: 10.223.181.235
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: API Management
+              postgres_version: '16.3'
+            t3vl477:
+              ansible_host: 10.223.181.236
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: API Management
+              postgres_version: '16.3'
+            t1vl879:
+              ansible_host: 10.224.237.97
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: eshop
+              postgres_version: '16.3'
+            t1vl886:
+              ansible_host: 10.224.237.104
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: eshop
+              postgres_version: '16.3'
+            T3VL545:
+              ansible_host: 10.225.34.27
+              postgres_port: 5432
+              postgres_role: Single
+              postgres_application: Discount platform
+              postgres_version: '16.3'
+            t1vl891:
+              ansible_host: 10.224.237.109
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: Irancell Forum website
+              postgres_version: '17.6'
+            t1vl892:
+              ansible_host: 10.224.237.110
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: Irancell Forum website
+              postgres_version: '17.6'
+            t3vl640:
+              ansible_host: 10.223.176.152
+              postgres_port: 5432
+              postgres_role: Single
+              postgres_application: ISS
+              postgres_version: '18.0'
+            t3vl631:
+              ansible_host: 10.223.176.98
+              postgres_port: 5432
+              postgres_role: Primary
+              postgres_application: Irancell Forum website
+              postgres_version: '17.6'
+            t3vl632:
+              ansible_host: 10.223.176.99
+              postgres_port: 5432
+              postgres_role: Secondary
+              postgres_application: Irancell Forum website
+              postgres_version: '17.6'
+            drvl1319:
+              ansible_host: 10.235.19.21
+              postgres_port: 5432
+              postgres_role: Single
+              postgres_application: AI Team - CSP Project
+              postgres_version: '18.0'
+            t1vl890:
+              ansible_host: 10.224.237.108
+              postgres_port: 5432
+              postgres_role: Single
+              postgres_application: CCTV Camera
+              postgres_version: '18.0'

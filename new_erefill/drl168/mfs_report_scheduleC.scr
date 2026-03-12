@@ -1,0 +1,66 @@
+#!/bin/bash
+#===============================================================================
+# MFS_REPORT Gather Stats - Schedule C (Every 12 hours)
+# Server: Drl168
+# PDB: MFS_REPORT
+# Schema: APP_USER
+# 
+# Part 1: Dynamic partition stats (MFS_EDR_DAILY)
+# Part 2: Static non-partitioned tables (MFS_RPT_*)
+#
+# Cron: 0 11,23 * * *
+#===============================================================================
+
+# Source configuration
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source ${SCRIPT_DIR}/mfs_report_config.env
+
+# Cleanup logs older than 30 days
+cleanup_old_logs
+
+LOG_FILE="${LOG_DIR}/scheduleC.log"
+
+log_message "Schedule C Started"
+START_TIME=$(date +%s)
+FAILED_PARTS=""
+
+# Clear log
+> "$LOG_FILE"
+
+#------------------------------------------------------------------------------
+# Part 1: MFS_REPORT PDB - Dynamic partition stats (MFS_EDR_DAILY)
+#------------------------------------------------------------------------------
+echo "=== MFS_REPORT PDB - Dynamic Partitions (MFS_EDR_DAILY) ===" >> "$LOG_FILE"
+export ORACLE_PDB_SID=${PDB_MFS_REPORT}
+${ORACLE_HOME}/bin/sqlplus -S / as sysdba @${SCRIPT_DIR}/mfs_report_scheduleC_gen.sql $SCRIPT_DIR 2>&1 | tee -a ${LOG_FILE}
+SQL_STATUS1=${PIPESTATUS[0]}
+
+if [ $SQL_STATUS1 -ne 0 ]; then
+    log_message "Schedule C (Dynamic) FAILED"
+    FAILED_PARTS+="DYNAMIC "
+fi
+
+#------------------------------------------------------------------------------
+# Part 2: MFS_REPORT PDB - Static non-partitioned tables
+#------------------------------------------------------------------------------
+echo "" >> "$LOG_FILE"
+echo "=== MFS_REPORT PDB - Static Tables (MFS_RPT_*) ===" >> "$LOG_FILE"
+export ORACLE_PDB_SID=${PDB_MFS_REPORT}
+${ORACLE_HOME}/bin/sqlplus -S / as sysdba @${SCRIPT_DIR}/mfs_report_scheduleC_static.sql 2>&1 | tee -a ${LOG_FILE}
+SQL_STATUS2=${PIPESTATUS[0]}
+
+if [ $SQL_STATUS2 -ne 0 ]; then
+    log_message "Schedule C (Static) FAILED"
+    FAILED_PARTS+="STATIC "
+fi
+
+END_TIME=$(date +%s)
+ELAPSED=$((END_TIME - START_TIME))
+
+if [ -z "$FAILED_PARTS" ]; then
+    log_message "Schedule C Completed Successfully (Elapsed: $(format_duration $ELAPSED))"
+    send_success_email "Schedule C (5 tables)" "$LOG_FILE"
+else
+    log_message "Schedule C FAILED ($FAILED_PARTS)"
+    send_email "Schedule C FAILED ($FAILED_PARTS)" "Gather stats failed at $(date)\nElapsed: $(format_duration $ELAPSED)\nFailed: $FAILED_PARTS" "$LOG_FILE"
+fi

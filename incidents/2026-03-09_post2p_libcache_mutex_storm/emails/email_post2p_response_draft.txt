@@ -1,0 +1,66 @@
+Dear Erfan,
+
+Thank you for providing the March 7th and 8th AWR reports. We have now analyzed all four reports.
+
+You are correct that the preUploadPK update rate on GSM_BACKGROUND_PROCESSES is a recurring pattern:
+- March 7 (08-09): 66,470,815 executions — 9,370s elapsed (5.47% of DB Time)
+- March 8 (08-09): 28,098,251 executions — 3,145s elapsed (1.51% of DB Time)
+- March 9 (08:30-09:27): 28,544,200 executions — 19,871s elapsed (0.37% of DB Time)
+
+The execution count on March 9th is comparable to March 8th and actually lower than March 7th. We agree this is not the trigger.
+
+However, this makes the finding even more significant. With the SAME workload pattern, library cache: mutex X went from normal to catastrophic:
+
+                    March 7    March 8    March 9 (incident)
+lib cache mutex X   23 sec     49 sec     4,977,019 sec
+% of DB Time        0.01%      0.02%      93.36%
+Avg wait            0 ms       0 ms       5,599 ms
+
+This 100,000x increase in library cache mutex wait time, with no change in workload, means something caused mass cursor invalidation on March 9th. The internal library cache latch statistics confirm this:
+
+                         March 7         March 9 (incident)
+kgllkdl1 (lock dealloc)  68,880 gets     1,487,021,925 gets (21,600x increase)
+kglhdgn1 (handle get)    78,331 gets     936,986,368 gets (12,000x increase)
+
+These mutexes are involved in cursor deallocation and reallocation. This is a definitive indicator of mass cursor invalidation — all cursors in the library cache were invalidated, forcing every session to re-parse every SQL statement simultaneously, which serialized the entire library cache.
+
+We have now identified the direct cause from the incident AWR itself (POST2P, DBID: 2771519206, Host: dru104a, Snap IDs: 233938-233941). The following DDL statements were executed via SQL*Plus during the incident window (08:30-09:27) on March 9th:
+
+1. SQL ID: 42mg7x5zcfvk3 — BEGIN PRC_RECON_REVOKING_DMS(); END;
+   Module: SQL*Plus (manual execution)
+   Note: This procedure is NOT present in March 7, March 8, or 17 Esfand (baseline) AWRs — it is unique to the incident window.
+
+2. SQL ID: 7x6qn1dz83c0k — CREATE TABLE ABL_DBOBJECTS.TMP_REVOKING_DMS_0 NOLOGGING AS SELECT ... FROM cb_suspended_dtls ...
+   Module: SQL*Plus
+   Physical Reads: 1,600,455 (heavy full scan)
+   Elapsed: 92.37 seconds
+
+3. SQL ID: 265hrvacvmp0w — CREATE TABLE ABL_DBOBJECTS.TMP_REVOKING_DMS_1 NOLOGGING AS SELECT ... FROM V_GSM_SERVICE_MAST, TMP_REVOKING_DMS_0 ...
+   Module: SQL*Plus
+   Physical Reads: 1,125,528
+   Note: This SQL ID is also unique to the incident AWR — not present in any other report.
+
+4. SQL ID: 5abqar03rcgj3 — CREATE TABLE tmp_dms_recon_mon NOLOGGING AS SELECT /*+PARALLEL(4)*/ ... FROM TRANS_PO.V_GSM_SERVICE_MAST, CB_CHANGE_OWNERSHIP_HISTORY, CB_SUSPENDED_DTLS ...
+   Physical Reads: 494,158,880
+
+5. SQL ID: cfm37yac6n61h — CREATE TABLE cb_schedules_staging AS SELECT * FROM cb_schedules WHERE 1=0
+
+Additionally, DBMS_SCHEDULER job ABL_DBOBJECTS.TMP_BEN_UPDATE_CCC ran 51 times during this window (SQL ID: 70g14pnm1ct58), accumulating 3,420 seconds elapsed time.
+
+The ABL_DBOBJECTS segment statistics confirm heavy write activity: TMP_REVOKING_DMS_0 accounted for 22.53% of total direct writes during the snapshot.
+
+These CREATE TABLE ... AS SELECT statements reference shared production tables (V_GSM_SERVICE_MAST, CB_SUSPENDED_DTLS, CB_CHANGE_OWNERSHIP_HISTORY). DDL operations acquire exclusive dictionary locks that invalidate all cached cursors referencing these objects. With 28.5 million concurrent preUploadPK executions and thousands of other queries, every invalidated cursor was forced to re-parse simultaneously, creating the library cache mutex storm.
+
+The key evidence is that PRC_RECON_REVOKING_DMS and TMP_REVOKING_DMS_1 are completely absent from the March 7, March 8, and 17 Esfand AWRs. They only appear on March 9th — the incident day.
+
+No ALTER SYSTEM, no parameter changes, and no FLUSH SHARED_POOL was performed by the DBA/infrastructure team.
+
+Please confirm what triggered the execution of PRC_RECON_REVOKING_DMS() via SQL*Plus on March 9th morning, and whether this can be scheduled outside peak hours.
+
+Best Regards,
+
+Alireza Aghajanzadeh Gheshlaghi
+Infrastructure Team Database Administrator
+ITS Infrastructure Operation
+Phone: 09106909975
+09352106621 (DBA Standby)

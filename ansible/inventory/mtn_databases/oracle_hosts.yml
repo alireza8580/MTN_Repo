@@ -1,0 +1,516 @@
+all:
+  children:
+    oracle_servers:
+      children:
+        oracle_prod:
+          hosts:
+            drl080:
+              ansible_host: 10.132.65.129
+              oracle_application: nmanager
+              oracle_version: 11.2.0.4.0
+            DRU101c:
+              ansible_host: 10.133.154.34
+              oracle_application: PTSSDB
+              oracle_version: 10.2.0.4
+            dru103b:
+              ansible_host: 10.133.126.193
+              oracle_application: PGDB
+              oracle_version: 12.2.0.1.0
+            drl149:
+              ansible_host: 10.234.233.123
+              oracle_application: PORTHIST
+              oracle_version: 10.2.0.4
+            dru104a:
+              ansible_host: 10.132.59.67
+              oracle_application: POST2P
+              oracle_version: 11.2.0.2
+            dru104b:
+              ansible_host: 10.132.59.188
+              oracle_application: ICT3P
+              oracle_version: 11.2.0.4
+            dru110a:
+              ansible_host: 10.132.59.126
+              oracle_application: PPMS3P
+              oracle_version: 11.2.0.3
+            dru110b:
+              ansible_host: 10.132.59.209
+              oracle_application: rdmdb
+              oracle_version: 11.2.0.3
+            dru110c:
+              ansible_host: 10.132.59.43
+              oracle_application: SIMMNGRP
+              oracle_version: 11.2.0.3
+            t3u821a:
+              ansible_host: 10.223.176.36
+              oracle_application: st3ptssdb
+              oracle_version: 10.2.0.4.0
+            dru842a:
+              ansible_host: 10.133.155.31
+              oracle_application: stroam
+              oracle_version: 11.2.0.4
+            dru115a:
+              ansible_host: 10.133.154.175
+              oracle_application: STAT4P
+              oracle_version: 11.2.0.2
+            dru111d:
+              ansible_host: 10.133.154.139
+              oracle_application: EIALOG
+              oracle_version: 12.1.0.2.0
+            DRU915:
+              ansible_host: 10.132.59.37
+              oracle_application: PORT4P
+              oracle_version: 10.2.0.4
+            dru100b:
+              ansible_host: 10.133.154.16
+              oracle_application: CONC1P
+              oracle_version: 10.2.0.4
+            drum700:
+              ansible_host: 10.133.154.85
+              oracle_application: ods1p
+              oracle_version: 12.1.0.2.0
+            drum702b:
+              ansible_host: 10.133.154.214
+              oracle_application: ROAMING
+              oracle_version: 11.2.0.4
+            drum703a:
+              ansible_host: 10.133.154.217
+              oracle_application: NWGCMDB
+              oracle_version: 12.2.0.1.0
+            drum710:
+              ansible_host: 10.133.154.241
+              oracle_application: bib1p
+              oracle_version: 11.2.0.4
+            drum711b:
+              ansible_host: 10.133.154.234
+              oracle_application: rausg
+              oracle_version: 12.2.0.1.0
+            esfmsdp-dnd1:
+              ansible_host: 10.156.206.76
+              oracle_application: ecpdndte
+              oracle_version: 12.1.0.2.0
+            T1U925:
+              ansible_host: 10.131.59.124
+              oracle_application: spark2
+              oracle_version: 11.2.0.4
+            t3-rasha-plp-db01:
+              ansible_host: 10.224.241.23
+              oracle_application: rashadbp
+              oracle_version: 12.2.0.1.1
+            t3mycell-db1:
+              ansible_host: 10.224.241.44
+              oracle_application: selfcare1
+              oracle_version: 19.0.0.0.0
+            t3mycell-db2:
+              ansible_host: 10.224.241.45
+              oracle_application: selfcare2
+              oracle_version: 19.0.0.0.0
+            teaota-db1:
+              ansible_host: 10.133.219.198
+              oracle_application: aotadb1
+              oracle_version: 11.2.0.4.0
+            teaota-db2:
+              ansible_host: 10.133.219.199
+              oracle_application: aotadb2
+              oracle_version: 11.2.0.4.0
+            teenm-db1:
+              ansible_host: 10.133.203.51
+              oracle_application: prnedb1
+              oracle_version: 12.2.0.1.0
+            teenm-db2:
+              ansible_host: 10.133.203.52
+              oracle_application: prnedb2
+              oracle_version: 12.2.0.1.0
+            twmsdp-confdb1:
+              ansible_host: 10.133.217.208
+              oracle_application: ecpstte
+              oracle_version: 12.1.0.2.0
+            temsdp-dnd1:
+              ansible_host: 10.133.217.209
+              oracle_application: ecpdndte
+              oracle_version: 12.1.0.2.0
+            teussd-confdb1:
+              ansible_host: 10.133.218.214
+              oracle_application: ussdstte
+              oracle_version: 12.1.0.2.0
+            teussd-oam1(vip-10.133.218.230):
+              ansible_host: 10.133.218.222
+              oracle_application: ussdomte
+              oracle_version: 12.1.0.2.0
+            teussd-oam2(vip-10.133.218.230):
+              ansible_host: 10.133.218.223
+              oracle_application: ussdomte
+              oracle_version: 12.1.0.2.0
+            twmsdp-dnd1:
+              ansible_host: 10.130.79.37
+              oracle_application: ecpdndtw
+              oracle_version: 12.1.0.2.0
+            twussd-oam1(vip-10.130.80.50):
+              ansible_host: 10.130.80.39
+              oracle_application: ussdomtw
+              oracle_version: 12.1.0.2.0
+            twussd-oam2(vip-10.130.80.50):
+              ansible_host: 10.130.80.40
+              oracle_application: ussdomtw
+              oracle_version: 12.1.0.2.0
+            drvl988:
+              ansible_host: 10.234.233.58
+              oracle_application: obiee2p
+              oracle_version: 19.0.0.0.0
+            drl143:
+              ansible_host: 10.133.126.17
+              oracle_application: PROD10
+              oracle_version: 19.0.0.0.0
+            t3-dba-plp-farm01:
+              ansible_host: 10.224.241.117
+              oracle_application: USO_AMP
+              oracle_version: 19.0.0.0.0
+            t3ngmycell-db04:
+              ansible_host: 10.224.241.189
+              oracle_application: repocdb
+              oracle_version: 19.0.0.0.0
+            dru115d:
+              ansible_host: 10.133.154.184
+              oracle_application: SBPOST2P
+              oracle_version: 11.2.0.2
+            esfmsdp-confdb1:
+              ansible_host: 10.156.206.75
+              oracle_application: ecpstesf
+              oracle_version: 12.1.0.2.0
+            esfmsdp-dnd2:
+              ansible_host: 10.156.206.77
+              oracle_application: ECPDNDES
+              oracle_version: 12.1.0.2.0
+            T1U100A:
+              ansible_host: 10.131.59.44
+              oracle_application: IWA1P
+              oracle_version: 10.2.0.3.0
+            T1U100B:
+              ansible_host: 10.131.59.73
+              oracle_application: STPOST2P
+              oracle_version: 11.2.0.2
+            T1U100c:
+              ansible_host: 10.131.59.28
+              oracle_application: STBSIM
+              oracle_version: 11.2.0.3
+            T1U100d:
+              ansible_host: 10.131.59.121
+              oracle_application: STSTAT4P
+              oracle_version: 11.2.0.2
+            t1u100e:
+              ansible_host: 10.130.101.11
+              oracle_application: stapliman
+              oracle_version: 11.2.0.3.0
+            T1U101a:
+              ansible_host: 10.131.59.77
+              oracle_application: stdcp1p
+              oracle_version: 10.2.0.4.0
+            T1U101b:
+              ansible_host: 10.131.59.11
+              oracle_application: spmw
+              oracle_version: 11.2.0.3.0
+            T1U101e:
+              ansible_host: 10.131.59.104
+              oracle_application: stptssdb
+              oracle_version: 10.2.0.4.0
+            t1u103b:
+              ansible_host: 10.131.59.20
+              oracle_application: STEIALOG
+              oracle_version: '         12.1.0.2.0        '
+            Dru105:
+              ansible_host: 10.133.217.210
+              oracle_application: stecpdnd
+              oracle_version: '         12.1.0.2.0        '
+            twenm-db1:
+              ansible_host: 10.222.213.11
+              oracle_application: sprnedb1
+              oracle_version: 12.2.0.1.0
+            twenm-db2:
+              ansible_host: 10.222.213.12
+              oracle_application: sprnedb2
+              oracle_version: 12.2.0.1.0
+            temsdp-confdb1:
+              ansible_host: 10.130.79.36
+              oracle_application: ecpsttw
+              oracle_version: 12.1.0.2.0
+            twmsdp-dnd2:
+              ansible_host: 10.130.79.38
+              oracle_application: stecptw
+              oracle_version: 12.1.0.2
+            twussd-confdb1:
+              ansible_host: 10.130.80.36
+              oracle_application: ussdsttw
+              oracle_version: 12.1.0.2.0
+            twmycell-db1:
+              ansible_host: 10.223.174.4
+              oracle_application: stselfcare1
+              oracle_version: 19.0.0.0
+            twmycell-db2:
+              ansible_host: 10.223.174.5
+              oracle_application: stselfcare1
+              oracle_version: 19.0.0.0
+            t1vl754:
+              ansible_host: 10.224.237.15
+              oracle_application: stcat19c
+              oracle_version: 19.0.0.0
+            t3-ifs-db01:
+              ansible_host: 10.224.241.224
+              oracle_application: SPROD10
+              oracle_version: 19.0.0.0
+            drvl807:
+              ansible_host: 10.132.57.89
+              oracle_application: cat19c
+              oracle_version: 19.0.0.0.0
+            drum702a:
+              ansible_host: 10.133.154.211
+              oracle_application: dms3u
+              oracle_version: 11.2.0.4.0
+            t1u102b:
+              ansible_host: 10.131.59.46
+              oracle_application: PORT1P
+              oracle_version: 11.2.0.2
+            drl151:
+              ansible_host: 10.133.126.119
+              oracle_application: prod10
+              oracle_version: 19.0.0.0.0
+            T1VL052:
+              ansible_host: 10.131.65.50
+              oracle_application: ESPADB
+              oracle_version: 11.2.0.3
+            drvl1037:
+              ansible_host: 10.234.81.93
+              oracle_application: AtollNewDB
+              oracle_version: 19.0.0.0.0
+            drvl1051:
+              ansible_host: 10.234.81.95
+              oracle_application: AICC_ORADB
+              oracle_version: 19.0.0.0.0
+            drvl1057:
+              ansible_host: 10.234.233.143
+              oracle_application: TAXDB
+              oracle_version: 19.0.0.0.0
+            drl140:
+              ansible_host: 10.132.59.14
+              oracle_application: OMSDB
+              oracle_version: 19.0.0.0.0
+            drvl1081:
+              ansible_host: 10.133.126.28
+              oracle_application: swprod10
+              oracle_version: 19.0.0.0.0
+            dru822b:
+              ansible_host: 10.133.155.17
+              oracle_application: sport4p
+              oracle_version: 10.2.0.4.0
+            dru821b:
+              ansible_host: 10.133.155.8
+              oracle_application: stict3p
+              oracle_version: 11.2.0.4.0
+            drvl1053:
+              ansible_host: 10.234.81.97
+              oracle_application: SLMBI
+              oracle_version: 19.0.0.0.0
+            t3u821b:
+              ansible_host: 10.223.176.39
+              oracle_application: st3ict3p
+              oracle_version: 11.2.0.4.0
+            drvl1144:
+              ansible_host: 10.234.233.176
+              oracle_application: strepocdb
+              oracle_version: 19.0.0.0.0
+            t3-dba-plp-farm03:
+              ansible_host: 10.224.241.84
+              oracle_application: scorporat
+              oracle_version: 12.2.0.1.0
+            drvl1153:
+              ansible_host: 10.234.233.186
+              oracle_application: AMP
+              oracle_version: 19.0.0.0.0
+            drl167:
+              ansible_host: 10.234.233.184
+              oracle_application: EREFILL_EVENT
+              oracle_version: 19.0.0.0.0
+            drl168:
+              ansible_host: 10.234.233.185
+              oracle_application: MFS_REPORT
+              oracle_version: 19.0.0.0.0
+            t3-dba-plp-farm04:
+              ansible_host: 10.224.241.85
+              oracle_application: CTLDBCDB
+              oracle_version: 19.0.0.0.0
+            t3-pg-plp-db01:
+              ansible_host: 10.223.181.177
+              oracle_application: serefill
+              oracle_version: 19.0.0.0.0
+            t3-pg-plp-db02:
+              ansible_host: 10.223.181.178
+              oracle_application: sreport
+              oracle_version: 19.0.0.0.0
+            t3-tax-plp-db01:
+              ansible_host: 10.223.181.196
+              oracle_application: TAXDB
+              oracle_version: 19.0.0.0.0
+            drl164:
+              ansible_host: 10.234.233.208
+              oracle_application: dms2h
+              oracle_version: 19.0.0.0.0
+            drl163:
+              ansible_host: 10.234.233.207
+              oracle_application: adhoc1p
+              oracle_version: 11.2.0.4.0
+            t3-dmslog-plp-db01:
+              ansible_host: 10.224.241.100
+              oracle_application: sdms2h
+              oracle_version: 19.0.0.0.0
+            t3vl506:
+              ansible_host: 10.223.176.87
+              oracle_application: OAS
+              oracle_version: 19.0.0.0.0
+            drvl1268:
+              ansible_host: 10.234.233.253
+              oracle_application: oasdr
+              oracle_version: 19.0.0.0.0
+            dru841a:
+              ansible_host: 10.132.59.34
+              oracle_application: smdx5p
+              oracle_version: 11.2.0.3.0
+            dru841b:
+              ansible_host: 10.132.59.55
+              oracle_application: stlcms
+              oracle_version: 11.2.0.3
+            t1u841b:
+              ansible_host: 10.131.59.101
+              oracle_application:   SATOLLDB
+              oracle_version: 11.2.0.3
+            dru842b:
+              ansible_host: 10.133.155.34
+              oracle_application: SPGDB
+              oracle_version: 12.2.0.1.0
+            t1u841c:
+              ansible_host: 10.131.59.113
+              oracle_application: sapliman
+              oracle_version: 11.2.0.3.0
+            t1u841a:
+              ansible_host: 10.131.59.94
+              oracle_application: st1mdx5p
+              oracle_version: 11.2.0.3.0
+            t3-ict-plp-db01:
+              ansible_host: 10.224.241.176
+              oracle_application: ictprd
+              oracle_version: 19.0.0.0.0
+            t3u842a:
+              ansible_host: 10.223.176.79
+              oracle_application: t3bib1p
+              oracle_version: 11.2.0.4
+            T3Vl540:
+              ansible_host: 10.225.34.23
+              oracle_application: t3utaxdb
+              oracle_version: 19.0.0.0.0
+            t3u841a:
+              ansible_host: 10.223.176.76
+              oracle_application: t3ods1p
+              oracle_version: 12.1.0.2.0
+            esfvl081:
+              ansible_host: 10.226.81.51
+              oracle_application: esfrepodb
+              oracle_version: 19.0.0.0.0
+        oracle_uat:
+          hosts:
+            drl139:
+              ansible_host: 10.218.244.77
+              oracle_application: eia
+              oracle_version: 19.0.0.0.0
+            dru100b:
+              ansible_host: 10.133.154.16
+              oracle_application: LCMSU
+              oracle_version: 11.2.0.3.0
+            drum702a:
+              ansible_host: 10.133.154.211
+              oracle_application: dms2u
+              oracle_version: 11.2.0.4.0
+            drum703a:
+              ansible_host: 10.133.154.217
+              oracle_application: RASHADB
+              oracle_version: 12.2.0.1.0
+            drum703b:
+              ansible_host: 10.132.59.215
+              oracle_application: rocra
+              oracle_version: 12.2.0.1.0
+            drvl798:
+              ansible_host: 10.218.244.76
+              oracle_application: eiauat
+              oracle_version: 19.0.0.0.0
+            t1u102d:
+              ansible_host: 10.131.59.34
+              oracle_application: ppms3d
+              oracle_version: 11.2.0.3.0
+            teem-testdb1:
+              ansible_host: 10.133.203.22
+              oracle_application: prnedb
+              oracle_version: 11.2.0.4.0
+            temm-testdb1:
+              ansible_host: 10.220.208.5
+              oracle_application: MWDBUAT
+              oracle_version: 11.2.0.4.0
+            temsdp-testdb1:
+              ansible_host: 10.133.217.252
+              oracle_application: ecptstte
+              oracle_version: 12.1.0.2.0
+            teussd-testdb1:
+              ansible_host: 10.133.218.221
+              oracle_application: testdbte
+              oracle_version: 12.1.0.2.0
+            drvl987:
+              ansible_host: 10.234.233.57
+              oracle_application: obiee1p
+              oracle_version: 19.0.0.0.0
+            drl144:
+              ansible_host: 10.133.126.27
+              oracle_application: PROD10
+              oracle_version: 19.0.0.0.0
+            dru100a:
+              ansible_host: 10.133.154.13
+              oracle_application: simmngru
+              oracle_version: 11.2.0.3.0
+            twmycell-db1:
+              ansible_host: 10.132.57.138
+              oracle_application: selfuat
+              oracle_version: 19.0.0.0.0
+            t3-dba-plp-farm02:
+              ansible_host: 10.224.241.114
+              oracle_application: DDMS19C
+              oracle_version: 19.0.0.0.0
+            dru100d:
+              ansible_host: 10.133.154.82
+              oracle_application: ods1p
+              oracle_version: 12.1.0.2.0
+            drl149:
+              ansible_host: 10.234.233.123
+              oracle_application: pgclone
+              oracle_version: 12.2.0.1.0
+            t1u103d:
+              ansible_host: 10.131.59.62
+              oracle_application: bib1p
+              oracle_version: 11.2.0.4.0
+            t1u902:
+              ansible_host: 10.131.58.69
+              oracle_application: ict2p
+              oracle_version: '11.2.0.4 '
+            T1U904:
+              ansible_host: 10.131.59.118
+              oracle_application: adhoc1p(NEW)
+              oracle_version: 11.2.0.4
+            t1vl801 (TEST):
+              ansible_host: 10.224.237.30
+              oracle_application: port1p
+              oracle_version: 19.0.0.0.0
+            drvl1097:
+              ansible_host: 10.234.81.115
+              oracle_application: ERPMW
+              oracle_version: 19.0.0.0.0
+            t1vl877:
+              ansible_host: 10.224.237.68
+              oracle_application: ICTTST
+              oracle_version: 19.0.0.0.0
+            t1vl878:
+              ansible_host: 10.224.237.69
+              oracle_application: OASUAT
+              oracle_version: 19.0.0.0.0

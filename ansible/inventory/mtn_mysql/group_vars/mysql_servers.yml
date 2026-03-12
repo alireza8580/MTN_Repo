@@ -1,0 +1,39 @@
+# MySQL Server Group Variables
+# These can be overridden in host_vars for specific servers
+
+# Server identification (override in host_vars)
+# mysql_server_id: derived from hostname (e.g., 717 for t3vl717)
+# is_master: true/false
+# is_backup_node: true/false
+
+# MySQL character set and collation
+mysql_character_set: utf8mb4
+mysql_collation: utf8mb4_general_ci
+
+# InnoDB settings
+mysql_innodb_log_file_size: 2G
+mysql_innodb_buffer_pool_size: auto  # Uses innodb_dedicated_server if 'auto'
+mysql_innodb_temp_max_size: 50G
+
+# Connection settings
+mysql_max_connections: 3000
+mysql_connect_timeout: 300
+mysql_table_open_cache: 4000
+
+# Slow query log
+mysql_slow_query_log: 1
+mysql_long_query_time: 10
+
+# Binary log settings
+mysql_binlog_expire_seconds: 604800  # 7 days
+mysql_max_binlog_size: 1073741824    # 1GB
+mysql_binlog_format: row
+mysql_sync_binlog: 1
+
+# Buffer sizes
+mysql_key_buffer_size: 256M
+mysql_max_allowed_packet: 1G
+mysql_tmp_table_size: 256M
+
+# Disabled storage engines
+mysql_disabled_storage_engines: "MyISAM,BLACKHOLE,FEDERATED,ARCHIVE,MEMORY"

@@ -1,0 +1,86 @@
+From: Mohsen Roudsaz [ Arya Hamrah Samaneh ]
+Sent: 09 March 2026 14:02
+To: Erfan Fatemi Zadeh [ MTNIrancell - Labs ]; #ITS DC DBA
+Cc: #ITS CSS DBA; Yasamin Sepehr [ MTNIrancell - Labs ]; ITS CRM Billing-NOC; #ITS DC UNIX; ITS Service Desk; Amir Hemmati [ MTNIrancell - ITS ]; Soheil Sarrafi [ MTNIrancell - ITS ]; Mohammadamin Mir Shekari [ MTNIrancell - Labs ]; Pardis Goudarzi [ MTNIrancell - Labs ]; Sara Sedigh Zadeh [ MTNIrancell - ITS ]; Morteza Shohrati [ MTNIrancell - Labs ]; Somayeh Solgi [ MTNIrancell - ITS ]; Hossein Eskandari [ MTNIrancell - ITS ]; Mohammadsaleh Bayat Jozani [ MTNIrancell - Labs ]
+Subject: Re: Problem : @bility - dru104a - Critical CPU Utilization 
+ 
+Dear Erfan,
+
+As we check the database the main wait event causing the issue was concurrency wait event, These waits occur when two or more sessions are working with the same cursors simultaneously , when one session takes and holds a resource required by another the second session will wait on one of these events.
+The awr reports of database for today and yesterday is attached, which shows yesterday at the same time database was working normally and today with high rate of concurrent dml executions, high cpu load and performances issue happened that is the root cause for other issues. please check application side.
+
+Mohsen Roudsaz
+AHS Database Administrator
+ITS Infrastructure Operation
+Phone: +989125392542
+DBA On call: +989352106621
+
+
+
+
+________________________________________
+From: Erfan Fatemi Zadeh [ MTNIrancell - Labs ]
+Sent: 09 March 2026 10:06
+To: Mohammadsaleh Bayat Jozani [ MTNIrancell - Labs ]; Alireza Aghajanzadeh Gheshlaghi [ Arya Hamrah Samaneh ]; #ITS DC DBA
+Cc: #ITS CSS DBA; Yasamin Sepehr [ MTNIrancell - Labs ]; ITS CRM Billing-NOC; #ITS DC UNIX; ITS Service Desk; Amir Hemmati [ MTNIrancell - ITS ]; Soheil Sarrafi [ MTNIrancell - ITS ]; Mohammadamin Mir Shekari [ MTNIrancell - Labs ]; Pardis Goudarzi [ MTNIrancell - Labs ]; Sara Sedigh Zadeh [ MTNIrancell - ITS ]; Morteza Shohrati [ MTNIrancell - Labs ]; Somayeh Solgi [ MTNIrancell - ITS ]; Pardis Goudarzi [ MTNIrancell - Labs ]; Hossein Eskandari [ MTNIrancell - ITS ]; Mohammadamin Mir Shekari [ MTNIrancell - Labs ]
+Subject: RE: Problem : @bility - dru104a - Critical CPU Utilization 
+ 
+Dear Alireza,
+notice that listener has problems since 8: 50
+ 
+Host=dru104a.mtnirancell.ir 
+Target type=Listener 
+Target name=LISTENER0_dru104a.mtnirancell.ir 
+Categories=Performance 
+Message=Listener response to a TNS ping is 20,840 msecs 
+Severity=Critical 
+Event reported time=Mar 9, 2026 8:50:10 AM IRST 
+Operating System=SunOS
+Platform=sparc
+Associated Incident Id=1681293 
+Associated Incident Status=New 
+Associated Incident Owner= 
+Associated Incident Acknowledged By Owner=No 
+Associated Incident Priority=None 
+Associated Incident Escalation Level=0 
+Event Type=Metric Alert 
+Event name=Response:tnsPing 
+Metric Group=Response
+Metric=Response Time (msec)
+Metric value=20840
+Key Value= 
+Rule Name=Incident management rule set for all targets,Create incident for critical metric alerts 
+Rule Owner=System Generated 
+Update Details:
+Listener response to a TNS ping is 20,840 msecs
+Incident created by rule (Name = Incident management rule set for all targets, Create incident for critical metric alerts [System generated rule]). 
+ 
+BR
+Fatemizadeh
+ 
+ 
+From: Mohammadsaleh Bayat Jozani [ MTNIrancell - Labs ] <mohammadsaleh.b@mtnirancell.ir> 
+Sent: Monday, March 9, 2026 10:04 AM
+To: Alireza Aghajanzadeh Gheshlaghi [ Arya Hamrah Samaneh ] <alireza.aghaja@mtnirancell.ir>; #ITS DC DBA <#ITSDCDBA@mtnirancell.ir>
+Cc: #ITS CSS DBA <#ITSCSSDBA@mtnirancell.ir>; Yasamin Sepehr [ MTNIrancell - Labs ] <yasamin.s@mtnirancell.ir>; ITS CRM Billing-NOC <itscrmbilling-noc@mtnirancell.ir>; #ITS DC UNIX <#ITSDCUNIX@mtnirancell.ir>; ITS Service Desk <itsservicedesk@mtnirancell.ir>; Amir Hemmati [ MTNIrancell - ITS ] <amir.hem@mtnirancell.ir>; Soheil Sarrafi [ MTNIrancell - ITS ] <soheil.sar@mtnirancell.ir>; Erfan Fatemi Zadeh [ MTNIrancell - Labs ] <erfan.f@mtnirancell.ir>; Mohammadamin Mir Shekari [ MTNIrancell - Labs ] <mohammadamin.mir@mtnirancell.ir>; Pardis Goudarzi [ MTNIrancell - Labs ] <pardis.go@mtnirancell.ir>; Sara Sedigh Zadeh [ MTNIrancell - ITS ] <sara.se@mtnirancell.ir>; Morteza Shohrati [ MTNIrancell - Labs ] <morteza.s@mtnirancell.ir>; Somayeh Solgi [ MTNIrancell - ITS ] <Somayeh.s@mtnirancell.ir>; Pardis Goudarzi [ MTNIrancell - Labs ] <pardis.go@mtnirancell.ir>; Hossein Eskandari [ MTNIrancell - ITS ] <hossein.es@mtnirancell.ir>; Mohammadamin Mir Shekari [ MTNIrancell - Labs ] <mohammadamin.mir@mtnirancell.ir>
+Subject: RE: Problem : @bility - dru104a - Critical CPU Utilization
+ 
+Dear Alireza,
+ 
+Based on the chart below, at 8:58 AM in our database, there was no high load, but the event attached to the email refers to 8:58 AM and indicates that the database was unavailable for at least 10 minutes prior to that time. Please share your thoughts on this.
+ 
+ 
+ 
+Best Regards
+Mohammad Saleh Bayat Jozani
+Mobile: +98 9352005270
+ 
+From: Alireza Aghajanzadeh Gheshlaghi [ Arya Hamrah Samaneh ] <alireza.aghaja@mtnirancell.ir> 
+Sent: Monday, March 9, 2026 9:25 AM
+To: Mohammadsaleh Bayat Jozani [ MTNIrancell - Labs ] <mohammadsaleh.b@mtnirancell.ir>; ITS CRM Billing-NOC <itscrmbilling-noc@mtnirancell.ir>; #ITS DC UNIX <#ITSDCUNIX@mtnirancell.ir>; ITS Service Desk <itsservicedesk@mtnirancell.ir>; #ITS DC DBA <#ITSDCDBA@mtnirancell.ir>; Amir Hemmati [ MTNIrancell - ITS ] <amir.hem@mtnirancell.ir>; Soheil Sarrafi [ MTNIrancell - ITS ] <soheil.sar@mtnirancell.ir>; Erfan Fatemi Zadeh [ MTNIrancell - Labs ] <erfan.f@mtnirancell.ir>; Mohammadamin Mir Shekari [ MTNIrancell - Labs ] <mohammadamin.mir@mtnirancell.ir>; Pardis Goudarzi [ MTNIrancell - Labs ] <pardis.go@mtnirancell.ir>
+Cc: #ITS Support Ability <#ITSSupportAbility@mtnirancell.ir>; #ITS Support Middleware <#ITSSupportMiddleware@mtnirancell.ir>; Zahra Ahmadi [ MTNIrancell - Labs ] <zahra.ahmadi2@mtnirancell.ir>; #ITS CSS DBA <#ITSCSSDBA@mtnirancell.ir>; Yasamin Sepehr [ MTNIrancell - Labs ] <yasamin.s@mtnirancell.ir>
+Subject: Re: Problem : @bility - dru104a - Critical CPU Utilization
+ 
+Dear Mohammadsaleh,
+load is decreased now, the blocker is gone and we are able to connect to server.
+ 

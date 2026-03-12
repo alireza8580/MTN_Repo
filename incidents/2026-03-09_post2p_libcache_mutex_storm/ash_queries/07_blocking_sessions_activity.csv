@@ -1,0 +1,108 @@
+-- ============================================================================
+-- Query 07: Blocking Sessions 322 and 3082 — Combined Activity with P1/P2/P3
+-- ============================================================================
+-- Purpose: Track the parallel activity of MMON_SLAVE (322) and root blocker
+--          (3082) during the storm, including P1/P2/P3 wait parameters.
+--          This shows: (1) When MMON transitioned from ON CPU to mutex waiting,
+--          (2) Session 3082's redo block# progression proving sequential scanning,
+--          (3) The exact P2 value encoding holder SID 3082.
+-- Result:  83 rows showing both sessions side-by-side with P1/P2/P3 parameters.
+-- Run on:  POST2P (DBID 2771519206), dru104a
+-- Date:    March 2026 (post-incident investigation)
+-- ============================================================================
+
+-- SQL Query:
+-- SELECT sample_time, session_id, session_serial#, user_id, sql_id, sql_opname,
+--        module, machine, program, event, session_state,
+--        p1text, p1, p2text, p2, p3text, p3
+-- FROM dba_hist_active_sess_history
+-- WHERE dbid = 2771519206
+--   AND instance_number = 1
+--   AND snap_id BETWEEN 233938 AND 233941
+--   AND session_id IN (322, 3082)
+-- ORDER BY sample_time, session_id;
+
+SAMPLE_TIME,SESSION_ID,SESSION_SERIAL#,USER_ID,SQL_ID,SQL_OPNAME,MODULE,MACHINE,PROGRAM,EVENT,SESSION_STATE,P1TEXT,P1,P2TEXT,P2,P3TEXT,P3
+09-MAR-26 08.40.08.418000000 AM,3082,42787,267,1381vc9ny18sn,SELECT,SQL*Plus,drvl141,sqlplus@drvl141 (TNS V1-V3),,ON CPU,address,259444923272,number,155,tries,0
+09-MAR-26 08.40.18.633000000 AM,3082,42787,267,1381vc9ny18sn,SELECT,SQL*Plus,drvl141,sqlplus@drvl141 (TNS V1-V3),,ON CPU,file#,10932,block#,1794047,blocks,1
+09-MAR-26 08.40.18.633000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),,ON CPU,,0,,0,,0
+09-MAR-26 08.41.09.155000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),,ON CPU,idn,41804,value,0,where,49
+09-MAR-26 08.41.29.419000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),,ON CPU,,0,,0,,0
+09-MAR-26 08.41.49.585000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),,ON CPU,,0,,0,,0
+09-MAR-26 08.42.40.084000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),,ON CPU,idn,3981144484,value,6876242640896,where,124
+09-MAR-26 08.43.00.283000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),,ON CPU,,0,,0,,0
+09-MAR-26 08.43.20.455000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),,ON CPU,,0,,0,,0
+09-MAR-26 08.43.40.642000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),,ON CPU,,0,,0,,0
+09-MAR-26 08.44.31.146000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),,ON CPU,,0,,0,,0
+09-MAR-26 08.44.51.316000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),,ON CPU,,0,,0,,0
+09-MAR-26 08.45.11.487000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),,ON CPU,,0,,0,,0
+09-MAR-26 08.46.22.252000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),,ON CPU,,0,,0,,0
+09-MAR-26 08.46.42.466000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),,ON CPU,,0,,0,,0
+09-MAR-26 08.47.02.637000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),,ON CPU,,0,,0,,0
+09-MAR-26 08.47.12.774000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.47.22.860000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.47.33.032000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.47.33.032000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),log file sequential read,WAITING,log#,987952,block#,681984,blocks,2048
+09-MAR-26 08.47.43.187000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.47.43.187000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),log file sequential read,WAITING,log#,987952,block#,3592192,blocks,2048
+09-MAR-26 08.47.53.288000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),log file sequential read,WAITING,log#,987952,block#,6311936,blocks,2048
+09-MAR-26 08.47.53.288000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.48.03.450000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.48.03.450000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),log file sequential read,WAITING,log#,987952,block#,8419328,blocks,2048
+09-MAR-26 08.48.13.621000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.48.13.621000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),,ON CPU,log#,987952,block#,9431040,blocks,2048
+09-MAR-26 08.48.23.740000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),,ON CPU,log#,987952,block#,10366976,blocks,2048
+09-MAR-26 08.48.23.740000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.48.34.208000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.48.34.208000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),,ON CPU,log#,987952,block#,11382784,blocks,2048
+09-MAR-26 08.48.44.395000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),,ON CPU,log#,987952,block#,12355584,blocks,2048
+09-MAR-26 08.48.44.395000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.48.54.525000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),log file sequential read,WAITING,log#,987952,block#,13225984,blocks,2048
+09-MAR-26 08.48.54.525000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.49.04.719000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.49.04.719000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),log file sequential read,WAITING,log#,987952,block#,14075904,blocks,2048
+09-MAR-26 08.49.15.100000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.49.25.250000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),,ON CPU,log#,987953,block#,497664,blocks,2048
+09-MAR-26 08.49.25.250000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.49.35.734000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.49.35.734000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),,ON CPU,log#,987953,block#,1138688,blocks,2048
+09-MAR-26 08.49.46.151000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),,ON CPU,log#,987953,block#,1851392,blocks,2048
+09-MAR-26 08.49.46.151000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.49.56.306000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),log file sequential read,WAITING,log#,987953,block#,2537472,blocks,2048
+09-MAR-26 08.49.56.306000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.50.06.501000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.50.06.501000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),log file sequential read,WAITING,log#,987953,block#,3293184,blocks,2048
+09-MAR-26 08.50.16.731000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.50.16.731000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),log file sequential read,WAITING,log#,987953,block#,4005888,blocks,2048
+09-MAR-26 08.50.29.375000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.50.29.375000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),,ON CPU,log#,987953,block#,4773888,blocks,2048
+09-MAR-26 08.50.39.586000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),,ON CPU,log#,987953,block#,5244928,blocks,2048
+09-MAR-26 08.50.39.586000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.50.50.089000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),log file sequential read,WAITING,log#,987953,block#,5769216,blocks,2048
+09-MAR-26 08.50.50.089000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.51.01.349000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.51.01.349000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),log file sequential read,WAITING,log#,987953,block#,6352896,blocks,2048
+09-MAR-26 08.51.12.386000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.51.12.386000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),,ON CPU,log#,987953,block#,6821888,blocks,2048
+09-MAR-26 08.51.22.924000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.51.22.924000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),,ON CPU,log#,987953,block#,7217152,blocks,2048
+09-MAR-26 08.51.34.052000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),,ON CPU,log#,987953,block#,7743488,blocks,2048
+09-MAR-26 08.51.34.052000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.51.44.344000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),,ON CPU,log#,987953,block#,8284160,blocks,2048
+09-MAR-26 08.51.44.344000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.51.54.529000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.51.54.529000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),,ON CPU,log#,987953,block#,8843264,blocks,2048
+09-MAR-26 08.52.04.758000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.52.04.758000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),,ON CPU,log#,987953,block#,9279488,blocks,2048
+09-MAR-26 08.52.15.963000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),,ON CPU,log#,987953,block#,9791488,blocks,2048
+09-MAR-26 08.52.15.963000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.52.26.133000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.52.26.133000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),,ON CPU,log#,987953,block#,10201088,blocks,2048
+09-MAR-26 08.52.38.876000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.52.38.876000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),log file sequential read,WAITING,log#,987953,block#,10739712,blocks,2048
+09-MAR-26 08.52.49.163000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),,ON CPU,log#,987953,block#,11171840,blocks,2048
+09-MAR-26 08.52.49.163000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.52.59.410000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),,ON CPU,log#,987953,block#,11503616,blocks,2048
+09-MAR-26 08.52.59.410000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124
+09-MAR-26 08.53.09.599000000 AM,3082,44313,267,459f3z9u4fb3u,SELECT,sqlplus@drvl1078 (TNS V1-V3),drvl1078,sqlplus@drvl1078 (TNS V1-V3),,ON CPU,log#,987953,block#,11907072,blocks,2048
+09-MAR-26 08.53.09.599000000 AM,322,45335,0,,,MMON_SLAVE,dru104a,oracle@dru104a (M000),library cache: mutex X,WAITING,idn,1950821498,value,13237089206272,where,124

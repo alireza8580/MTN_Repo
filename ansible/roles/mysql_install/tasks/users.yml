@@ -1,0 +1,12 @@
+---
+# MySQL users setup tasks
+
+# Placeholder for user creation
+# Application-specific users should be created here or via separate playbooks
+
+- name: Display user setup information
+  ansible.builtin.debug:
+    msg: |
+      User setup complete.
+      Default login path 'sqlp6' configured for root user.
+      Use: mysql --login-path=sqlp6
