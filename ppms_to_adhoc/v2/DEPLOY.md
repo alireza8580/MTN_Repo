@@ -172,23 +172,26 @@ crontab -e
 ```
 Add:
 ```
-0 1 * * * /oracle/ppms_to_adhoc/cron_adhoc_import.sh >> /oracle/ppms_to_adhoc/logs/cron.log 2>&1
+0 4 * * * /oracle/ppms_to_adhoc/cron_adhoc_import.sh >> /oracle/ppms_to_adhoc/logs/cron.log 2>&1
 ```
 
-Both fire at 01:00 daily. Each checks Jalali 1st. Export creates `.ppms_export_done` on NFS; import polls for it (every 3 min, up to 12h).
+Export at 01:00, import at 04:00. Both check Jalali 1st.
+Import also checks: no SSH lock file → NFS done signal → start.
 
-### Option B: Single-Side SSH Mode (requires firewall whitelist)
+### Option B: Smart Pipeline (auto SSH detection)
 
-One crontab on dru110a only. Requires SSH from dru110a → t1u904.
+Single cron on dru110a + fallback cron on t1u904.
 
 ```bash
 # On dru110a (oracle crontab):
-crontab -e
-```
-Add:
-```
 0 1 * * * /oracle/ppms_to_adhoc/cron_pipeline.sh >> /oracle/ppms_to_adhoc/logs/cron.log 2>&1
+
+# On t1u904 (oracle crontab) — fallback:
+0 4 * * * /oracle/ppms_to_adhoc/cron_adhoc_import.sh >> /oracle/ppms_to_adhoc/logs/cron.log 2>&1
 ```
+
+If SSH works: dru110a runs everything, SSH lock prevents t1u904 cron from running.
+If SSH fails: dru110a exports only, t1u904 cron at 04:00 handles import via NFS.
 
 ## Step 8: Disable legacy scripts
 

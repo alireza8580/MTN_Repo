@@ -256,7 +256,7 @@ ALTER TABLE REPORT.TPS01_LOG_USED_CARDS SET UNUSED (CPS01_PIN_NUMBER, CPS01_ACCE
 
 ### Option A: v2 Two-Server with NFS Coordination (Current Setup)
 
-Both servers have independent cron jobs. The import polls NFS signal files — no SSH needed.
+Both servers have independent cron jobs. Export at 01:00, import at 04:00 (polls NFS). No SSH needed.
 
 **Crontab on dru110a (oracle user):**
 ```bash
@@ -265,10 +265,11 @@ Both servers have independent cron jobs. The import polls NFS signal files — n
 
 **Crontab on t1u904 (oracle user):**
 ```bash
-0 1 * * * /oracle/ppms_to_adhoc/cron_adhoc_import.sh >> /oracle/ppms_to_adhoc/logs/cron.log 2>&1
+0 4 * * * /oracle/ppms_to_adhoc/cron_adhoc_import.sh >> /oracle/ppms_to_adhoc/logs/cron.log 2>&1
 ```
 
-Both fire at 01:00 daily. Each checks Jalali 1st-of-month. Export creates NFS signal files; import polls for them.
+Both check Jalali 1st-of-month. Export creates NFS signal files; import polls for them.
+The t1u904 cron also checks for SSH lock file — if present (pipeline mode), it skips.
 
 **Manual run (force, bypass Jalali check):**
 ```bash
@@ -282,21 +283,25 @@ Both fire at 01:00 daily. Each checks Jalali 1st-of-month. Export creates NFS si
 
 ### Option B: v2 Single-Side via SSH (Requires Firewall Whitelist)
 
-Runs everything from dru110a, SSHing to t1u904 for import. Requires SSH connectivity.
+Single cron on dru110a. Probes SSH — if available, runs full pipeline. If SSH fails, export completes with NFS signals and import is deferred to t1u904 cron.
 
 **Crontab on dru110a (oracle user):**
 ```bash
 0 1 * * * /oracle/ppms_to_adhoc/cron_pipeline.sh >> /oracle/ppms_to_adhoc/logs/cron.log 2>&1
 ```
 
+**Crontab on t1u904 (oracle user) — fallback for SSH failure:**
+```bash
+0 4 * * * /oracle/ppms_to_adhoc/cron_adhoc_import.sh >> /oracle/ppms_to_adhoc/logs/cron.log 2>&1
+```
+
+If SSH works: dru110a handles everything, t1u904 cron sees SSH lock and skips.
+If SSH fails: dru110a exports with NFS signals, t1u904 cron at 04:00 picks up import.
+
 **Manual run:**
 ```bash
-# Full pipeline (export + SSH import)
+# Full pipeline (auto-detects SSH)
 /oracle/ppms_to_adhoc/run_pipeline.sh
-
-# Or separately
-/oracle/ppms_to_adhoc/run_export.sh
-ssh oracle@t1u904 '/oracle/ppms_to_adhoc/run_import.sh --skip-wait'
 ```
 
 ### Option B: Legacy Two-Server Execution
@@ -368,7 +373,7 @@ scp -r v2/sql oracle@t1u904:/oracle/ppms_to_adhoc/
 | `ppms_to_adhoc.conf` | Both | Central configuration (SIDs, paths, table arrays, parallelism, PII, email) |
 | `common.sh` | Both | Shared functions (logging, email, SSH lock, NFS signals, parallelism, helpers) |
 | `is_jalali_first.sh` | Both | Jalali 1st-of-month detection (FarsiWeb algorithm) |
-| `run_pipeline.sh` | dru110a | Single-side orchestrator: export + SSH import (Option B) |
+| `run_pipeline.sh` | dru110a | Smart orchestrator: probes SSH → full pipeline or export-only with NFS |
 | `run_export.sh` | dru110a | Export orchestrator (trap, NFS signals, optional SSH lock, expdp) |
 | `run_import.sh` | t1u904 | Import orchestrator (NFS/SSH wait, DDL, impdp, validation, indexes, PII, grants) |
 | `cron_pipeline.sh` | dru110a | Cron wrapper: Jalali check → run_pipeline.sh (Option B) |
