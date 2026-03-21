@@ -1,11 +1,11 @@
 #!/bin/bash
 #
-# cron_adhoc_import.sh - Cron entry point for ADHOC import
+# cron_adhoc_import.sh - Cron entry point for ADHOC import (t1u904)
 #
 # Runs daily from cron. Checks if today is the 1st of a Jalali month.
-# If yes, runs the import (waits for export lock to clear). If no, exits silently.
+# If yes, runs the import which polls the NFS signal file until export is done.
 #
-# Crontab entry (run at 01:00 daily, same as export - import waits for lock):
+# Crontab entry on t1u904 (oracle user):
 #   0 1 * * * /oracle/ppms_to_adhoc/cron_adhoc_import.sh >> /oracle/ppms_to_adhoc/logs/cron.log 2>&1
 #
 

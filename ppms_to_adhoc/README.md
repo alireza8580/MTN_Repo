@@ -9,11 +9,11 @@ Automated Oracle Data Pump (expdp/impdp) pipeline that replicates 15 tables from
 | Source (expdp) | dru110a | `ppms3p` | `/oracle11/product/11.2.0.3/db_1` | Solaris 10 |
 | Target (impdp) | t1u904 | `adhoc1p` | `/oracle/product/11.2.0.4/db_1` | Solaris 10 |
 
-SSH connectivity: `oracle@dru110a` can SSH to `oracle@t1u904` (passwordless).
+SSH connectivity: `oracle@dru110a` → `oracle@t1u904` (currently blocked by firewall — whitelist pending).
 
 ## Shared NFS Storage
 
-Both servers access the same NFS storage through different mount points:
+Both servers access the same NFS storage through the same mount point:
 
 | Server | Hostname | Mount Point | Oracle Directory |
 |--------|----------|-------------|-----------------|
@@ -54,22 +54,50 @@ All tables are exported from `PREPAID` schema and imported into `REPORT` schema 
 
 ## Execution Flow
 
-### v2 Single-Side Flow (from dru110a)
+### v2 Two-Server Flow (NFS coordination, no SSH needed)
+
+```
+dru110a (PPMS)                                  t1u904 (ADHOC)
+─────────────                                   ──────────────
+cron at 01:00 daily                             cron at 01:00 daily
+  │                                               │
+  ├─ is_jalali_first.sh                           ├─ is_jalali_first.sh
+  │  exit if not 1st                              │  exit if not 1st
+  │                                               │
+  ├─ run_export.sh --no-lock                      ├─ run_import.sh (default: NFS poll)
+  │   ├─ trap handler (cleanup NFS signal)        │   ├─ polls NFS for .ppms_export_done
+  │   ├─ NFS: create .ppms_export_running         │   │  (every 3 min, up to 12h)
+  │   ├─ NFS space check                          │   │
+  │   ├─ expdp for each table                     │   └─ (continues when done signal found)
+  │   ├─ check logs for ORA- errors               │       ├─ validate dump count >= 58
+  │   │                                           │       ├─ Phase 1: DROP + CREATE, NOLOGGING
+  │   ├─ SUCCESS: NFS .ppms_export_done           │       ├─ Phase 2: impdp (2 streams)
+  │   └─ FAILURE: remove .ppms_export_running     │       │   └─ ABORT on failure
+  │                                               │       ├─ Phase 2b: Row count validation
+        ┌─── NFS ──────────────────────┐          │       ├─ Phase 3: PII cleanup
+        │ .dmp + .log + signal files   │          │       ├─ Phase 4: CREATE INDEX
+        └──────────────────────────────┘          │       ├─ Phase 5: GRANTs
+                                                  │       └─ email result
+```
+
+### v2 Single-Side Flow (from dru110a, requires SSH)
 
 ```
 dru110a (PPMS) ─ cron at 01:00 daily
   │
   ├─ is_jalali_first.sh → exit if not 1st
   │
-  ├─ run_export.sh (local expdp)
-  │   ├─ trap handler (cleanup lock on SIGTERM)
+  ├─ run_export.sh (with SSH lock + NFS signals)
+  │   ├─ trap handler (cleanup lock + NFS signal on SIGTERM)
   │   ├─ NFS space check
-  │   ├─ lock file on t1u904
+  │   ├─ SSH lock file on t1u904
+  │   ├─ NFS: create .ppms_export_running
   │   ├─ email "export started"
   │   ├─ expdp for each table (from HEAVY_TABLES + LIGHT_TABLES arrays)
   │   ├─ check logs for ORA- errors
+  │   ├─ NFS: create .ppms_export_done (or remove running on failure)
   │   ├─ email result
-  │   └─ remove lock file
+  │   └─ remove SSH lock file
   │
   └─ ssh oracle@t1u904 run_import.sh --skip-wait
       ├─ validate dump count >= 58
@@ -175,11 +203,32 @@ dru110a (PPMS) ─ cron at 01:00 daily
 | `ramram2.sql`, `ramram3.sql` | ADHOC: `/oracle/admin/dba/sql/` |
 | `impdp_ppms_to_adhoc_mail.sh` | ADHOC: `/oracle/` |
 
-## Coordination Mechanism
+## Coordination Mechanisms
 
-1. **Lock file** (`/tmp/exp.lock` on t1u904): Created before export starts (via SSH from dru110a), removed after export completes. The import script polls for this file every 3 minutes.
-2. **Dump file count**: Import validates that at least 58 `.dmp` files exist (with mtime < 3 days) before proceeding.
-3. **Shared SQL timestamp**: Both sides poll the same `ppms_to_adhoc_time.sql` to start at the right time.
+### NFS Signal Files (default — no SSH required)
+
+Signal files on the shared NFS directory coordinate export and import without SSH:
+
+| Signal File | Created By | Meaning |
+|-------------|------------|--------|
+| `.ppms_export_running` | `run_export.sh` at start | Export is in progress |
+| `.ppms_export_done` | `run_export.sh` on success | Export completed, import can proceed |
+
+- `run_import.sh` (default mode) polls for `.ppms_export_done` every 3 minutes
+- On export failure, `.ppms_export_running` is removed but `.ppms_export_done` is NOT created
+- Stale timeout: import aborts after `LOCK_MAX_WAIT_HOURS` (12h)
+
+### SSH Lock File (alternative — requires firewall whitelist)
+
+SSH-based lock on t1u904 (`/tmp/exp.lock`), created/polled/removed via SSH:
+
+- `run_export.sh` (without `--no-lock`): creates lock before export, removes after
+- `run_import.sh --wait-ssh`: polls lock until it disappears, then starts import
+- Currently blocked by firewall between dru110a ↔ t1u904
+
+### Dump File Validation
+
+Both modes validate that at least 58 `.dmp` files exist (mtime < 3 days) before importing.
 
 ## PII Handling
 
@@ -205,26 +254,47 @@ ALTER TABLE REPORT.TPS01_LOG_USED_CARDS SET UNUSED (CPS01_PIN_NUMBER, CPS01_ACCE
 
 ## How to Run
 
-### Option A: v2 Single-Side Execution (Recommended)
+### Option A: v2 Two-Server with NFS Coordination (Current Setup)
 
-The refactored v2 scripts run everything from **dru110a** (PPMS server), SSHing to t1u904 for the import. No manual timestamp editing required — Jalali 1st-of-month detection is automatic.
+Both servers have independent cron jobs. The import polls NFS signal files — no SSH needed.
+
+**Crontab on dru110a (oracle user):**
+```bash
+0 1 * * * /oracle/ppms_to_adhoc/cron_ppms_export.sh >> /oracle/ppms_to_adhoc/logs/cron.log 2>&1
+```
+
+**Crontab on t1u904 (oracle user):**
+```bash
+0 1 * * * /oracle/ppms_to_adhoc/cron_adhoc_import.sh >> /oracle/ppms_to_adhoc/logs/cron.log 2>&1
+```
+
+Both fire at 01:00 daily. Each checks Jalali 1st-of-month. Export creates NFS signal files; import polls for them.
+
+**Manual run (force, bypass Jalali check):**
+```bash
+# On dru110a:
+/oracle/ppms_to_adhoc/run_export.sh --no-lock
+
+# On t1u904 (after export finishes, or let it poll):
+/oracle/ppms_to_adhoc/run_import.sh              # polls NFS signal
+/oracle/ppms_to_adhoc/run_import.sh --skip-wait   # skip polling, start immediately
+```
+
+### Option B: v2 Single-Side via SSH (Requires Firewall Whitelist)
+
+Runs everything from dru110a, SSHing to t1u904 for import. Requires SSH connectivity.
 
 **Crontab on dru110a (oracle user):**
 ```bash
 0 1 * * * /oracle/ppms_to_adhoc/cron_pipeline.sh >> /oracle/ppms_to_adhoc/logs/cron.log 2>&1
 ```
 
-This runs at 01:00 daily. The script checks if today is the 1st of a Jalali month. If not, it exits. If yes, it:
-1. Exports all 15 tables locally on dru110a (expdp)
-2. SSHes to t1u904 and runs import (impdp, DDL, indexes, PII cleanup, grants)
-3. Emails status at each phase
-
 **Manual run:**
 ```bash
-# Run full pipeline now (from dru110a as oracle)
+# Full pipeline (export + SSH import)
 /oracle/ppms_to_adhoc/run_pipeline.sh
 
-# Or run export/import separately
+# Or separately
 /oracle/ppms_to_adhoc/run_export.sh
 ssh oracle@t1u904 '/oracle/ppms_to_adhoc/run_import.sh --skip-wait'
 ```
@@ -296,14 +366,14 @@ scp -r v2/sql oracle@t1u904:/oracle/ppms_to_adhoc/
 | File | Server | Description |
 |------|--------|-------------|
 | `ppms_to_adhoc.conf` | Both | Central configuration (SIDs, paths, table arrays, parallelism, PII, email) |
-| `common.sh` | Both | Shared functions (logging, email, lock, parallelism lookup, helpers) |
-| `is_jalali_first.sh` | dru110a | Jalali 1st-of-month detection (FarsiWeb algorithm) |
-| `run_pipeline.sh` | dru110a | Single-side orchestrator: export + SSH import |
-| `run_export.sh` | dru110a | Export orchestrator (trap handler, lock file, expdp, error checking) |
-| `run_import.sh` | t1u904 | Import orchestrator (DDL, impdp, row validation, indexes, PII, grants) |
-| `cron_pipeline.sh` | dru110a | Cron wrapper: Jalali check → run_pipeline.sh |
-| `cron_ppms_export.sh` | dru110a | Cron wrapper (export only, for two-server mode) |
-| `cron_adhoc_import.sh` | t1u904 | Cron wrapper (import only, for two-server mode) |
+| `common.sh` | Both | Shared functions (logging, email, SSH lock, NFS signals, parallelism, helpers) |
+| `is_jalali_first.sh` | Both | Jalali 1st-of-month detection (FarsiWeb algorithm) |
+| `run_pipeline.sh` | dru110a | Single-side orchestrator: export + SSH import (Option B) |
+| `run_export.sh` | dru110a | Export orchestrator (trap, NFS signals, optional SSH lock, expdp) |
+| `run_import.sh` | t1u904 | Import orchestrator (NFS/SSH wait, DDL, impdp, validation, indexes, PII, grants) |
+| `cron_pipeline.sh` | dru110a | Cron wrapper: Jalali check → run_pipeline.sh (Option B) |
+| `cron_ppms_export.sh` | dru110a | Cron wrapper: Jalali check → run_export.sh (Option A) |
+| `cron_adhoc_import.sh` | t1u904 | Cron wrapper: Jalali check → run_import.sh (Option A) |
 | `sql/create_tables.sql` | t1u904 | DDL for all 15 REPORT tables |
 | `sql/create_indexes_1.sql` | t1u904 | Index stream 1 (LOG_CARDS, USED_CARDS, TPS11, etc.) |
 | `sql/create_indexes_2.sql` | t1u904 | Index stream 2 (TPS73, TPS107, TPS01_CARDS, etc.) |
@@ -311,8 +381,9 @@ scp -r v2/sql oracle@t1u904:/oracle/ppms_to_adhoc/
 
 ### v2 Safety Features
 
-- **Trap handler** (`run_export.sh`): Catches SIGINT/SIGTERM/SIGHUP — removes lock file and sends email before exit. Prevents orphaned locks on script kill.
-- **Stale lock timeout** (`run_import.sh`): In two-server mode, the lock-wait loop aborts after `LOCK_MAX_WAIT_HOURS` (default: 12h) instead of waiting forever.
+- **NFS signal coordination** (`run_export.sh` + `run_import.sh`): Export writes `.ppms_export_running` / `.ppms_export_done` signal files on shared NFS. Import polls NFS — no SSH required between servers.
+- **Trap handler** (`run_export.sh`): Catches SIGINT/SIGTERM/SIGHUP — removes NFS running signal and SSH lock (if active), sends email before exit. Prevents orphaned signals.
+- **Stale lock timeout** (`run_import.sh`): Both NFS and SSH wait loops abort after `LOCK_MAX_WAIT_HOURS` (default: 12h) instead of waiting forever.
 - **Phase 2 abort** (`run_import.sh`): If either import stream fails, the pipeline aborts immediately — no wasting hours building indexes on broken data.
 - **Row count validation** (`run_import.sh`): After Phase 2, queries every imported table. Warns (with email) if any table has 0 rows, catching partial imports.
 - **Table lists in conf**: All table names, parallelism, PII columns, and special-case tables are defined in `ppms_to_adhoc.conf`. Adding/removing a table only requires editing the conf — no script changes needed.

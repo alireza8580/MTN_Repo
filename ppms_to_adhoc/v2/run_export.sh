@@ -28,6 +28,7 @@ ensure_dir "${LOG_DIR_PPMS}"
 # ============================================================
 cleanup() {
     log_error "Caught signal — cleaning up before exit"
+    nfs_signal_fail "${NFS_PATH_PPMS}"
     if [ "${NO_LOCK}" = "false" ]; then
         remove_lock
     fi
@@ -95,6 +96,9 @@ if [ "${NO_LOCK}" = "false" ]; then
         exit 1
     fi
 fi
+
+# NFS signal: mark export as running (always, independent of SSH lock)
+nfs_signal_start "${NFS_PATH_PPMS}"
 
 send_mail "PPMS_EXPORT_STARTED" "Export started.
 
@@ -165,6 +169,7 @@ error_logs=$(egrep -il 'ORA-|failed' "${NFS_PATH_PPMS}"/exp_PREPAID*.log 2>/dev/
 if [ ${export_failed} -ne 0 ] || [ -n "${error_logs}" ]; then
     log_error "Export completed WITH ERRORS"
     _error_detail=$(egrep -h 'ORA-' "${NFS_PATH_PPMS}"/exp_PREPAID*.log 2>/dev/null | sort -u | head -30)
+    nfs_signal_fail "${NFS_PATH_PPMS}"
     send_mail "PPMS_EXPORT_FAILED" "Export completed with errors.
 
 Failed log files:
@@ -177,10 +182,11 @@ Full logs at: ${NFS_PATH_PPMS}/exp_PREPAID*.log"
     echo "failed expdp" > "${LOG_DIR_PPMS}/failed_expdp_${DATE_TAG}.log"
 else
     log_info "Export completed successfully"
+    nfs_signal_done "${NFS_PATH_PPMS}"
     send_mail "PPMS_EXPORT_COMPLETED" "Export completed successfully. All tables exported."
 fi
 
-# Remove lock when done (if using lock)
+# Remove SSH lock when done (if using lock)
 if [ "${NO_LOCK}" = "false" ]; then
     remove_lock
 fi

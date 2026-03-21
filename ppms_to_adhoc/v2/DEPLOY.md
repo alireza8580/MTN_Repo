@@ -13,21 +13,14 @@ Step-by-step instructions for deploying the refactored PPMS-to-ADHOC pipeline on
 
 Before deploying, verify:
 
-1. **SSH access** — passwordless SSH from `oracle@dru110a` to `oracle@t1u904`:
-   ```bash
-   # From dru110a as oracle:
-   ssh oracle@t1u904 'hostname'
-   # Should print: t1u904
-   ```
-
-2. **NFS mount** — both servers can access the shared dump directory:
+1. **NFS mount** — both servers can access the shared dump directory:
    ```bash
    # Both servers:
    ls /net/dru112c/dba_data/RAMIN/PPMS3P/
    df -h /net/dru112c/dba_data/RAMIN/PPMS3P/
    ```
 
-3. **Oracle directory objects** — must exist in both databases:
+2. **Oracle directory objects** — must exist in both databases:
    ```sql
    -- On PPMS (ppms3p):
    SELECT directory_name, directory_path FROM dba_directories
@@ -49,6 +42,13 @@ Before deploying, verify:
    ```sql
    -- On ADHOC (adhoc1p):
    SELECT username, default_tablespace FROM dba_users WHERE username = 'REPORT';
+   ```
+
+6. **(Optional) SSH access** — for single-side mode. Not required for NFS coordination:
+   ```bash
+   # From dru110a as oracle:
+   ssh oracle@t1u904 'hostname'
+   # If this fails, use Option A (two-server NFS mode) instead of Option B
    ```
 
 ## Step 1: Create directories
@@ -80,11 +80,12 @@ scp v2/sql/*.sql             oracle@dru110a:/oracle/ppms_to_adhoc/sql/
 
 ## Step 3: Deploy files to t1u904 (ADHOC)
 
-Only import-related files and shared config needed here.
+Import scripts, shared config, and Jalali detection needed here.
 
 ```bash
 scp v2/ppms_to_adhoc.conf  oracle@t1u904:/oracle/ppms_to_adhoc/
 scp v2/common.sh            oracle@t1u904:/oracle/ppms_to_adhoc/
+scp v2/is_jalali_first.sh   oracle@t1u904:/oracle/ppms_to_adhoc/
 scp v2/run_import.sh        oracle@t1u904:/oracle/ppms_to_adhoc/
 scp v2/cron_adhoc_import.sh oracle@t1u904:/oracle/ppms_to_adhoc/
 scp v2/sql/*.sql             oracle@t1u904:/oracle/ppms_to_adhoc/sql/
@@ -139,48 +140,55 @@ Test the export (one table only — modify conf temporarily):
 #   HEAVY_TABLES=()
 #   LIGHT_TABLES=("PREPAID.TPS08_DENOMINATION_TYPES")
 # Then:
-/oracle/ppms_to_adhoc/run_export.sh
+/oracle/ppms_to_adhoc/run_export.sh --no-lock
 ```
 
-If export works, test the import from dru110a:
+If export works, test the import on t1u904:
 
 ```bash
-ssh oracle@t1u904 '/oracle/ppms_to_adhoc/run_import.sh --skip-wait'
+/oracle/ppms_to_adhoc/run_import.sh --skip-wait
 ```
 
 **After testing, restore the original table lists in conf.**
 
 ## Step 7: Install crontab
 
-### Option A: Single-Side (recommended)
+### Option A: Two-Server NFS Mode (recommended — no SSH required)
 
-Only one crontab entry on **dru110a**. The script handles everything, including SSHing to t1u904 for import.
-
-```bash
-# On dru110a as oracle:
-crontab -e
-```
-
-Add this line:
-```
-0 1 * * * /oracle/ppms_to_adhoc/cron_pipeline.sh >> /oracle/ppms_to_adhoc/logs/cron.log 2>&1
-```
-
-This runs at 01:00 every day. `is_jalali_first.sh` exits silently on non-Jalali-1st days.
-
-### Option B: Two-Server Mode
-
-If you prefer independent scheduling (e.g., SSH connectivity is unreliable), set up cron on **both** servers:
+Independent cron on both servers. Import polls NFS signal files.
 
 ```bash
 # On dru110a (oracle crontab):
+crontab -e
+```
+Add:
+```
 0 1 * * * /oracle/ppms_to_adhoc/cron_ppms_export.sh >> /oracle/ppms_to_adhoc/logs/cron.log 2>&1
-
-# On t1u904 (oracle crontab):
-5 1 * * * /oracle/ppms_to_adhoc/cron_adhoc_import.sh >> /oracle/ppms_to_adhoc/logs/cron.log 2>&1
 ```
 
-Import starts 5 minutes after export and polls the lock file until export finishes (up to `LOCK_MAX_WAIT_HOURS`).
+```bash
+# On t1u904 (oracle crontab):
+crontab -e
+```
+Add:
+```
+0 1 * * * /oracle/ppms_to_adhoc/cron_adhoc_import.sh >> /oracle/ppms_to_adhoc/logs/cron.log 2>&1
+```
+
+Both fire at 01:00 daily. Each checks Jalali 1st. Export creates `.ppms_export_done` on NFS; import polls for it (every 3 min, up to 12h).
+
+### Option B: Single-Side SSH Mode (requires firewall whitelist)
+
+One crontab on dru110a only. Requires SSH from dru110a → t1u904.
+
+```bash
+# On dru110a (oracle crontab):
+crontab -e
+```
+Add:
+```
+0 1 * * * /oracle/ppms_to_adhoc/cron_pipeline.sh >> /oracle/ppms_to_adhoc/logs/cron.log 2>&1
+```
 
 ## Step 8: Disable legacy scripts
 
@@ -225,9 +233,14 @@ ls -lt /net/dru112c/dba_data/RAMIN/PPMS3P/exp_PREPAID*.log | head -5
 ls -lt /net/dru112c/dba_data/RAMIN/PPMS3P/imp_PREPAID*.log | head -5
 ```
 
-### Check for stale lock
+### Check for stale signals / lock
 
 ```bash
+# NFS signal files:
+ls -la /net/dru112c/dba_data/RAMIN/PPMS3P/.ppms_export_*
+cat /net/dru112c/dba_data/RAMIN/PPMS3P/.ppms_export_done   # shows date + timestamp
+
+# SSH lock (if using single-side mode):
 ssh oracle@t1u904 'ls -la /tmp/exp.lock 2>/dev/null && echo "LOCK EXISTS" || echo "No lock"'
 ```
 

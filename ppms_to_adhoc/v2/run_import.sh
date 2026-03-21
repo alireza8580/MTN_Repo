@@ -2,10 +2,13 @@
 #
 # run_import.sh - ADHOC Data Pump Import
 #
-# Runs on the ADHOC server. Waits for export lock to clear, validates dumps,
+# Runs on the ADHOC server. Waits for export to finish, validates dumps,
 # drops/creates tables, imports data, cleans PII, creates indexes, sets grants.
 #
-# Usage: ./run_import.sh
+# Wait modes:
+#   (default)    Poll NFS signal files on shared storage (no SSH needed)
+#   --wait-ssh   Poll SSH lock file on ADHOC (requires firewall whitelist)
+#   --skip-wait  Skip waiting entirely (used by run_pipeline.sh via SSH)
 #
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
@@ -26,13 +29,23 @@ ensure_dir "${LOG_DIR_ADHOC}"
 log_info "=== PPMS to ADHOC Import Starting ==="
 
 # ============================================================
-# Wait for export lock to be released (skip if --skip-wait)
+# Wait for export completion
+#   (default)    : poll NFS signal files (no SSH required)
+#   --wait-ssh   : poll SSH lock file (requires firewall whitelist)
+#   --skip-wait  : skip waiting (called from run_pipeline.sh)
 # ============================================================
+WAIT_MODE="nfs"
 if [ "$1" = "--skip-wait" ]; then
-    log_info "Lock wait skipped (--skip-wait flag, called from pipeline)."
-else
-    log_info "Waiting for export to complete (checking lock file)..."
+    WAIT_MODE="skip"
+elif [ "$1" = "--wait-ssh" ]; then
+    WAIT_MODE="ssh"
+fi
 
+if [ "${WAIT_MODE}" = "skip" ]; then
+    log_info "Wait skipped (--skip-wait flag, called from pipeline)."
+
+elif [ "${WAIT_MODE}" = "ssh" ]; then
+    log_info "Waiting for export to complete (SSH lock on ${LOCK_HOST})..."
     _wait_start=$(date +%s)
     _max_wait=$((LOCK_MAX_WAIT_HOURS * 3600))
     while check_lock; do
@@ -42,11 +55,38 @@ else
             send_mail "PPMS_IMPORT_FAILED" "Import aborted: lock file ${LOCK_FILE} on ${LOCK_HOST} still exists after ${LOCK_MAX_WAIT_HOURS} hours. Possible stale lock."
             exit 1
         fi
-        log_info "Lock file still exists, waiting 3 minutes... (elapsed: $((${_elapsed}/60))m / max: $((${_max_wait}/60))m)"
+        log_info "SSH lock still exists, waiting 3 minutes... (elapsed: $((${_elapsed}/60))m / max: $((${_max_wait}/60))m)"
         sleep 180
     done
+    log_info "SSH lock cleared. Export appears complete."
 
-    log_info "Lock file cleared. Export appears complete."
+else
+    # Default: NFS signal polling
+    log_info "Waiting for export to complete (NFS signal on ${NFS_PATH_ADHOC})..."
+    _wait_start=$(date +%s)
+    _max_wait=$((LOCK_MAX_WAIT_HOURS * 3600))
+    while true; do
+        if nfs_check_done "${NFS_PATH_ADHOC}" "${DATE_TAG}"; then
+            log_info "NFS signal: export completed for today (${DATE_TAG}). Proceeding."
+            break
+        fi
+
+        _elapsed=$(( $(date +%s) - _wait_start ))
+        if [ ${_elapsed} -ge ${_max_wait} ]; then
+            log_error "No export done signal after ${LOCK_MAX_WAIT_HOURS}h."
+            send_mail "PPMS_IMPORT_FAILED" "Import aborted: NFS export done signal not found after ${LOCK_MAX_WAIT_HOURS} hours.
+Signal file expected: ${NFS_PATH_ADHOC}/${NFS_SIGNAL_DONE}
+Checked for date: ${DATE_TAG}"
+            exit 1
+        fi
+
+        if nfs_check_running "${NFS_PATH_ADHOC}"; then
+            log_info "Export in progress, waiting 3 min... (elapsed: $((${_elapsed}/60))m)"
+        else
+            log_info "Export not started yet, waiting 3 min... (elapsed: $((${_elapsed}/60))m)"
+        fi
+        sleep 180
+    done
 fi
 
 # ============================================================

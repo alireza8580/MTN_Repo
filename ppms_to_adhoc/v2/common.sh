@@ -47,6 +47,10 @@ ${_body}
 EOF
 }
 
+# ============================================================
+# SSH-based lock functions (requires SSH between servers)
+# ============================================================
+
 # Check if lock file exists on remote host
 # Returns 0 if lock exists, 1 if not
 check_lock() {
@@ -74,6 +78,54 @@ remove_lock() {
     fi
     log_info "Lock file removed from ${LOCK_HOST}:${LOCK_FILE}"
     return 0
+}
+
+# ============================================================
+# NFS-based signal functions (no SSH required)
+# ============================================================
+# Signal files live on the shared NFS directory visible to both servers.
+# Each script uses its own NFS_PATH_* variable as the base directory.
+
+# Mark export as started (removes any previous done signal)
+nfs_signal_start() {
+    local _dir="$1"
+    rm -f "${_dir}/${NFS_SIGNAL_DONE}"
+    echo "$(date +%Y%m%d) started pid=$$ at $(date +%H:%M:%S)" > "${_dir}/${NFS_SIGNAL_RUNNING}"
+    log_info "NFS signal: export running (${_dir}/${NFS_SIGNAL_RUNNING})"
+}
+
+# Mark export as completed successfully
+nfs_signal_done() {
+    local _dir="$1"
+    rm -f "${_dir}/${NFS_SIGNAL_RUNNING}"
+    echo "$(date +%Y%m%d) completed pid=$$ at $(date +%H:%M:%S)" > "${_dir}/${NFS_SIGNAL_DONE}"
+    log_info "NFS signal: export done (${_dir}/${NFS_SIGNAL_DONE})"
+}
+
+# Remove running signal on failure (does NOT create done signal)
+nfs_signal_fail() {
+    local _dir="$1"
+    rm -f "${_dir}/${NFS_SIGNAL_RUNNING}"
+    log_info "NFS signal: export failed, running signal removed"
+}
+
+# Check if export completed today. Returns 0 if done, 1 if not.
+nfs_check_done() {
+    local _dir="$1"
+    local _today="$2"  # YYYYMMDD
+    if [ -f "${_dir}/${NFS_SIGNAL_DONE}" ]; then
+        local _sig_date=$(awk '{print $1}' "${_dir}/${NFS_SIGNAL_DONE}" 2>/dev/null)
+        if [ "${_sig_date}" = "${_today}" ]; then
+            return 0
+        fi
+    fi
+    return 1
+}
+
+# Check if export is currently running. Returns 0 if running, 1 if not.
+nfs_check_running() {
+    local _dir="$1"
+    [ -f "${_dir}/${NFS_SIGNAL_RUNNING}" ]
 }
 
 # Check export/import logs for errors
