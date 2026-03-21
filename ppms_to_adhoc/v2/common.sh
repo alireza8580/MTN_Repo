@@ -107,3 +107,28 @@ table_short_name() {
 table_schema() {
     echo "$1" | sed 's/\..*//'
 }
+
+# Convert PREPAID.TABLE to REPORT.TABLE
+to_report_table() {
+    echo "$1" | sed 's/^PREPAID\./REPORT./'
+}
+
+# Get export parallelism for a table (uses EXP_PARALLEL_* from conf)
+get_exp_parallel() {
+    case "$1" in
+        *TPS01_CARDS)                                                    echo "${EXP_PARALLEL_CARDS:-20}" ;;
+        *TPS01_LOG_CARDS|*TPS01_LOG_USED_CARDS|*TPS31_CARD_BRICKS)      echo "${EXP_PARALLEL_LARGE:-8}" ;;
+        *TPS30_CARD_BOXES)                                               echo "${EXP_PARALLEL_MEDIUM:-4}" ;;
+        *)                                                               echo 1 ;;
+    esac
+}
+
+# Get import parallelism for a table (uses IMP_PARALLEL_* from conf)
+get_imp_parallel() {
+    case "$1" in
+        *TPS01_CARDS)                                                    echo "${IMP_PARALLEL_CARDS:-20}" ;;
+        *TPS01_LOG_CARDS|*TPS01_LOG_USED_CARDS|*TPS31_CARD_BRICKS)      echo "${IMP_PARALLEL_LARGE:-8}" ;;
+        *TPS30_CARD_BOXES)                                               echo "${IMP_PARALLEL_MEDIUM:-4}" ;;
+        *)                                                               echo 1 ;;
+    esac
+}

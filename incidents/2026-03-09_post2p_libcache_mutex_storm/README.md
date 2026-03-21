@@ -6,7 +6,10 @@
 **DBID:** 2771519206  
 **Incident Window:** 08:47–09:27 (storm onset at 08:47:12, full resolution by ~09:23)  
 **Snap IDs:** 233938–233941  
+**Ticket:** MTNI-1459453  
 **Ticket Subject:** Problem : @bility - dru104a - Critical CPU Utilization  
+**Previous Identical Incident:** MTNI-760378 (May 15, 2022) — same DB, same symptoms, RCA = "Application Misuse"  
+**Status:** Awaiting application team response to identify Session 3082's operation. Email v8 finalized (March 14, 2026) — addressed to Omid/Mehdi, includes 2022 precedent (MTNI-760378), technical rebuttals, SOC option.  
 
 ---
 
@@ -204,6 +207,8 @@ Oracle 11.2.0.2 has known bugs related to `library cache: mutex X`:
 
 ## 6. Erfan's Arguments and Our Rebuttals
 
+### Phase 1 — March 9-10 (Initial Email Exchange)
+
 ### Erfan's Argument 1: "The workload is normal, preUploadPK has 66M on March 7"
 **Our response:** Acknowledged. He was correct. The workload volume was normal. But the same workload produced catastrophic mutex waits because of Session 3082's operation.
 
@@ -219,26 +224,148 @@ Oracle 11.2.0.2 has known bugs related to `library cache: mutex X`:
 ### Erfan's Argument 5: "CPU load increased after 9:15, not before"
 **Our response:** CPU was being consumed but processes were mostly WAITING (on mutexes, not running on CPU). `library cache: mutex X` is a "Concurrency" class wait — sessions spin briefly then sleep. The load average of 2628 confirms massive process pileup. The CPU spike at 09:15+ happens when the mutex releases and all queued sessions execute simultaneously.
 
+### Phase 2 — March 14 (Post-Meeting Response)
+
+After a meeting held March 14 (2:00-2:30 PM), Erfan sent a follow-up email at 4:27 PM with a strategy shift. Instead of defending application workload, he pivoted to blaming Oracle bugs and SYS internal session.
+
+### Erfan's Argument 6: "SYS Session 322 = 68% blocking, application 3082 = only 8%"
+**Our response:** This is **misleading**. Session 322 (SYS, MMON_SLAVE) is an Oracle background process that was **BLOCKED BY Session 3082**. The blocking relationship is proven mathematically:
+
+```
+Session 322 waited on "library cache: mutex X" with P2 = 13,237,089,206,272
+TRUNC(13,237,089,206,272 / POWER(2,32)) = 3082
+```
+
+The upper 32 bits of P2 contain the SID of the mutex holder. Session 322 was waiting for 3082 to release the mutex. The "68%" attributed to Session 322 is **cascading impact** — like blaming a traffic jam on the second car in line while ignoring the accident ahead of it.
+
+62 consecutive ASH samples (08:47:12–09:23:03) confirm this chain without interruption.
+
+### Erfan's Argument 7: "ORA-00600 errors in alert log — Oracle bugs"
+**Our response:** The alert log entries Erfan cited:
+
+```
+ORA-00600: [kkscxa_1]              at 08:52:43
+ORA-00600: [kgh_heap_sizes:ds]     at 08:52:43
+KGX cleanup, Mutex 3b1c0326a8(322, 0)
+```
+
+Key observations:
+- The storm began at **08:47:12** (confirmed by ASH). These errors appeared at **08:52:43** — a full **5 minutes and 31 seconds later**.
+- `[kkscxa_1]` = "kernel kompile shared cursor add" — occurs when shared pool is under extreme contention. This is exactly what happens when a mutex is held for minutes instead of microseconds.
+- The mutex reference `(322, 0)` refers to Session 322 (MMON_SLAVE) — the same session our analysis showed was blocked by 3082.
+- These errors are **SYMPTOMS** of prolonged mutex holding, not independent bugs. Presenting consequences as causes reverses the causality chain.
+
+### Erfan's Argument 8: "Upgrade to Oracle 11.2.0.4 — these bugs are fixed in that release"
+**Our response:** This is a deflection that shifts the burden to infrastructure. Even on 11.2.0.4, a session holding a library cache mutex for 36 minutes while scanning redo logs would produce an identical storm. The upgrade is a capacity planning topic; it does not explain WHY Session 3082 was scanning redo logs on March 9 when it never did on March 7 or March 8. 
+
+Note: We are not opposed to the upgrade — in fact, certain blocked infrastructure tasks such as server migration depend on it. But this is not the RCA for this incident.
+
+### Erfan's Argument 9: "No abnormal load observed compared to previous days"
+**Our response:** We agree. That is precisely the point — the same normal workload produced a **100,000x increase** in mutex wait time. The only difference on March 9 was Session 3082's redo-scanning operation from drvl1078, which does not appear in any comparison AWR (March 7, March 8, 17 Esfand).
+
+### Pattern of Deflection
+
+The application team has produced three successive misdirections over the course of the investigation:
+
+| # | Deflection | When | Debunked |
+|---|-----------|------|----------|
+| 1 | "Listener problems since 08:50" | March 9-10 | Listener degradation is consequence of DB mutex, not cause |
+| 2 | "ORA-00600 errors = Oracle bugs" | March 14 | Errors at 08:52:43, 5 min AFTER storm at 08:47:12. Symptoms, not causes. |
+| 3 | "Upgrade Oracle to 11.2.0.4" | March 14 | Deflection to infra. Doesn't explain Session 3082's behavior. Same issue occurred in 2022 — classified as "Application Misuse" |
+
 ---
 
-## 7. What To Do Next
+## 7. Past Incident: MTNI-760378 (May 15, 2022)
 
-### Immediate (Email Response)
-1. **Write email v6** with the new Session 3082 evidence (queries 12-17)
-2. Key points for the email:
-   - Root blocker identified: Session 3082/44313 from drvl1078, user ABL_DBOBJECTS
-   - Only SQL: `select value$ from props$` — internal Oracle recursive SQL (not user-initiated)
-   - 62 ASH samples proving MMON blocked by SID 3082 (P2 mathematical proof)
-   - Session 1750 (DDLs) was blocked until 09:23 — DDLs are secondary, not trigger
-   - PRC_RECON_REVOKING_DMS source obtained — 100% application billing procedure
-   - Ask Labs: what process ran from drvl1078 at ~08:47 doing redo scanning?
+### Overview
 
-### If Labs Denies (Escalation Evidence)
+The **exact same issue** occurred on POST2P (dru104a) on May 15, 2022 — documented as JIRA ticket MTNI-760378.
+
+| Attribute | 2022 Incident (MTNI-760378) | 2026 Incident (MTNI-1459453) |
+|-----------|---------------------------|------------------------------|
+| Database | POST2P, dru104a | POST2P, dru104a |
+| Primary Wait Event | library cache: mutex X | library cache: mutex X |
+| Symptoms | Mass blocking sessions, DB inaccessible | Mass blocking sessions, DB inaccessible |
+| Services Impacted | DPOS, CLM, UMS IVR, MFS, iChat, NGPG, eShop, MyIrancell, AAT lending | @bility (Billing/CBS) and dependents |
+| Resolution | Kill blocking sessions + DB bounce (CAT1 Emergency Change MTNI-760463) | Kill blocker at 09:23 + DB recovered |
+| **Official RCA Cause** | **"Application Misuse"** | Pending (disputed by Labs team) |
+| Cause Detail | "huge load on Ability database caused oracle background processes to fail" | Session 3082 from drvl1078 holding mutex for 36 min |
+| Final RCA Comment | "Due to high version count error number of blocking session on Ability database were increased and caused inaccessibility" | Investigation complete, application team not examining |
+| Application Team | Tecnotree (Benyamin Teimouri) | Labs (Erfan Fatemi Zadeh) |
+| Application Team Response | Examined evidence, acknowledged issue, engaged constructively | 3 successive deflections over 5 days |
+
+### 2022 Email Thread (MTNI-760378) — Key Exchanges
+
+**Our email (May 15, 2022 — same day):**
+> "There are huge amount of blocking session on DB. DB is going to crash with this load. load average: 3094.62, 2653.15, 1720.68"
+
+**Our follow-up (May 15, 2022):**
+> "High concurrency of library cache: mutex X impacted the DB. This concurrency is due to high hard parse which we have no control over it. Could you please advice to reassign the ticket."
+
+**Benyamin Teimouri (Tecnotree DBA, May 16, 2022) — same defense as Erfan:**
+> "As we checked, our load and also the hard pars did not increase" — provided TPS data and hard parse counts for comparison
+
+Key data from Benyamin's analysis (comparing 4 Sundays):
+
+| Date | Parse | Hard Parse | library cache: mutex X |
+|------|-------|------------|----------------------|
+| 1400/10/26 | 2,195 | 32.5 | 409,429 |
+| 1400/11/03 | 2,356 | 26 | 732,246 |
+| 1401/02/11 | 2,355 | 32.9 | 539,820 |
+| 1401/02/25 (incident) | 2,095 | 29 | 539,806 |
+
+**Benyamin (May 18, 2022):**
+> "based on when high load happen, DB do not generate snapshot, please generate it manually on issue time then we can focus on issue to fix it."
+
+This is the exact same diagnostic gap as 2026 — AWR snapshot didn't generate because MMON was blocked. They recognized the problem but didn't solve it.
+
+**Our final response (May 18, 2022):**
+> "We need a symptom to predict the upcoming issue... You can prepare a query which detects abnormal usage/load and share it with zabbix team and set it trigger on it. For instance, if blocking session exceed 300 sessions, a notification gets generated."
+
+**P&C (Zeinab Salehi) asked Labs in the JIRA ticket comments:**
+- To investigate the root cause of "library cache: mutex X"
+- To implement a solution to prevent recurrence
+
+**Outcome:** Four years later, the identical scenario recurred — same database, same wait event, same type of blocking sessions, same service impact — confirming those preventive measures were never implemented.
+
+### Key Parallels
+
+1. **Same defense:** In 2022, Benyamin said "our load and hard parse did not increase." In 2026, Erfan says "no abnormal load observed." Both correct, both irrelevant — the trigger was a specific session, not aggregate workload.
+2. **Same missing AWR:** In 2022, AWR snapshots didn't generate during the incident. In 2026, snap 233939 at 09:00 was missed because MMON was blocked.
+3. **Same resolution:** Kill blocking sessions + wait for recovery.
+4. **Different team behavior:** In 2022, Tecnotree engaged constructively (provided data, committed to investigation). In 2026, Labs has produced 3 misdirections over 5 days.
+5. **Official RCA in 2022 was "Application Misuse"** — the exact classification the current incident should receive.
+
+### Source Files
+
+| File | Description |
+|------|-------------|
+| MTNI-760378.doc | JIRA ticket export (HTML format) — contains RCA fields, comments, action items |
+| check status of post2p  MTNI-760378.msg | Full Outlook email thread (4MB) — complete investigation correspondence |
+| RE Problem  @bility - dru104a - Critical CPU Utilization  MTNI-1459453.msg | Current incident Outlook email thread (1.3MB) |
+
+---
+
+## 8. What To Do Next
+
+### Current Status (as of March 14, 2026)
+- Email v8 finalized in `emails/06_response_draft_v8.txt` — addressed to Omid/Mehdi (account managers)
+- References 2022 precedent first, highlights lack of TT handover, counters all 3 new arguments
+- Mentions 2 attachments: MTNI-760378 Icare ticket + email thread
+- SOC logs option suggested for drvl1078 verification
+
+### Remaining Actions
+1. **Send email v8** with attachments (MTNI-760378.doc and MTNI-760378.msg)
+2. **Wait for application team** to identify what Session 3082 was running from drvl1078
+3. If no response: escalate to Mehdi Kheir Andish with full evidence package
+
+### If Labs Continues to Deflect (Escalation Evidence)
 - 62 consecutive ASH samples with P2=13237089206272 → TRUNC(P2/2^32) = 3082 is irrefutable
 - Session 3082/44313 machine=drvl1078 is an APPLICATION server, not DBA-managed
 - ABL_DBOBJECTS (user_id 267) is NOT a DBA schema
 - PRC_RECON_REVOKING_DMS references billing tables, CRs, and defects — application code
 - Session 1750 was itself blocked by the storm (empty sql_id from 09:16-09:23)
+- **MTNI-760378 precedent** — same issue in 2022 was classified as "Application Misuse"
 
 ### Prevention
 - If the operation was LogMiner/Flashback, schedule outside peak hours
@@ -248,16 +375,33 @@ Oracle 11.2.0.2 has known bugs related to `library cache: mutex X`:
 
 ---
 
-## 8. File Index
+## 9. File Index
+
+### Root Directory
+| File | Description |
+|------|-------------|
+| README.md | This file — master investigation document |
+| full_loop_incident.txt | Complete email thread (all participants, newest-first). Updated March 14 with Erfan's post-meeting response. |
+| oem_screenshot.png | OEM screenshot of Critical CPU Utilization alert |
+| MTNI-760378.doc | **Past Incident (2022):** JIRA ticket export in HTML format — RCA = "Application Misuse" |
+| check status of post2p  MTNI-760378.msg | **Past Incident (2022):** Full Outlook email thread (4MB) — investigation correspondence with Tecnotree |
+| RE Problem  @bility - dru104a - Critical CPU Utilization  MTNI-1459453.msg | **Current Incident:** Outlook email thread (1.3MB) — includes Erfan's March 14 response |
 
 ### emails/
 | File | Description |
 |------|-------------|
-| 01_full_email_thread.txt | Complete email loop (all participants, bottom-up chronological) |
+| 01_full_email_thread.txt | Complete email loop (all participants, bottom-up chronological) — original version pre-March 14 |
 | 02_initial_request_to_respond.txt | Erfan's email that triggered our initial AWR investigation |
-| 03_response_draft_v5.txt | Previous email draft (v5 — superseded, focused on DDLs as cause) |
-| 04_response_draft_v6.txt | Previous email draft (v6 — Session 3082 evidence, P2 proof, DDLs proven secondary) |
-| **05_response_draft_v7.txt** | **Current email draft (v7 — enhanced technical details, kgl stats, redo block progression, ASH gap explanation, stronger action items)** |
+| 03_response_draft_v5.txt | Email draft v5 (superseded — focused on DDLs as cause) |
+| 04_response_draft_v6.txt | Email draft v6 (Session 3082 evidence, P2 proof, DDLs proven secondary) |
+| 05_response_draft_v7.txt | Email draft v7 (enhanced: kgl stats, redo block progression, ASH gap explanation) — targets Erfan |
+| 05_response_draft_v7.html | HTML version of v7 |
+| **06_response_draft_v8.txt** | **Final email v8 — targets Omid/Mehdi (account managers). Opens with 2022 precedent comparison, highlights lack of TT handover, counters 3 new arguments (68%/8%, ORA-600, upgrade), suggests SOC logs. 2 attachments.** |
+| **07_past_incident_MTNI-760378_email_thread.txt** | **Extracted text from .msg — Complete 2022 email thread (578K chars). Key exchanges between Alireza, Benyamin (TT DBA), Mohammadali, Zeinab (P&C). Shows "Application Misuse" RCA process.** |
+| **08_current_incident_MTNI-1459453_email_thread.txt** | **Extracted text from .msg — Current incident email thread (68K chars). Includes Erfan's March 14 post-meeting response and all prior exchanges.** |
+| **09_past_incident_MTNI-760378_jira_ticket.txt** | **Extracted text from .doc — JIRA ticket export showing RCA fields, cause="Application Misuse", comments, action items, impacted services.** |
+| email_post2p_response_draft.txt | Legacy working draft |
+| email_post2p_to_respond.txt. | Legacy initial request |
 
 ### awr_reports/
 | File | Description |
@@ -288,10 +432,22 @@ Oracle 11.2.0.2 has known bugs related to `library cache: mutex X`:
 | **15_mmon_blocking_by_3082_timeline.txt** | **62 ASH samples: MMON blocked by SID 3082, P2 math proof (08:47:12–09:23:03)** |
 | **16_logminer_search_empty.txt** | **LogMiner search — empty result (no LOGMNR in any sql_text)** |
 | **17_prc_recon_revoking_dms_source.txt** | **Full procedure source — billing/subscription management, 100% application code** |
+| **18_session_3082_osuser.csv** | **OS user for Session 3082 — confirms application-level access** |
+| query_1_post_incident.csv | Legacy: First post-incident query |
+| query_2_post_incident.csv | Legacy: Second post-incident query |
+| query_2_5_post_incident.csv | Legacy: Extended second query |
+| query_2_8_post_incident.csv | Legacy: Extended second query (variant) |
+| query_3_post_incident.csv | Legacy: Third post-incident query |
+| query_4_post_incident.csv | Legacy: Fourth post-incident query |
+| query_6.txt | Legacy: Query 6 results |
+| query_7.txt | Legacy: Query 7 results |
+| query_9.txt | Legacy: Query 9 results |
+| query_10.txt | Legacy: Query 10 results |
+| session_id_3082.txt | Legacy: Initial Session 3082 identification |
 
 ---
 
-## 9. Key People and Team Stances
+## 10. Key People and Team Stances
 
 ### Teams Involved
 
@@ -299,16 +455,31 @@ Oracle 11.2.0.2 has known bugs related to `library cache: mutex X`:
 |------|-----------|-----------------|
 | **AHS (Arya Hamrah Samaneh)** | Infrastructure DBA Team | Database administration, host management. **Our team.** Responsible for DB health, AWR analysis, performance investigation. |
 | **Labs (MTNIrancell - Labs)** | Application Team | Application development, application schemas (ABL_DBOBJECTS), procedures (PRC_RECON_REVOKING_DMS), SQL*Plus scripts on app servers (drvl1078, drvl141, drum711a). |
+| **ITS Service Desk** | Incident Management | Ticket routing, meeting coordination |
+| **P&C** | Performance & Capacity Management | RCA review, action item tracking |
 
 ### People
 
 | Name | Team | Role | Stance |
 |------|------|------|--------|
-| **Alireza Aghajanzadeh Gheshlaghi** | **AHS (Infra DBA)** | Lead investigator | The root blocker is Session 3082 from drvl1078 (ABL_DBOBJECTS) — application-side operation. No DBA/infrastructure change was made. |
-| **Mohsen Roudsaz** | **AHS (Infra DBA)** | Initial responder during incident | First to identify concurrency wait event and root cause direction. Sent initial email pointing to application concurrent DML. |
-| **Masoud Rafiei** | **AHS (Infra DBA)** | DBA | Requested Service Desk to reassign incident to application team based on provided evidence. |
-| **Erfan Fatemi Zadeh** | **Labs (Application)** | Application team lead for this incident | Claims: no application issue before 09:15, workload is normal (correct), listener problem is infra-side (incorrect — caused by DB contention). Provided AWR for March 7/8 to prove workload was normal. Trying to keep incident assigned to infra/DBA team. |
-| **Mohammadsaleh Bayat Jozani** | **Labs (Application)** | Application team | Reported initial alert, asked DBA/Unix to check. Showed EM graph claiming "no high load at 8:58" — this is because the graph aggregation missed the per-second ASH data showing the storm. |
+| **Alireza Aghajanzadeh Gheshlaghi** | **AHS (Infra DBA)** | Lead investigator | Root blocker is Session 3082 from drvl1078 — application-side operation. No DBA/infrastructure change was made. |
+| **Mohsen Roudsaz** | **AHS (Infra DBA)** | Initial responder | First to identify concurrency wait event and root cause direction. |
+| **Masoud Rafiei** | **AHS (Infra DBA)** | DBA | Requested SD to reassign incident to application team. |
+| **Erfan Fatemi Zadeh** | **Labs (Application)** | Application team lead | Claims no application issue, workload normal. 3 deflections: listener → ORA-600 → upgrade. |
+| **Pardis Goudarzi** | **Labs** | Billing & CRM Operations Senior Manager | Claimed PRC_RECON_REVOKING_DMS runs daily at 9AM, said we gave "3 different root causes." Requested meeting. |
+| **Mohammadsaleh Bayat Jozani** | **Labs (Application)** | Application team | Reported initial alert, showed EM graph claiming "no high load at 8:58." |
+| **Omid Heravi** | **ITS** | Account Manager | Asked SD to assign to infra DBA. Supports investigation from technical evidence. |
+| **Mehdi Kheir Andish** | **ITS** | Manager / Account Manager | DBA team manager. Approves changes. |
+| **Ali Davachi** | **ITS Service Desk** | Team Leader | Coordinated ticket routing, set meeting for March 14. |
+| **Hamidreza Saadat Pour** | **Labs** | — | CC'd on all emails, meeting organizer. |
+
+### 2022 Incident People (MTNI-760378)
+
+| Name | Team | Role in 2022 |
+|------|------|-------------|
+| **Benyamin Teimouri** | **Tecnotree (TT DBA)** | Application DBA — examined evidence, provided data, engaged constructively |
+| **Zeinab Salehi** | **P&C** | RCA reviewer — asked Labs to investigate and prevent recurrence |
+| **Mohammadali Arab Yar Mohammadi** | **ITS SD** | Supervisor — asked for follow-up from DBA team |
 
 ### Team Positions Summary
 
@@ -318,18 +489,17 @@ Oracle 11.2.0.2 has known bugs related to `library cache: mutex X`:
 - ASH data proves Session 3082/44313 from **drvl1078** (application server) as the root blocker
 - The operation (redo scanning, likely LogMiner) held library cache mutexes causing 102K+ blocked waits
 - DDLs (PRC_RECON_REVOKING_DMS, TMP_REVOKING_DMS tables) at 09:23 from same user/machine confirm application activity
+- Same incident in 2022 (MTNI-760378) was classified as "Application Misuse"
 - Incident should be assigned to Labs (application team)
 
-**Labs (Their Position):**
-- preUploadPK workload is normal (66M on Mar 7, 28M on Mar 8/9) — **correct, we agree**
-- No application-related issues visible before 09:15 in EM top activity — **incorrect: ASH shows storm at 08:47:12, EM graph aggregation hid it**
-- Listener problem since 08:50 suggests infrastructure issue — **incorrect: listener slowness is a consequence of DB contention, not a cause**
-- sbpost2p Data Guard errors since 03:18 AM — **unrelated to the 08:47 library cache storm**
-- CPU load only spiked after 09:15 — **misleading: the load was in WAIT state (mutex), not CPU-intensive, which is why the CPU graph looks low until sessions unblock**
+**Labs (Their Position — evolving):**
+- Phase 1: preUploadPK workload is normal, listener problem since 08:50 is infra issue, Data Guard errors since 03:18
+- Phase 2: SYS/322 = 68% blocking (misleading — 322 is victim of 3082), ORA-600 errors = Oracle bugs (symptoms not causes), upgrade to 11.2.0.4 (deflection)
+- **Key omission:** Labs has never examined what Session 3082 was doing, despite being asked since March 9
 
 ---
 
-## 10. Database Reference
+## 11. Database Reference
 
 ```
 Database:    POST2P
@@ -343,3 +513,23 @@ CPUs:        100 (50 cores, 4 sockets)
 RAM:         512 GB
 Startup:     28 Azar 1404 (21:09)
 ```
+
+---
+
+## 12. Email Communication Log
+
+| Date | From | Action | Key Content |
+|------|------|--------|-------------|
+| Mar 9, 09:10 | Billing-NOC | Alert forwarded | "Critical CPU Utilization" on dru104a |
+| Mar 9, 09:18 | Alireza | Response | "load average: 2628, unable to connect, huge blocking sessions" |
+| Mar 9, 09:25 | Alireza | Update | "blocker is gone, able to connect" |
+| Mar 9, 11:05 | Mohammadsaleh (Labs) | EM graph | "No high load before 09:15" — misleading (missing AWR snap) |
+| Mar 9, 12:50 | Erfan (Labs) | First defense | preUploadPK workload normal, listener problem since 08:50, Data Guard errors |
+| Mar 9, 21:25 | Alireza | Session 3082 evidence | Full ASH analysis, P2 proof, DDL timeline, action items |
+| Mar 10, 16:15 | Pardis (Labs) | Pushback | "PRC_RECON runs daily at 9AM, you gave 3 different root causes" |
+| Mar 10, 17:08 | Alireza | Clarification | "Session 3082 caused it. This is application-side. We are helping, not responsible." |
+| Mar 10, 17:38 | Erfan (Labs) | GSM workload | "gsm_background_process 66M/28M normal, why are you ignoring this" |
+| Mar 11, 13:28 | Omid Heravi (ITS) | Support | "Please assign to Application team" |
+| Mar 11, 15:21 | Ali Davachi (SD) | Meeting set | March 14, 2:00-2:30 PM meeting organized |
+| **Mar 14, 16:27** | **Erfan (Labs)** | **Post-meeting** | **New strategy: SYS/322=68%, ORA-600 bugs, upgrade to 11.2.0.4** |
+| **Mar 14 (draft)** | **Alireza** | **Email v8 to Omid/Mehdi** | **Frustration, 2022 precedent, technical rebuttals, attachments** |

@@ -1,0 +1,1935 @@
+Source: MTNI-760378.doc (JIRA ticket export, May 2022)
+================================================================================
+[#MTNI-760378] Service degradation on DPOS, CLM, UMS IVR, MFS Erefill, iChat, NGPG, eShop, MyIrancell application, Buyable Offer and AAT lending
+
+
+
+
+
+
+
+
+                        [MTNI-760378] Service degradation on DPOS, CLM, UMS IVR, MFS Erefill, iChat, NGPG, eShop, MyIrancell application, Buyable Offer and AAT lending
+
+               Created: 15/May/22                    Updated: 06/Mar/24
+
+                                                     Resolved: 29/Jun/22
+
+
+
+
+
+
+        	Status:
+        	Closed
+
+
+
+        	Category :
+        	MTN Irancell Helpdesk
+
+
+
+
+            	Component/s:
+
+                            None
+
+
+
+
+
+
+            	Affects Version/s:
+
+                            None
+
+
+
+
+
+
+            	Fix Version/s:
+
+                            None
+
+
+
+
+
+            	Security Level:
+
+                Global Security Level
+
+
+
+
+
+
+
+            Type:
+
+
+            Incident
+
+
+
+                Priority:
+
+
+                Critical
+
+
+
+
+
+                Reporter:
+
+
+                                            Mohammadali Arab Yar Mohammadi [ MTNIrancell ]
+
+
+
+                Assignee:
+
+
+                                    Unassigned
+
+
+
+
+
+			Resolution:
+
+
+                            Close
+
+                    	 
+
+
+
+
+
+
+            Labels:
+
+
+                            None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                Attachments:
+
+
+
+                    AVG active session.png.jpg    
+
+                    CLM-End.jpg    
+
+                    CLM-Start.jpg    
+
+                    DPOS registration total transactions is around 0%.jpg    
+
+                    DPOS-End.jpg    
+
+                    DPOS-Start.jpg    
+
+                    IVR Failure rate on MW is 100%.jpg    
+
+                    MFS-End.jpg    
+
+                    MFS-Start.jpg    
+
+                    MyIRancell- End.jpg    
+
+                    MyIRancell- Start.jpg    
+
+                    NGPG-End.jpg    
+
+                    NGPG-Start.jpg    
+
+                    Post2P database -Duration .jpg    
+
+                    Problem   @bility - dru104a_post2p Database - Database is NOT Accessible.msg    
+
+                    Problem   Ability - dru104a - Critical CPU Utilization.msg    
+
+                    Problem   MW and IVR Connectivity Checking - EIA Business roles - IVR API Failure on side of MW is more than 10%.msg    
+
+                    Psot2p CPU usage is around 100%.jpg    
+
+                    RE  MTNI-753874(DMS portal and Warehouse application are not accessible).msg    
+
+                    RE TT Database Monitoring .msg    
+
+                    RE Zabbix query.msg    
+
+                    RE monitoruser on post2p.msg    
+
+                    Schema.jpg    
+
+                    Severity  Average (1).msg    
+
+                    Severity  Average.msg    
+
+                    Shared log by DBA team.txt    
+
+                    That first time the exception was logged in alert log.jpg    
+
+                    UMS-IVR-Duration.jpg    
+
+                    bug_jdbc_dbms_pickler (3).pdf    
+
+                    eShop-End.jpg    
+
+                    eShop-Start.jpg    
+
+                    the first blocking session.jpg    
+
+
+
+
+
+
+                Issue Links:
+
+
+
+
+
+
+                                Duplicate
+
+
+
+
+
+
+                duplicates
+
+
+
+                     MTNI-760384
+
+
+                CLM is not stable for all users
+
+
+                Discard
+
+
+
+
+
+                duplicates
+
+
+
+                     MTNI-760390
+
+
+                Fluctuation on postpaid transactions
+
+
+                Discard
+
+
+
+
+
+                duplicates
+
+
+
+                     MTNI-760418
+
+
+                Drop on ENM SuccessRate per EndPoint ...
+
+
+                Discard
+
+
+
+
+
+                duplicates
+
+
+
+                     MTNI-760428
+
+
+                Pre-order sections are frozen in logi...
+
+
+                Discard
+
+
+
+
+
+                duplicates
+
+
+
+                     MTNI-761207
+
+
+                Wrong assign time in express delivery
+
+
+                Discard
+
+
+
+
+
+                duplicates
+
+
+
+                     MTNI-761809
+
+
+                Registration & sending Documents via ...
+
+
+                Discard
+
+
+
+
+
+                                Relates
+
+
+
+
+
+
+                relates to
+
+
+
+                     MTNI-760411
+
+
+                [PROBLEM] Database is NOT Accessible
+
+
+                Closed
+
+
+
+
+
+                relates to
+
+
+
+                     MTNI-760369
+
+
+                [PROBLEM] Database is NOT Accessible
+
+
+                Cancelled
+
+
+
+
+
+                relates to
+
+
+
+                     MTNI-760463
+
+
+                To stop/start all TT services/apps an...
+
+
+                Completed
+
+
+
+
+
+                relates to
+
+
+
+                     MTNI-761636
+
+
+                Request to retry failed orders which ...
+
+
+                Closed
+
+
+
+
+
+
+
+
+
+                	Service:
+
+ITS: Information Technology
+
+
+
+
+                	ITS Services:
+
+@bility Customer Care
+
+
+
+
+                	PIT:
+
+No
+
+
+
+
+                	Contact Department:
+                	      Information Technology Services
+
+
+
+
+                	Contact Phone:
+                	      09023901990
+
+
+
+
+                	Pending Confirmation to In Progress Counter:
+                	    0
+
+
+
+
+                	Total Reopen Counter:
+                	    0
+
+
+
+
+                	Vendor:
+                	      Tecnotree
+
+
+
+
+                	Issue ID:
+
+          1785902
+
+
+
+
+
+                	RCA-Other Group:
+
+
+                    ITS @bility
+
+
+
+
+
+                	Reporter Company:
+                	      Arya Hamrah Samaneh
+
+
+
+
+                	Reporter's Location:
+                	      TEHRAN WEST (T1)
+
+
+
+
+                	Age of Ticket:
+
+        0
+
+
+
+
+                	Age of RCA:
+
+        33
+
+
+
+
+                	Cause:
+
+Application Misuse
+
+
+
+
+                	Cause Detail:
+                	      There was a huge load on Ability database caused ora**e background processes to fail.
+
+
+
+
+                	Resolution:
+
+Restart (Server/Service)
+
+
+
+
+                	Resolution Detail:
+                	      Support killed blocking sessions and then bounced the CBS database via CAT1 Emergency Change MTNI-760463.
+
+
+
+
+                	Impacted Services:
+                	      Below services were impacted:
+
+Subscribers are unable to connect to UMS IVR pilots on the following short codes 721, 727, 711, 7033, 714, 700, 600
+
+DPOS registration success rate is dropped to 1%
+
+eShop registration success rate is dropped to 78%
+
+CLM portal success rate is dropped to 81%
+
+NGPG success rate is dropped to ~95%
+
+MFS-Erefill success rate is dropped to ~97%
+
+Buyable Offer activation success rate from USSD, MyIrancell (App and Web) and eShop channels is dropped to 2%
+
+AAT lending flow  success rate on MyIrancell channel is dropped to 24%
+
+Also, iChat platform has fluctuation
+
+
+
+
+                	AMC Flag:
+
+No
+
+
+
+
+                	Symptom:
+                	      Service Desk received notification from monitoring tools regarding post2p database inaccessibility
+
+
+
+
+                	Group Assignee:
+
+
+                    ITS @bility
+
+
+
+
+
+                	Priority Details:
+                	      pos2p db is impacted
+
+
+
+
+                	Policy Violation Table:
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                    Policy Violation
+
+
+                                                                    Detected By
+
+
+                                                                    Vendor
+
+
+                                                                    Policy Violation Detail
+
+
+                                                                    Policy Violation Date
+
+
+                                                                    ITS Services
+
+
+
+
+
+
+
+
+
+                	Incident Conclusion Quality and Delivery Score:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                	Vendor Satisfaction Score:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                	SD Satisfaction Score:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                	RCA Status:
+                	      Closed
+
+
+
+
+                	RCA Actions:
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                    Description
+
+
+                                                                    Responsible
+
+
+                                                                    Due Date
+
+
+                                                                    Latest Progress/Status
+
+
+                                                                    Category / Sub Category
+
+
+
+
+
+                                                                            application team should control the load
+
+
+                                                                            ITS CLM Support
+
+
+                                                                            2022-07-31
+
+
+                                                                            As root cause was not point to load, so the action is not valid/Cancelled
+
+
+
+
+
+
+
+
+                                                                            To check all connected machine java driver version, in case there is difference in versioning check possibility of making all driver same version.(one time action)
+attached Doc showed the unpublished bug for our DB version.
+
+
+                                                                            ITS Middleware Support
+
+
+                                                                            2024-02-03
+
+
+                                                                            internal communication started in TT side/In Progress
+
+
+
+
+
+
+
+
+
+
+
+
+                	RCA-References:
+                	    1.5
+
+
+
+
+                	Resolution - Workaround:
+                	    1
+
+
+
+
+                	Root-Cause:
+                	    1
+
+
+
+
+                	Action plan:
+                	    1
+
+
+
+
+                	Timing:
+                	    0
+
+
+
+
+                	Chronological Order of event:
+                	    0.5
+
+
+
+
+                	RCA-Delivery Time:
+                	    0
+
+
+
+
+                	RCA Total Rate:
+
+          5.0
+
+
+
+
+
+
+
+
+
+
+
+             Description 
+
+        	 
+
+
+
+
+
+
+
+
+Reported by Soroush Sadegh Bayan
+
+
+
+
+
+
+
+
+
+
+
+
+             Comments 
+
+        	 
+
+
+
+
+
+
+            Comment by
+                                                        Mohammadali Arab Yar Mohammadi [ MTNIrancell ]
+
+            [
+                15/May/22
+
+                            ]
+
+
+
+
+
+
+raised to critical
+
+
+
+            Comment by
+                                                        Mohammadali Arab Yar Mohammadi [ MTNIrancell ]
+
+            [
+                15/May/22
+
+                            ]
+
+
+
+
+
+
+assigned to DBA
+
+
+
+            Comment by
+                                                        Mehran Rahimian [ Saei ]
+
+            [
+                15/May/22
+
+                            ]
+
+
+
+
+
+
+Graphs Start
+
+ 
+
+
+
+
+
+            Comment by
+                                                        Alireza Aghajanzadeh Gheshlaghi [ Arya Hamrah Samaneh ]
+
+            [
+                15/May/22
+
+                            ]
+
+
+
+
+
+
+Dear SD,
+
+Please assign it to TT , we can't control application load.
+
+
+
+            Comment by
+                                                        Alireza Aghajanzadeh Gheshlaghi [ Arya Hamrah Samaneh ]
+
+            [
+                15/May/22
+
+                            ]
+
+
+
+
+
+
+Dear Mehdi/Fatemeh,
+
+Oracle background processes got impacted due to huge load and DB won’t function properly without a bounce.
+
+we already killed blocking sessions in DB an OS but the impact already done.
+
+We have to bounce the DB to fix the background process issues.
+
+Please advice.
+
+
+
+            Comment by
+                                                        Mohammadali Arab Yar Mohammadi [ MTNIrancell ]
+
+            [
+                15/May/22
+
+                            ]
+
+
+
+
+
+
+Shared log by DBA team.txt
+
+
+
+            Comment by
+                                                        Seuneh Barkhordari [ Arya Hamrah Samaneh ]
+
+            [
+                15/May/22
+
+                            ]
+
+
+
+
+
+
+Post2p is up and running
+
+
+
+            Comment by
+                                                        Alireza Aghajanzadeh Gheshlaghi [ Arya Hamrah Samaneh ]
+
+            [
+                15/May/22
+
+                            ]
+
+
+
+
+
+
+High load on DB caused oracle background processes to fail
+
+
+
+            Comment by
+                                                        Hamidreza Saadat Pour [ MTNIrancell - Labs ]
+
+            [
+                16/May/22
+
+                            ]
+
+
+
+
+
+
+issue has been fixed 
+
+
+
+            Comment by
+                                                        Mohammadali Arab Yar Mohammadi [ MTNIrancell ]
+
+            [
+                16/May/22
+
+                            ]
+
+
+
+
+
+
+SM Conclusion:
+
+ 
+
+Cause:
+
+There was a huge load on Ability database caused ora**e background processes to fail.
+
+Impact:
+
+• DPOS registration success rate is dropped to Zero
+
+• CLM portal success rate is dropped to around 20%
+
+• Subscribers are unable to connect to some UMS IVR pilots
+
+• MFS erefill success rate is dropped to 97%
+
+• NGPG success rate is dropped to 93%
+
+• eShop registration success rate is dropped to Zero
+
+• Postpaid subscribers are unable to login to MyIrancell application
+
+• Buyable Offer activation success rate from USSD, MyIrancell (App and Web) and eShop channels is dropped to 2%
+
+• AAT Lending on MyIrancell channel is impacted
+
+• iChat portal has fluctuation
+
+Duration time: 15 May 10:45 to 13:15.
+
+Resolution:
+
+Support killed blocking sessions and then bounced the CBS database via CAT1 Emergency Change MTNI-760463.
+
+More details will be provided through RCA process.
+
+
+
+            Comment by
+                                                        Zeinab Salehi [ MTNIrancell - ITS ]
+
+            [
+                18/May/22
+
+                            ]
+
+
+
+
+
+
+
+
+
+
+            Comment by
+                                                        Zeinab Salehi [ MTNIrancell - ITS ]
+
+            [
+                18/May/22
+
+                            ]
+
+
+
+
+
+
+
+
+
+
+            Comment by
+                                                        Zeinab Salehi [ MTNIrancell - ITS ]
+
+            [
+                18/May/22
+
+                            ]
+
+
+
+
+
+
+
+
+
+
+            Comment by
+                                                        Zeinab Salehi [ MTNIrancell - ITS ]
+
+            [
+                18/May/22
+
+                            ]
+
+
+
+
+
+
+P&C Analysis on impacted services
+
+RE  MTNI-753874(DMS portal and Warehouse application are not accessible).msg
+
+
+
+            Comment by
+                                                        Zeinab Salehi [ MTNIrancell - ITS ]
+
+            [
+                18/May/22
+
+                            ]
+
+
+
+
+
+
+Ramin Baghaei Mehr [ MTNIrancell - ITS ]Soroush Sadegh Bayan [ MTNIrancell - ITS ]Mehdi Asi [ Tecnotree ]Mohammadamin Mir Shekari [ MTNIrancell - Labs ]
+
+Dears,
+
+Kindly consider that RCA assigned to Ability side to complete all parts with your comment and evidences,. Please update all sections and septerate your update from AHS. (Ex: TT Chronological, root cause)
+
+BR
+
+Mehrnaz
+
+
+
+            Comment by
+                                                        Mohammadali Arab Yar Mohammadi [ MTNIrancell ]
+
+            [
+                28/May/22
+
+                            ]
+
+
+
+
+
+
+Received Zabbix notifications are attached
+
+Severity  Average.msg Problem   MW and IVR Connectivity Checking - EIA Business roles - IVR API Failure on side of MW is more than 10%.msg [^Problem   @bility - dru104a_post2p Database - Database is NOT Accessible.msg] Severity  Average (1).msg Problem   Ability - dru104a - Critical CPU Utilization.msg
+
+
+
+            Comment by
+                                                        Zeinab Salehi [ MTNIrancell - ITS ]
+
+            [
+                29/May/22
+
+                            ]
+
+
+
+
+
+
+Dear Mohammadamin Mir Shekari [ MTNIrancell - Labs ] Mehdi Asi [ Tecnotree ]Soroush Sadegh Bayan [ MTNIrancell - ITS ]Ramin Baghaei Mehr [ MTNIrancell - ITS ]
+
+Kindly clarify about below items:
+
+1-	About library cash mute X ,as you mentioned “Because of the varied causes, it is important to find the correct cause; so that the right solution can be implemented.” Please share your plan to find the exact root cause and then implement the right solution
+
+2-	Please share what was the exact job related to monitoring which is already stopped and clarify by whom is stopped and when.
+
+3-	About Hard Parse and Zabbix top query , please share result of investigation with P&C team
+
+4-	Since this major incident happened close to Bill run change, was there any preparation activity which caused load on database
+
+5-	Please clarify if there is a possibility to set monitoring on Control version count and hard parse is based on coming query/operation by Zabbix
+
+6-     Please share all jobs and its description which killed to control the load before bouncing the database
+
+Dear Mehdi Kheir Andish [ MTNIrancell - ITS ]Seuneh Barkhordari [ Arya Hamrah Samaneh ]
+
+Please calrify about below item :
+
+1-	Is there any monitoring on OS /DB level to notify about high number of cash mute X  infrastructure before database get freeze
+
+
+
+            Comment by
+                                                        Mehran Rahimian [ Saei ]
+
+            [
+                21/Jun/22
+
+                            ]
+
+
+
+
+
+
+According to required action plans based on RCA, ticket will be moved to @bility bucket. 
+
+
+
+            Comment by
+                                                        Zeinab Salehi [ MTNIrancell - ITS ]
+
+            [
+                29/Jun/22
+
+                            ]
+
+
+
+
+
+
+Due to high version count error number of blocking session on Ability database were increased and caused inaccessibility of this database. Issue got fixed by bouncing database via emergency change MTNI-760463.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                24/Aug/22
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                24/Aug/22
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                28/Aug/22
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                28/Aug/22
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                03/Sep/22
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                03/Sep/22
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                05/Sep/22
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                21/Sep/22
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                24/Sep/22
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                24/Sep/22
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                24/Sep/22
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                28/Sep/22
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                02/Oct/22
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                31/Oct/22
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                05/Nov/22
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                07/Nov/22
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                09/Nov/22
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                06/Mar/23
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                12/Mar/23
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                19/Mar/23
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                27/Mar/23
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                24/Apr/23
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                29/Apr/23
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                30/May/23
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                03/Jun/23
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                29/Jul/23
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                29/Jul/23
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                29/Jul/23
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                31/Jul/23
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                31/Jul/23
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                05/Aug/23
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                20/Sep/23
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                27/Sep/23
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                29/Oct/23
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                17/Jan/24
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                20/Jan/24
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                05/Feb/24
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                06/Feb/24
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+
+            Comment by
+                                                        iApp-svc
+
+            [
+                06/Mar/24
+
+                            ]
+
+
+
+
+
+
+RCA table updated by RCA action tracker application.
+
+
+Generated at Sat Mar 14 17:29:55 GMT+03:30 2026 by Alireza Aghajanzadeh Gheshlaghi [ Arya Hamrah Samaneh ] using Jira 8.13.20#813020-sha1:424c361ba41777c0319c49c323027f14cae41061.

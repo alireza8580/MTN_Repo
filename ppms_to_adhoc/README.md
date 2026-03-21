@@ -62,10 +62,11 @@ dru110a (PPMS) ─ cron at 01:00 daily
   ├─ is_jalali_first.sh → exit if not 1st
   │
   ├─ run_export.sh (local expdp)
+  │   ├─ trap handler (cleanup lock on SIGTERM)
   │   ├─ NFS space check
   │   ├─ lock file on t1u904
   │   ├─ email "export started"
-  │   ├─ expdp for each table → NFS (.dmp + .log)
+  │   ├─ expdp for each table (from HEAVY_TABLES + LIGHT_TABLES arrays)
   │   ├─ check logs for ORA- errors
   │   ├─ email result
   │   └─ remove lock file
@@ -73,8 +74,10 @@ dru110a (PPMS) ─ cron at 01:00 daily
   └─ ssh oracle@t1u904 run_import.sh --skip-wait
       ├─ validate dump count >= 58
       ├─ Phase 1: DROP + CREATE tables (DDL), NOLOGGING
-      ├─ Phase 2: impdp (2 parallel streams: heavy + light)
-      ├─ Phase 3: SET UNUSED on PII columns
+      ├─ Phase 2: impdp (2 parallel streams: HEAVY + LIGHT from conf)
+      │   └─ ABORT on failure (no indexes on broken data)
+      ├─ Phase 2b: Row count validation (warn on empty tables)
+      ├─ Phase 3: SET UNUSED on PII columns (from PII_TABLES conf)
       ├─ Phase 4: CREATE INDEX (2 parallel streams)
       ├─ Phase 5: ALTER INDEX PARALLEL 2 + GRANTs
       └─ email result
@@ -122,7 +125,9 @@ dru110a (PPMS) ─ cron at 01:00 daily
                                                                      wait
 ```
 
-## File Inventory
+## File Inventory (Legacy — for reference only)
+
+> The legacy files in the repository root are the **original unmodified scripts**. They are kept for reference. Use the **v2/** scripts for production.
 
 ### Scheduling & Wrapper Scripts
 
@@ -290,12 +295,12 @@ scp -r v2/sql oracle@t1u904:/oracle/ppms_to_adhoc/
 
 | File | Server | Description |
 |------|--------|-------------|
-| `ppms_to_adhoc.conf` | Both | Central configuration (SIDs, paths, email, parallelism) |
-| `common.sh` | Both | Shared functions (logging, email, lock, helpers) |
+| `ppms_to_adhoc.conf` | Both | Central configuration (SIDs, paths, table arrays, parallelism, PII, email) |
+| `common.sh` | Both | Shared functions (logging, email, lock, parallelism lookup, helpers) |
 | `is_jalali_first.sh` | dru110a | Jalali 1st-of-month detection (FarsiWeb algorithm) |
 | `run_pipeline.sh` | dru110a | Single-side orchestrator: export + SSH import |
-| `run_export.sh` | dru110a | Export orchestrator (lock file, expdp, error checking) |
-| `run_import.sh` | t1u904 | Import orchestrator (DDL, impdp, indexes, PII, grants) |
+| `run_export.sh` | dru110a | Export orchestrator (trap handler, lock file, expdp, error checking) |
+| `run_import.sh` | t1u904 | Import orchestrator (DDL, impdp, row validation, indexes, PII, grants) |
 | `cron_pipeline.sh` | dru110a | Cron wrapper: Jalali check → run_pipeline.sh |
 | `cron_ppms_export.sh` | dru110a | Cron wrapper (export only, for two-server mode) |
 | `cron_adhoc_import.sh` | t1u904 | Cron wrapper (import only, for two-server mode) |
@@ -303,3 +308,11 @@ scp -r v2/sql oracle@t1u904:/oracle/ppms_to_adhoc/
 | `sql/create_indexes_1.sql` | t1u904 | Index stream 1 (LOG_CARDS, USED_CARDS, TPS11, etc.) |
 | `sql/create_indexes_2.sql` | t1u904 | Index stream 2 (TPS73, TPS107, TPS01_CARDS, etc.) |
 | `sql/post_import.sql` | t1u904 | ALTER INDEX PARALLEL 2 + GRANT SELECT to AIDA_A |
+
+### v2 Safety Features
+
+- **Trap handler** (`run_export.sh`): Catches SIGINT/SIGTERM/SIGHUP — removes lock file and sends email before exit. Prevents orphaned locks on script kill.
+- **Stale lock timeout** (`run_import.sh`): In two-server mode, the lock-wait loop aborts after `LOCK_MAX_WAIT_HOURS` (default: 12h) instead of waiting forever.
+- **Phase 2 abort** (`run_import.sh`): If either import stream fails, the pipeline aborts immediately — no wasting hours building indexes on broken data.
+- **Row count validation** (`run_import.sh`): After Phase 2, queries every imported table. Warns (with email) if any table has 0 rows, catching partial imports.
+- **Table lists in conf**: All table names, parallelism, PII columns, and special-case tables are defined in `ppms_to_adhoc.conf`. Adding/removing a table only requires editing the conf — no script changes needed.

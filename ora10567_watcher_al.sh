@@ -43,7 +43,7 @@ send_mail () {
 
 get_log_gap () {
   # Returns the numeric gap, or -1 if query fails/returns garbage
-  local gap=$(sqlplus -S / as sysdba <<EOF 2>/dev/null | grep -v "LOG_GAP" | grep -v "^-" | tr -d ' \n'
+  local gap=$(sqlplus -S / as sysdba <<EOF 2>/dev/null | grep -v "LOG_GAP" | grep -v "^-" | tr -d '[:space:]'
 set heading on feedback off pagesize 0
 select LOG_ARCHIVED-LOG_APPLIED "LOG_GAP" from
 (SELECT MAX(SEQUENCE#) LOG_ARCHIVED FROM V\$ARCHIVED_LOG WHERE DEST_ID=1 AND ARCHIVED='YES'),
@@ -164,7 +164,7 @@ EOF
 get_db_status () {
   # Returns: OPEN, MOUNTED, STARTED, or UNKNOWN
   # Use V$INSTANCE.STATUS for basic state (STARTED, MOUNTED, OPEN)
-  local status=$(sqlplus -S / as sysdba <<EOF 2>/dev/null | tr -d ' \n'
+  local status=$(sqlplus -S / as sysdba <<EOF 2>/dev/null | tr -d '[:space:]'
 set heading off feedback off pagesize 0
 select status from v\$instance;
 exit
@@ -187,7 +187,7 @@ EOF
 
 is_mrp_running () {
   # Returns 0 if MRP process is active, 1 otherwise
-  local mrp_count=$(sqlplus -S / as sysdba <<EOF 2>/dev/null | tr -d ' \n'
+  local mrp_count=$(sqlplus -S / as sysdba <<EOF 2>/dev/null | tr -d '[:space:]'
 set heading off feedback off pagesize 0
 select count(*) from v\$managed_standby where process like 'MRP%';
 exit
@@ -208,7 +208,7 @@ check_asm_diskgroups () {
     return
   fi
   for dg in ${ASM_DISKGROUPS}; do
-    local free_gb=$(sqlplus -S / as sysdba <<EOF 2>/dev/null | tr -d ' \n'
+    local free_gb=$(sqlplus -S / as sysdba <<EOF 2>/dev/null | tr -d '[:space:]'
 set heading off feedback off pagesize 0
 select round(free_mb/1024) from v\$asm_diskgroup where name='${dg}';
 exit
@@ -300,6 +300,19 @@ MRP has been started. DBA should open the database manually once recovery catche
   echo "$(date) === Startup health check complete ===" >> ${LOGFILE}
 }
 
+ensure_mrp_running () {
+  # Ensure MRP is running whenever DB is OPEN or MOUNTED.
+  # Skip if a recovery operation holds the lock (fix_standby is working).
+  [[ -d "${LOCKDIR}" ]] && return
+  local db_status=$(get_db_status)
+  if [[ "${db_status}" == "OPEN" ]] || [[ "${db_status}" == "MOUNTED" ]]; then
+    if ! is_mrp_running; then
+      echo "$(date) ... MRP check: DB is ${db_status} but MRP is not running. Restarting." >> ${LOGFILE}
+      start_mrp
+    fi
+  fi
+}
+
 try_periodic_open () {
   # Called periodically when DB is stuck in MOUNTED state with MRP running.
   # If gap has dropped below threshold, cancel MRP, try open, restart MRP.
@@ -374,7 +387,7 @@ EOF
   [[ $? -ne 0 ]] && return 1 # Status 1: Mount Failed
 
   # 2. Validate datafile exists
-  local df_valid=$(sqlplus -S / as sysdba <<EOF 2>/dev/null | tr -d ' \n'
+  local df_valid=$(sqlplus -S / as sysdba <<EOF 2>/dev/null | tr -d '[:space:]'
 set heading off feedback off pagesize 0
 select count(*) from v\$datafile where file#=${DATAFILE};
 exit
@@ -523,6 +536,7 @@ start_checker () {
         fi
         # Periodic check: try to open DB if stuck in MOUNTED state
         if [[ $((now_epoch - last_open_check)) -ge ${MOUNTED_OPEN_CHECK_INTERVAL} ]]; then
+          ensure_mrp_running
           try_periodic_open
           last_open_check=${now_epoch}
         fi

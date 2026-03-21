@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>[#MTNI-760378] Service degradation on DPOS, CLM, UMS IVR, MFS Erefill, iChat, NGPG, eShop, MyIrancell application, Buyable Offer and AAT lending</title>
+    <meta http-equiv="Content-Type" Content="application/vnd.ms-word; charset=UTF-8">
+        <style type="text/css">
+
+.tableBorder, .grid
+{
+    background-color: #fff;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tableBorder td, .grid td
+{
+    vertical-align: top;
+    padding: 2px;
+    border: 1px solid #ccc;
+}
+
+.noPadding
+{
+    padding: 0 !important;
+}
+
+h3 .subText
+{
+    font-size: 60%;
+    font-weight: normal;
+}
+
+.tabLabel
+{
+    font-weight: bold;
+    border: 1px solid #ccc;
+    border-bottom:none;
+    padding: 2px;
+    display: inline;
+}
+
+td.blank
+{
+    padding: 0;
+    margin: 0;
+}
+
+.blank td
+{
+    border: none;
+}
+
+#descriptionArea
+{
+    margin: 0;
+    padding: 2px;
+    border: 1px solid #ccc;
+}
+
+hr
+{
+    border-top:1px solid #aaa;
+}
+
+hr.fullcontent
+{
+  height: 15px;
+  padding: 10px 0;
+  background: #fff url('https://icare.mtnirancell.ir/images/icons/hr.gif') no-repeat scroll center;
+}
+
+</style>
+
+</head>
+<body>
+
+<table class="tableBorder" cellpadding="0" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td bgcolor="#f0f0f0" width="100%" colspan="2" valign="top">
+                            <h3 class="formtitle">
+                        [MTNI-760378]&nbsp;<a href="https://icare.mtnirancell.ir/browse/MTNI-760378">Service degradation on DPOS, CLM, UMS IVR, MFS Erefill, iChat, NGPG, eShop, MyIrancell application, Buyable Offer and AAT lending</a>
+            <span class="subText">
+               Created: 15/May/22                   &nbsp;Updated: 06/Mar/24
+
+                                                    &nbsp;Resolved: 29/Jun/22
+                            </span>
+            </h3>
+        </td>
+    </tr>
+    <tr>
+        <td width="20%"><b>Status:</b></td>
+        <td width="80%">Closed</td>
+    </tr>
+    <tr>
+        <td width="20%"><b>Category :</b></td>
+        <td width="80%"><a href="https://icare.mtnirancell.ir/secure/BrowseProject.jspa?id=10300">MTN Irancell Helpdesk</a></td>
+    </tr>
+
+        <tr>
+            <td><b>Component/s:</b></td>
+            <td>
+                            None
+                </td>
+    </tr>
+    
+
+        <tr>
+            <td><b>Affects Version/s:</b></td>
+            <td>
+                            None
+                </td>
+    </tr>
+    
+
+        <tr>
+            <td><b>Fix Version/s:</b></td>
+            <td>
+                            None
+                </td>
+    </tr>
+    
+            <tr>
+            <td><b>Security Level:</b></td>
+            <td>
+                Global Security Level
+                            </td>
+       </tr>
+    </table>
+
+<br />
+<table class="grid" cellpadding="0" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td bgcolor="#f0f0f0" valign="top" width="20%">
+            <b>Type:</b>
+        </td>
+        <td bgcolor="#ffffff" valign="top"  width="30%" >
+            Incident
+        </td>
+
+                    <td bgcolor="#f0f0f0">
+                <b>Priority:</b>
+            </td>
+            <td bgcolor="#ffffff" valign="top" nowrap>
+                Critical
+            </td>
+            </tr>
+    <tr>
+                        <td bgcolor="#f0f0f0" valign="top" width="20%">
+                <b>Reporter:</b>
+            </td>
+            <td bgcolor="#ffffff" valign="top"  width="30%" >
+                                            <a class="user-hover" rel="mohammadali.ar" id="word_reporter_mohammadali.ar" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=mohammadali.ar">Mohammadali Arab Yar Mohammadi [ MTNIrancell ]</a>
+                            </td>
+        
+                    <td bgcolor="#f0f0f0" width="20%">
+                <b>Assignee:</b>
+            </td>
+            <td bgcolor="#ffffff" valign="top" nowrap  width="30%" >
+                                    Unassigned
+                            </td>
+            </tr>
+    	<tr>
+		<td bgcolor="#f0f0f0" width="20%">
+			<b>Resolution:</b>
+		</td>
+		<td bgcolor="#ffffff" valign="top" width="30%" nowrap>
+                            Close
+                    </td>
+                    <td bgcolor="#ffffff" colspan="2">&nbsp;</td>
+        
+    </tr>
+    
+        <tr>
+        <td bgcolor="#f0f0f0" width="20%">
+            <b>Labels:</b>
+        </td>
+        <td id="labels-1785902-value" class="value" bgcolor="#ffffff" valign="top" colspan="3" nowrap>
+                            None
+                    </td>
+    </tr>
+    
+    
+    </table>
+
+
+
+    <br />
+
+    	<table class="grid" cellpadding="0" cellspacing="0" border="0" width="100%">
+            
+
+                <tr>
+            <td bgcolor="#f0f0f0" width=20% valign=top>
+                <b>Attachments:</b>
+            </td>
+            <td bgcolor="#ffffff" valign="top">
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    AVG active session.png.jpg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    CLM-End.jpg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    CLM-Start.jpg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    DPOS registration total transactions is around 0%.jpg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    DPOS-End.jpg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    DPOS-Start.jpg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    IVR Failure rate on MW is 100%.jpg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    MFS-End.jpg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    MFS-Start.jpg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    MyIRancell- End.jpg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    MyIRancell- Start.jpg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    NGPG-End.jpg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    NGPG-Start.jpg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    Post2P database -Duration .jpg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/file.gif" height="16" width="16" border="0" alt="File" role="presentation">
+                    Problem   @bility - dru104a_post2p Database - Database is NOT Accessible.msg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/file.gif" height="16" width="16" border="0" alt="File" role="presentation">
+                    Problem   Ability - dru104a - Critical CPU Utilization.msg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/file.gif" height="16" width="16" border="0" alt="File" role="presentation">
+                    Problem   MW and IVR Connectivity Checking - EIA Business roles - IVR API Failure on side of MW is more than 10%.msg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    Psot2p CPU usage is around 100%.jpg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/file.gif" height="16" width="16" border="0" alt="File" role="presentation">
+                    RE  MTNI-753874(DMS portal and Warehouse application are not accessible).msg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/file.gif" height="16" width="16" border="0" alt="File" role="presentation">
+                    RE TT Database Monitoring .msg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/file.gif" height="16" width="16" border="0" alt="File" role="presentation">
+                    RE Zabbix query.msg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/file.gif" height="16" width="16" border="0" alt="File" role="presentation">
+                    RE monitoruser on post2p.msg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    Schema.jpg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/file.gif" height="16" width="16" border="0" alt="File" role="presentation">
+                    Severity  Average (1).msg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/file.gif" height="16" width="16" border="0" alt="File" role="presentation">
+                    Severity  Average.msg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/text.gif" height="16" width="16" border="0" alt="Text File" role="presentation">
+                    Shared log by DBA team.txt &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    That first time the exception was logged in alert log.jpg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    UMS-IVR-Duration.jpg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/pdf.gif" height="16" width="16" border="0" alt="PDF File" role="presentation">
+                    bug_jdbc_dbms_pickler (3).pdf &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    eShop-End.jpg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    eShop-Start.jpg &nbsp;&nbsp;&nbsp;
+                                    <img src="https://icare.mtnirancell.ir/images/icons/attach/image.gif" height="16" width="16" border="0" alt="JPEG File" role="presentation">
+                    the first blocking session.jpg &nbsp;&nbsp;&nbsp;
+                            </td>
+        </tr>
+        
+            <tr>
+            <td bgcolor="#f0f0f0" width="20%" valign="top">
+                <b>Issue Links:</b>
+            </td>
+            <td bgcolor="#ffffff" valign="top" class="noPadding">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%" class="blank">
+                                            <tr>
+                            <td colspan="4" bgcolor="#f0f0f0">
+                                <b>Duplicate</b><br/>
+                            </td>
+                        </tr>
+                                    <tr>
+            <td>
+                duplicates
+            </td>
+            <td>
+                <a href="https://icare.mtnirancell.ir/browse/MTNI-760384">
+                     <strike>MTNI-760384</strike>                 </a>
+            </td>
+            <td>
+                CLM is not stable for all users
+            </td>
+            <td>
+                Discard
+            </td>
+        </tr>
+            <tr>
+            <td>
+                duplicates
+            </td>
+            <td>
+                <a href="https://icare.mtnirancell.ir/browse/MTNI-760390">
+                     <strike>MTNI-760390</strike>                 </a>
+            </td>
+            <td>
+                Fluctuation on postpaid transactions
+            </td>
+            <td>
+                Discard
+            </td>
+        </tr>
+            <tr>
+            <td>
+                duplicates
+            </td>
+            <td>
+                <a href="https://icare.mtnirancell.ir/browse/MTNI-760418">
+                     <strike>MTNI-760418</strike>                 </a>
+            </td>
+            <td>
+                Drop on ENM SuccessRate per EndPoint ...
+            </td>
+            <td>
+                Discard
+            </td>
+        </tr>
+            <tr>
+            <td>
+                duplicates
+            </td>
+            <td>
+                <a href="https://icare.mtnirancell.ir/browse/MTNI-760428">
+                     <strike>MTNI-760428</strike>                 </a>
+            </td>
+            <td>
+                Pre-order sections are frozen in logi...
+            </td>
+            <td>
+                Discard
+            </td>
+        </tr>
+            <tr>
+            <td>
+                duplicates
+            </td>
+            <td>
+                <a href="https://icare.mtnirancell.ir/browse/MTNI-761207">
+                     <strike>MTNI-761207</strike>                 </a>
+            </td>
+            <td>
+                Wrong assign time in express delivery 
+            </td>
+            <td>
+                Discard
+            </td>
+        </tr>
+            <tr>
+            <td>
+                duplicates
+            </td>
+            <td>
+                <a href="https://icare.mtnirancell.ir/browse/MTNI-761809">
+                     <strike>MTNI-761809</strike>                 </a>
+            </td>
+            <td>
+                Registration &amp; sending Documents via ...
+            </td>
+            <td>
+                Discard
+            </td>
+        </tr>
+                                                                            <tr>
+                            <td colspan="4" bgcolor="#f0f0f0">
+                                <b>Relates</b><br/>
+                            </td>
+                        </tr>
+                                    <tr>
+            <td>
+                relates to
+            </td>
+            <td>
+                <a href="https://icare.mtnirancell.ir/browse/MTNI-760411">
+                     <strike>MTNI-760411</strike>                 </a>
+            </td>
+            <td>
+                [PROBLEM] Database is NOT Accessible
+            </td>
+            <td>
+                Closed
+            </td>
+        </tr>
+            <tr>
+            <td>
+                relates to
+            </td>
+            <td>
+                <a href="https://icare.mtnirancell.ir/browse/MTNI-760369">
+                     <strike>MTNI-760369</strike>                 </a>
+            </td>
+            <td>
+                [PROBLEM] Database is NOT Accessible
+            </td>
+            <td>
+                Cancelled
+            </td>
+        </tr>
+            <tr>
+            <td>
+                relates to
+            </td>
+            <td>
+                <a href="https://icare.mtnirancell.ir/browse/MTNI-760463">
+                     <strike>MTNI-760463</strike>                 </a>
+            </td>
+            <td>
+                To stop/start all TT services/apps an...
+            </td>
+            <td>
+                Completed
+            </td>
+        </tr>
+                                        <tr>
+            <td>
+                relates to
+            </td>
+            <td>
+                <a href="https://icare.mtnirancell.ir/browse/MTNI-761636">
+                     <strike>MTNI-761636</strike>                 </a>
+            </td>
+            <td>
+                Request to retry failed orders which ...
+            </td>
+            <td>
+                Closed
+            </td>
+        </tr>
+                                        </table>
+            </td>
+        </tr>
+    
+
+
+
+                        <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Service:</b></td>
+                <td id="customfield_10014-1785902-value" class="value" bgcolor="#ffffff" width="80%"><div class="dynamicSelectValue">ITS: Information Technology</div>
+</td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>ITS Services:</b></td>
+                <td id="customfield_14421-1785902-value" class="value" bgcolor="#ffffff" width="80%"><div class="dynamicSelectValue">@bility Customer Care</div>
+</td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>PIT:</b></td>
+                <td id="customfield_10335-1785902-value" class="value" bgcolor="#ffffff" width="80%"><div class="dynamicSelectValue">No</div>
+</td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Contact Department:</b></td>
+                <td id="customfield_10024-1785902-value" class="value" bgcolor="#ffffff" width="80%">      Information Technology Services
+  </td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Contact Phone:</b></td>
+                <td id="customfield_10345-1785902-value" class="value" bgcolor="#ffffff" width="80%">      09023901990
+  </td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Pending Confirmation to In Progress Counter:</b></td>
+                <td id="customfield_10201-1785902-value" class="value" bgcolor="#ffffff" width="80%">    0
+</td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Total Reopen Counter:</b></td>
+                <td id="customfield_10679-1785902-value" class="value" bgcolor="#ffffff" width="80%">    0
+</td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Vendor:</b></td>
+                <td id="customfield_10716-1785902-value" class="value" bgcolor="#ffffff" width="80%">      Tecnotree
+  </td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Issue ID:</b></td>
+                <td id="customfield_12422-1785902-value" class="value" bgcolor="#ffffff" width="80%">
+          1785902
+  
+</td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>RCA-Other Group:</b></td>
+                <td id="customfield_13114-1785902-value" class="value" bgcolor="#ffffff" width="80%">    <div class="shorten" id="customfield_13114-field">
+                    <span>ITS @bility</span>
+            </div>
+</td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Reporter Company:</b></td>
+                <td id="customfield_13404-1785902-value" class="value" bgcolor="#ffffff" width="80%">      Arya Hamrah Samaneh
+  </td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Reporter&#39;s Location:</b></td>
+                <td id="customfield_13714-1785902-value" class="value" bgcolor="#ffffff" width="80%">      TEHRAN WEST (T1)
+  </td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Age of Ticket:</b></td>
+                <td id="customfield_13902-1785902-value" class="value" bgcolor="#ffffff" width="80%">
+        0
+
+</td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Age of RCA:</b></td>
+                <td id="customfield_18100-1785902-value" class="value" bgcolor="#ffffff" width="80%">
+        33
+
+</td>
+            </tr>
+                                    <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Cause:</b></td>
+                <td id="customfield_10025-1785902-value" class="value" bgcolor="#ffffff" width="80%"><div class="dynamicSelectValue">Application Misuse</div>
+</td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Cause Detail:</b></td>
+                <td id="customfield_17287-1785902-value" class="value" bgcolor="#ffffff" width="80%">      There was a huge load on Ability database caused ora**e background processes to fail. 
+  </td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Resolution:</b></td>
+                <td id="customfield_10026-1785902-value" class="value" bgcolor="#ffffff" width="80%"><div class="dynamicSelectValue">Restart (Server/Service)</div>
+</td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Resolution Detail:</b></td>
+                <td id="customfield_17288-1785902-value" class="value" bgcolor="#ffffff" width="80%">      Support killed blocking sessions and then bounced the CBS database via CAT1 Emergency Change <a href="https://icare.mtnirancell.ir/browse/MTNI-760463" title="To stop/start all TT services/apps and Restart post2p oracle DB to release high concurrency  " class="issue-link" data-issue-key="MTNI-760463"><strike>MTNI-760463</strike></a>.
+  </td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Impacted Services:</b></td>
+                <td id="customfield_10717-1785902-value" class="value" bgcolor="#ffffff" width="80%">      Below services were impacted:<br/>
+Subscribers are unable to connect to UMS IVR pilots on the following short codes 721, 727, 711, 7033, 714, 700, 600<br/>
+DPOS registration success rate is dropped to 1%<br/>
+eShop registration success rate is dropped to 78%<br/>
+CLM portal success rate is dropped to 81%<br/>
+NGPG success rate is dropped to ~95%<br/>
+MFS-Erefill success rate is dropped to ~97%<br/>
+Buyable Offer activation success rate from USSD, MyIrancell (App and Web) and eShop channels is dropped to 2%<br/>
+AAT lending flow  success rate on MyIrancell channel is dropped to 24%<br/>
+Also, iChat platform has fluctuation 
+  </td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>AMC Flag:</b></td>
+                <td id="customfield_20049-1785902-value" class="value" bgcolor="#ffffff" width="80%"><div class="dynamicSelectValue">No</div>
+</td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Symptom:</b></td>
+                <td id="customfield_10714-1785902-value" class="value" bgcolor="#ffffff" width="80%">      Service Desk received notification from monitoring tools regarding post2p database inaccessibility
+  </td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Group Assignee:</b></td>
+                <td id="customfield_10109-1785902-value" class="value" bgcolor="#ffffff" width="80%">    <div class="shorten" id="customfield_10109-field">
+                    <span>ITS @bility</span>
+            </div>
+</td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Priority Details:</b></td>
+                <td id="customfield_18700-1785902-value" class="value" bgcolor="#ffffff" width="80%">      pos2p db is impacted
+  </td>
+            </tr>
+                                    <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Policy Violation Table:</b></td>
+                <td id="customfield_13414-1785902-value" class="value" bgcolor="#ffffff" width="80%">    
+
+
+
+        
+
+
+
+
+<div id="customfield_13414_grid-container" class="idalko-grid-view" style=" width: 90%;  overflow-y: visible; overflow-x:visible;" rel="customfield_13414" name="idalko-grid-field">
+
+    <div id="customfield_13414_grid_pager"></div>
+    <div id="customfield_13414_filter"></div>
+
+             
+                                    <table class="grid" border="0" cellspacing="0" cellpadding="0">
+                <tr bgcolor="#f0f0f0">
+                                                                        <th style="width: ${column.plainWidth}px">
+                                                                    Policy Violation
+                                                            </th>
+                                                                                                <th style="width: ${column.plainWidth}px">
+                                                                    Detected By
+                                                            </th>
+                                                                                                <th style="width: ${column.plainWidth}px">
+                                                                    Vendor
+                                                            </th>
+                                                                                                <th style="width: ${column.plainWidth}px">
+                                                                    Policy Violation Detail
+                                                            </th>
+                                                                                                <th style="width: ${column.plainWidth}px">
+                                                                    Policy Violation Date
+                                                            </th>
+                                                                                                <th style="width: ${column.plainWidth}px">
+                                                                    ITS Services
+                                                            </th>
+                                                            </tr>
+                                                        </table>
+        
+    </div>
+</td>
+            </tr>
+                                    <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Incident Conclusion Quality and Delivery Score:</b></td>
+                <td id="customfield_26016-1785902-value" class="value" bgcolor="#ffffff" width="80%">
+
+
+            <div class="slie-rating-field" data-title="">
+            <div class="slie-rating-view">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <div class="slie-star"></div>
+                                                                                                        <div class="slie-star"></div>
+                                                                                                        <div class="slie-star"></div>
+                                                                                                        <div class="slie-star"></div>
+                                                                                                        <div class="slie-star"></div>
+                                                                                                        <div class="slie-star"></div>
+                                                                                                        <div class="slie-star"></div>
+                                                                                                        <div class="slie-star"></div>
+                                                                                                        <div class="slie-star"></div>
+                                                                                                        <div class="slie-star"></div>
+                                                                        </div>
+        </div>
+    </td>
+            </tr>
+                                    <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Vendor Satisfaction Score:</b></td>
+                <td id="customfield_13400-1785902-value" class="value" bgcolor="#ffffff" width="80%">
+
+
+            <div class="slie-rating-field" data-title="8">
+            <div class="slie-rating-view">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <div class="slie-star slie-star-gold"></div>
+                                                                                                        <div class="slie-star slie-star-gold"></div>
+                                                                                                        <div class="slie-star slie-star-gold"></div>
+                                                                                                        <div class="slie-star slie-star-gold"></div>
+                                                                                                        <div class="slie-star slie-star-gold"></div>
+                                                                                                        <div class="slie-star slie-star-gold"></div>
+                                                                                                        <div class="slie-star slie-star-gold"></div>
+                                                                                                        <div class="slie-star slie-star-gold"></div>
+                                                                                                                                <div class="slie-star"></div>
+                                                                                                        <div class="slie-star"></div>
+                                                                        </div>
+        </div>
+    </td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>SD Satisfaction Score:</b></td>
+                <td id="customfield_13401-1785902-value" class="value" bgcolor="#ffffff" width="80%">
+
+
+            <div class="slie-rating-field" data-title="8">
+            <div class="slie-rating-view">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <div class="slie-star slie-star-gold"></div>
+                                                                                                        <div class="slie-star slie-star-gold"></div>
+                                                                                                        <div class="slie-star slie-star-gold"></div>
+                                                                                                        <div class="slie-star slie-star-gold"></div>
+                                                                                                        <div class="slie-star slie-star-gold"></div>
+                                                                                                        <div class="slie-star slie-star-gold"></div>
+                                                                                                        <div class="slie-star slie-star-gold"></div>
+                                                                                                        <div class="slie-star slie-star-gold"></div>
+                                                                                                                                <div class="slie-star"></div>
+                                                                                                        <div class="slie-star"></div>
+                                                                        </div>
+        </div>
+    </td>
+            </tr>
+                                    <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>RCA Status:</b></td>
+                <td id="customfield_14728-1785902-value" class="value" bgcolor="#ffffff" width="80%">      Closed
+  </td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>RCA Actions:</b></td>
+                <td id="customfield_19703-1785902-value" class="value" bgcolor="#ffffff" width="80%">    
+
+
+
+        
+
+
+
+
+<div id="customfield_19703_grid-container" class="idalko-grid-view" style=" width: 90%;  overflow-y: visible; overflow-x:visible;" rel="customfield_19703" name="idalko-grid-field">
+
+    <div id="customfield_19703_grid_pager"></div>
+    <div id="customfield_19703_filter"></div>
+
+             
+                                    <table class="grid" border="0" cellspacing="0" cellpadding="0">
+                <tr bgcolor="#f0f0f0">
+                                                                        <th style="width: ${column.plainWidth}px">
+                                                                    Description
+                                                            </th>
+                                                                                                <th style="width: ${column.plainWidth}px">
+                                                                    Responsible
+                                                            </th>
+                                                                                                <th style="width: ${column.plainWidth}px">
+                                                                    Due Date
+                                                            </th>
+                                                                                                <th style="width: ${column.plainWidth}px">
+                                                                    Latest Progress/Status
+                                                            </th>
+                                                                                                <th style="width: ${column.plainWidth}px">
+                                                                    Category / Sub Category
+                                                            </th>
+                                                            </tr>
+                                    <tr bgcolor="#ffffff">
+                                                                                    <td style="width: ${column.plainWidth}px" align="${column.align}">
+                                                                            application team should control the load
+                                                                    </td>
+                                                                                                                <td style="width: ${column.plainWidth}px" align="${column.align}">
+                                                                            ITS CLM Support
+                                                                    </td>
+                                                                                                                <td style="width: ${column.plainWidth}px" align="${column.align}">
+                                                                            2022-07-31
+                                                                    </td>
+                                                                                                                <td style="width: ${column.plainWidth}px" align="${column.align}">
+                                                                            As root cause was not point to load, so the action is not valid/Cancelled
+                                                                    </td>
+                                                                                                                <td style="width: ${column.plainWidth}px" align="${column.align}">
+                                                                            
+                                                                    </td>
+                                                                        </tr>
+                                    <tr bgcolor="#ffffff">
+                                                                                    <td style="width: ${column.plainWidth}px" align="${column.align}">
+                                                                            To check all connected machine java driver version, in case there is difference in versioning check possibility of making all driver same version.(one time action)
+attached Doc showed the unpublished bug for our DB version.
+                                                                    </td>
+                                                                                                                <td style="width: ${column.plainWidth}px" align="${column.align}">
+                                                                            ITS Middleware Support
+                                                                    </td>
+                                                                                                                <td style="width: ${column.plainWidth}px" align="${column.align}">
+                                                                            2024-02-03
+                                                                    </td>
+                                                                                                                <td style="width: ${column.plainWidth}px" align="${column.align}">
+                                                                            internal communication started in TT side/In Progress
+                                                                    </td>
+                                                                                                                <td style="width: ${column.plainWidth}px" align="${column.align}">
+                                                                            
+                                                                    </td>
+                                                                        </tr>
+                                                        </table>
+        
+    </div>
+</td>
+            </tr>
+                                    <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>RCA-References:</b></td>
+                <td id="customfield_12948-1785902-value" class="value" bgcolor="#ffffff" width="80%">    1.5
+</td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Resolution - Workaround:</b></td>
+                <td id="customfield_12950-1785902-value" class="value" bgcolor="#ffffff" width="80%">    1
+</td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Root-Cause:</b></td>
+                <td id="customfield_12952-1785902-value" class="value" bgcolor="#ffffff" width="80%">    1
+</td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Action plan:</b></td>
+                <td id="customfield_12955-1785902-value" class="value" bgcolor="#ffffff" width="80%">    1
+</td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Timing:</b></td>
+                <td id="customfield_12956-1785902-value" class="value" bgcolor="#ffffff" width="80%">    0
+</td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>Chronological Order of event:</b></td>
+                <td id="customfield_12958-1785902-value" class="value" bgcolor="#ffffff" width="80%">    0.5
+</td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>RCA-Delivery Time:</b></td>
+                <td id="customfield_12959-1785902-value" class="value" bgcolor="#ffffff" width="80%">    0
+</td>
+            </tr>
+                                <tr>
+                <td bgcolor="#f0f0f0" width="20%" valign="top"><b>RCA Total Rate:</b></td>
+                <td id="customfield_14905-1785902-value" class="value" bgcolor="#ffffff" width="80%">
+          5.0
+  
+</td>
+            </tr>
+            </table>
+
+    <br/>
+
+    <table cellpadding="2" cellspacing="0" border="0" width="100%" align="center">
+    <tr>
+        <td bgcolor="#bbbbbb" width="1%" nowrap align="center">
+            &nbsp;<font color="#ffffff"><b>Description</b></font>&nbsp;
+        </td>
+        <td>&nbsp;</td>
+    </tr>
+    </table>
+
+    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+    <tr>
+        <td id="descriptionArea">
+            <p>Reported by Soroush Sadegh Bayan</p>
+            <br/>
+        </td>
+    </tr>
+    </table>
+
+    <br/>
+
+    <table cellpadding="2" cellspacing="0" border="0" width="100%" align="center">
+    <tr>
+        <td bgcolor="#bbbbbb" width="1%" nowrap align="center">
+            &nbsp;<font color="#ffffff"><b>Comments</b></font>&nbsp;
+        </td>
+        <td>&nbsp;</td>
+    </tr>
+    </table>
+
+    <table cellpadding="0" cellspacing="0" border="0" width="100%" class="grid" style="margin: 0;">
+                <tr id="comment-header-1702999"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="mohammadali.ar" id="word_commented_mohammadali.ar" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=mohammadali.ar">Mohammadali Arab Yar Mohammadi [ MTNIrancell ]</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">15/May/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1702999"><td bgcolor="#ffffff">
+            <p>raised to critical</p>
+        </td></tr>
+                <tr id="comment-header-1703402"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="mohammadali.ar" id="word_commented_mohammadali.ar" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=mohammadali.ar">Mohammadali Arab Yar Mohammadi [ MTNIrancell ]</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">15/May/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1703402"><td bgcolor="#ffffff">
+            <p>assigned to DBA</p>
+        </td></tr>
+                <tr id="comment-header-1703407"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="mehran.ra" id="word_commented_mehran.ra" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=mehran.ra">Mehran Rahimian [ Saei ]</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">15/May/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1703407"><td bgcolor="#ffffff">
+            <p>Graphs Start</p>
+
+<p> <br/>
+<span class="image-wrap" style=""><a id="735689_thumb" href="https://icare.mtnirancell.ir/secure/attachment/735689/735689_Psot2p+CPU+usage+is+around+100%25.jpg" title="Psot2p CPU usage is around 100%.jpg" file-preview-type="image" file-preview-id="735689" file-preview-title="Psot2p CPU usage is around 100%.jpg"><img src="https://icare.mtnirancell.ir/secure/thumbnail/735689/_thumb_735689.png" style="border: 0px solid black" role="presentation"/></a></span> <span class="image-wrap" style=""><a id="735690_thumb" href="https://icare.mtnirancell.ir/secure/attachment/735690/735690_DPOS+registration+total+transactions+is+around+0%25.jpg" title="DPOS registration total transactions is around 0%.jpg" file-preview-type="image" file-preview-id="735690" file-preview-title="DPOS registration total transactions is around 0%.jpg"><img src="https://icare.mtnirancell.ir/secure/thumbnail/735690/_thumb_735690.png" style="border: 0px solid black" role="presentation"/></a></span> <span class="image-wrap" style=""><a id="735691_thumb" href="https://icare.mtnirancell.ir/secure/attachment/735691/735691_IVR+Failure+rate+on+MW+is+100%25.jpg" title="IVR Failure rate on MW is 100%.jpg" file-preview-type="image" file-preview-id="735691" file-preview-title="IVR Failure rate on MW is 100%.jpg"><img src="https://icare.mtnirancell.ir/secure/thumbnail/735691/_thumb_735691.png" style="border: 0px solid black" role="presentation"/></a></span></p>
+        </td></tr>
+                <tr id="comment-header-1703314"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="alireza.aghaja" id="word_commented_alireza.aghaja" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=alireza.aghaja">Alireza Aghajanzadeh Gheshlaghi [ Arya Hamrah Samaneh ]</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">15/May/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1703314"><td bgcolor="#ffffff">
+            <p>Dear SD,<br/>
+Please assign it to TT , we can't control application load.</p>
+        </td></tr>
+                <tr id="comment-header-1703327"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="alireza.aghaja" id="word_commented_alireza.aghaja" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=alireza.aghaja">Alireza Aghajanzadeh Gheshlaghi [ Arya Hamrah Samaneh ]</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">15/May/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1703327"><td bgcolor="#ffffff">
+            <p>Dear Mehdi/Fatemeh,<br/>
+Oracle background processes got impacted due to huge load and DB won’t function properly without a bounce.<br/>
+we already killed blocking sessions in DB an OS but the impact already done.<br/>
+We have to bounce the DB to fix the background process issues.<br/>
+Please advice.</p>
+        </td></tr>
+                <tr id="comment-header-1703074"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="mohammadali.ar" id="word_commented_mohammadali.ar" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=mohammadali.ar">Mohammadali Arab Yar Mohammadi [ MTNIrancell ]</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">15/May/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1703074"><td bgcolor="#ffffff">
+            <p><span class="nobr"><a href="https://icare.mtnirancell.ir/secure/attachment/735399/735399_Shared+log+by+DBA+team.txt" title="Shared log by DBA team.txt attached to MTNI-760378">Shared log by DBA team.txt<sup><img class="rendericon" src="https://icare.mtnirancell.ir/images/icons/link_attachment_7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></p>
+        </td></tr>
+                <tr id="comment-header-1703434"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="seuneh.b" id="word_commented_seuneh.b" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=seuneh.b">Seuneh Barkhordari [ Arya Hamrah Samaneh ]</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">15/May/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1703434"><td bgcolor="#ffffff">
+            <p>Post2p is up and running</p>
+        </td></tr>
+                <tr id="comment-header-1703361"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="alireza.aghaja" id="word_commented_alireza.aghaja" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=alireza.aghaja">Alireza Aghajanzadeh Gheshlaghi [ Arya Hamrah Samaneh ]</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">15/May/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1703361"><td bgcolor="#ffffff">
+            <p>High load on DB caused oracle background processes to fail</p>
+        </td></tr>
+                <tr id="comment-header-1704579"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="hamidreza.saa" id="word_commented_hamidreza.saa" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=hamidreza.saa">Hamidreza Saadat Pour [ MTNIrancell - Labs ]</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">16/May/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1704579"><td bgcolor="#ffffff">
+            <p>issue has been fixed </p>
+        </td></tr>
+                <tr id="comment-header-1705811"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="mohammadali.ar" id="word_commented_mohammadali.ar" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=mohammadali.ar">Mohammadali Arab Yar Mohammadi [ MTNIrancell ]</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">16/May/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1705811"><td bgcolor="#ffffff">
+            <p>SM Conclusion:</p>
+
+<p> </p>
+
+<p>Cause: <br/>
+There was a huge load on Ability database caused ora**e background processes to fail.</p>
+
+<p>Impact: <br/>
+• DPOS registration success rate is dropped to Zero<br/>
+• CLM portal success rate is dropped to around 20%<br/>
+• Subscribers are unable to connect to some UMS IVR pilots<br/>
+• MFS erefill success rate is dropped to 97%<br/>
+• NGPG success rate is dropped to 93%<br/>
+• eShop registration success rate is dropped to Zero<br/>
+• Postpaid subscribers are unable to login to MyIrancell application<br/>
+• Buyable Offer activation success rate from USSD, MyIrancell (App and Web) and eShop channels is dropped to 2%<br/>
+• AAT Lending on MyIrancell channel is impacted<br/>
+• iChat portal has fluctuation<br/>
+Duration time: 15 May 10:45 to 13:15.<br/>
+Resolution:<br/>
+Support killed blocking sessions and then bounced the CBS database via CAT1 Emergency Change <a href="https://icare.mtnirancell.ir/browse/MTNI-760463" title="To stop/start all TT services/apps and Restart post2p oracle DB to release high concurrency  " class="issue-link" data-issue-key="MTNI-760463"><del>MTNI-760463</del></a>.</p>
+
+<p>More details will be provided through RCA process.</p>
+        </td></tr>
+                <tr id="comment-header-1707027"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="zeinab.sale" id="word_commented_zeinab.sale" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=zeinab.sale">Zeinab Salehi [ MTNIrancell - ITS ]</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">18/May/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1707027"><td bgcolor="#ffffff">
+            <p><span class="image-wrap" style=""><a id="737651_thumb" href="https://icare.mtnirancell.ir/secure/attachment/737651/737651_CLM-End.jpg" title="CLM-End.jpg" file-preview-type="image" file-preview-id="737651" file-preview-title="CLM-End.jpg"><img src="https://icare.mtnirancell.ir/secure/thumbnail/737651/_thumb_737651.png" style="border: 0px solid black" role="presentation"/></a></span> <span class="image-wrap" style=""><a id="737652_thumb" href="https://icare.mtnirancell.ir/secure/attachment/737652/737652_CLM-Start.jpg" title="CLM-Start.jpg" file-preview-type="image" file-preview-id="737652" file-preview-title="CLM-Start.jpg"><img src="https://icare.mtnirancell.ir/secure/thumbnail/737652/_thumb_737652.png" style="border: 0px solid black" role="presentation"/></a></span> <span class="image-wrap" style=""><a id="737653_thumb" href="https://icare.mtnirancell.ir/secure/attachment/737653/737653_DPOS-End.jpg" title="DPOS-End.jpg" file-preview-type="image" file-preview-id="737653" file-preview-title="DPOS-End.jpg"><img src="https://icare.mtnirancell.ir/secure/thumbnail/737653/_thumb_737653.png" style="border: 0px solid black" role="presentation"/></a></span> <span class="image-wrap" style=""><a id="737654_thumb" href="https://icare.mtnirancell.ir/secure/attachment/737654/737654_DPOS-Start.jpg" title="DPOS-Start.jpg" file-preview-type="image" file-preview-id="737654" file-preview-title="DPOS-Start.jpg"><img src="https://icare.mtnirancell.ir/secure/thumbnail/737654/_thumb_737654.png" style="border: 0px solid black" role="presentation"/></a></span> <span class="image-wrap" style=""><a id="737655_thumb" href="https://icare.mtnirancell.ir/secure/attachment/737655/737655_eShop-End.jpg" title="eShop-End.jpg" file-preview-type="image" file-preview-id="737655" file-preview-title="eShop-End.jpg"><img src="https://icare.mtnirancell.ir/secure/thumbnail/737655/_thumb_737655.png" style="border: 0px solid black" role="presentation"/></a></span> <span class="image-wrap" style=""><a id="737656_thumb" href="https://icare.mtnirancell.ir/secure/attachment/737656/737656_eShop-Start.jpg" title="eShop-Start.jpg" file-preview-type="image" file-preview-id="737656" file-preview-title="eShop-Start.jpg"><img src="https://icare.mtnirancell.ir/secure/thumbnail/737656/_thumb_737656.png" style="border: 0px solid black" role="presentation"/></a></span> <span class="image-wrap" style=""><a id="737657_thumb" href="https://icare.mtnirancell.ir/secure/attachment/737657/737657_MFS-End.jpg" title="MFS-End.jpg" file-preview-type="image" file-preview-id="737657" file-preview-title="MFS-End.jpg"><img src="https://icare.mtnirancell.ir/secure/thumbnail/737657/_thumb_737657.png" style="border: 0px solid black" role="presentation"/></a></span> <span class="image-wrap" style=""><a id="737658_thumb" href="https://icare.mtnirancell.ir/secure/attachment/737658/737658_MFS-Start.jpg" title="MFS-Start.jpg" file-preview-type="image" file-preview-id="737658" file-preview-title="MFS-Start.jpg"><img src="https://icare.mtnirancell.ir/secure/thumbnail/737658/_thumb_737658.png" style="border: 0px solid black" role="presentation"/></a></span> <span class="image-wrap" style=""><a id="737659_thumb" href="https://icare.mtnirancell.ir/secure/attachment/737659/737659_NGPG-End.jpg" title="NGPG-End.jpg" file-preview-type="image" file-preview-id="737659" file-preview-title="NGPG-End.jpg"><img src="https://icare.mtnirancell.ir/secure/thumbnail/737659/_thumb_737659.png" style="border: 0px solid black" role="presentation"/></a></span> <span class="image-wrap" style=""><a id="737660_thumb" href="https://icare.mtnirancell.ir/secure/attachment/737660/737660_NGPG-Start.jpg" title="NGPG-Start.jpg" file-preview-type="image" file-preview-id="737660" file-preview-title="NGPG-Start.jpg"><img src="https://icare.mtnirancell.ir/secure/thumbnail/737660/_thumb_737660.png" style="border: 0px solid black" role="presentation"/></a></span> <span class="image-wrap" style=""><a id="737661_thumb" href="https://icare.mtnirancell.ir/secure/attachment/737661/737661_UMS-IVR-Duration.jpg" title="UMS-IVR-Duration.jpg" file-preview-type="image" file-preview-id="737661" file-preview-title="UMS-IVR-Duration.jpg"><img src="https://icare.mtnirancell.ir/secure/thumbnail/737661/_thumb_737661.png" style="border: 0px solid black" role="presentation"/></a></span></p>
+        </td></tr>
+                <tr id="comment-header-1707039"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="zeinab.sale" id="word_commented_zeinab.sale" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=zeinab.sale">Zeinab Salehi [ MTNIrancell - ITS ]</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">18/May/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1707039"><td bgcolor="#ffffff">
+            <p><span class="image-wrap" style=""><a id="737665_thumb" href="https://icare.mtnirancell.ir/secure/attachment/737665/737665_MyIRancell-+End.jpg" title="MyIRancell- End.jpg" file-preview-type="image" file-preview-id="737665" file-preview-title="MyIRancell- End.jpg"><img src="https://icare.mtnirancell.ir/secure/thumbnail/737665/_thumb_737665.png" style="border: 0px solid black" role="presentation"/></a></span> <span class="image-wrap" style=""><a id="737666_thumb" href="https://icare.mtnirancell.ir/secure/attachment/737666/737666_MyIRancell-+Start.jpg" title="MyIRancell- Start.jpg" file-preview-type="image" file-preview-id="737666" file-preview-title="MyIRancell- Start.jpg"><img src="https://icare.mtnirancell.ir/secure/thumbnail/737666/_thumb_737666.png" style="border: 0px solid black" role="presentation"/></a></span></p>
+        </td></tr>
+                <tr id="comment-header-1707336"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="zeinab.sale" id="word_commented_zeinab.sale" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=zeinab.sale">Zeinab Salehi [ MTNIrancell - ITS ]</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">18/May/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1707336"><td bgcolor="#ffffff">
+            <p><span class="image-wrap" style=""><a id="737801_thumb" href="https://icare.mtnirancell.ir/secure/attachment/737801/737801_Post2P+database+-Duration+.jpg" title="Post2P database -Duration .jpg" file-preview-type="image" file-preview-id="737801" file-preview-title="Post2P database -Duration .jpg"><img src="https://icare.mtnirancell.ir/secure/thumbnail/737801/_thumb_737801.png" style="border: 0px solid black" role="presentation"/></a></span></p>
+        </td></tr>
+                <tr id="comment-header-1707338"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="zeinab.sale" id="word_commented_zeinab.sale" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=zeinab.sale">Zeinab Salehi [ MTNIrancell - ITS ]</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">18/May/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1707338"><td bgcolor="#ffffff">
+            <p>P&amp;C Analysis on impacted services <br/>
+<span class="nobr"><a href="https://icare.mtnirancell.ir/secure/attachment/737802/737802_RE++MTNI-753874%28DMS+portal+and+Warehouse+application+are+not+accessible%29.msg" title="RE  MTNI-753874(DMS portal and Warehouse application are not accessible).msg attached to MTNI-760378">RE  MTNI-753874(DMS portal and Warehouse application are not accessible).msg<sup><img class="rendericon" src="https://icare.mtnirancell.ir/images/icons/link_attachment_7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></p>
+        </td></tr>
+                <tr id="comment-header-1707848"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="zeinab.sale" id="word_commented_zeinab.sale" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=zeinab.sale">Zeinab Salehi [ MTNIrancell - ITS ]</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">18/May/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1707848"><td bgcolor="#ffffff">
+            <p><a href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ramin.ba" class="user-hover" rel="ramin.ba">Ramin Baghaei Mehr [ MTNIrancell - ITS ]</a><a href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=soroush.sa" class="user-hover" rel="soroush.sa">Soroush Sadegh Bayan [ MTNIrancell - ITS ]</a><a href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=mehdi.asi" class="user-hover" rel="mehdi.asi">Mehdi Asi [ Tecnotree ]</a><a href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=mohammadamin.mir" class="user-hover" rel="mohammadamin.mir">Mohammadamin Mir Shekari [ MTNIrancell - Labs ]</a></p>
+
+<p>Dears,<br/>
+Kindly consider that RCA assigned to Ability side to complete all parts with your comment and evidences,. Please update all sections and septerate your update from AHS. (Ex: TT Chronological, root cause)</p>
+
+<p>BR<br/>
+Mehrnaz </p>
+        </td></tr>
+                <tr id="comment-header-1717366"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="mohammadali.ar" id="word_commented_mohammadali.ar" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=mohammadali.ar">Mohammadali Arab Yar Mohammadi [ MTNIrancell ]</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">28/May/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1717366"><td bgcolor="#ffffff">
+            <p><font color="#00875a">Received Zabbix notifications are attached</font><br/>
+<span class="nobr"><a href="https://icare.mtnirancell.ir/secure/attachment/742241/742241_Severity++Average.msg" title="Severity  Average.msg attached to MTNI-760378">Severity  Average.msg<sup><img class="rendericon" src="https://icare.mtnirancell.ir/images/icons/link_attachment_7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> <span class="nobr"><a href="https://icare.mtnirancell.ir/secure/attachment/742242/742242_Problem+++MW+and+IVR+Connectivity+Checking+-+EIA+Business+roles+-+IVR+API+Failure+on+side+of+MW+is+more+than+10%25.msg" title="Problem   MW and IVR Connectivity Checking - EIA Business roles - IVR API Failure on side of MW is more than 10%.msg attached to MTNI-760378">Problem   MW and IVR Connectivity Checking - EIA Business roles - IVR API Failure on side of MW is more than 10%.msg<sup><img class="rendericon" src="https://icare.mtnirancell.ir/images/icons/link_attachment_7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> <span class="error">&#91;^Problem   @bility - dru104a_post2p Database - Database is NOT Accessible.msg&#93;</span> <span class="nobr"><a href="https://icare.mtnirancell.ir/secure/attachment/742244/742244_Severity++Average+%281%29.msg" title="Severity  Average (1).msg attached to MTNI-760378">Severity  Average (1).msg<sup><img class="rendericon" src="https://icare.mtnirancell.ir/images/icons/link_attachment_7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span> <span class="nobr"><a href="https://icare.mtnirancell.ir/secure/attachment/742245/742245_Problem+++Ability+-+dru104a+-+Critical+CPU+Utilization.msg" title="Problem   Ability - dru104a - Critical CPU Utilization.msg attached to MTNI-760378">Problem   Ability - dru104a - Critical CPU Utilization.msg<sup><img class="rendericon" src="https://icare.mtnirancell.ir/images/icons/link_attachment_7.gif" height="7" width="7" align="absmiddle" alt="" border="0"/></sup></a></span></p>
+        </td></tr>
+                <tr id="comment-header-1719543"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="zeinab.sale" id="word_commented_zeinab.sale" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=zeinab.sale">Zeinab Salehi [ MTNIrancell - ITS ]</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">29/May/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1719543"><td bgcolor="#ffffff">
+            <p>Dear <a href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=mohammadamin.mir" class="user-hover" rel="mohammadamin.mir">Mohammadamin Mir Shekari [ MTNIrancell - Labs ]</a> <a href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=mehdi.asi" class="user-hover" rel="mehdi.asi">Mehdi Asi [ Tecnotree ]</a><a href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=soroush.sa" class="user-hover" rel="soroush.sa">Soroush Sadegh Bayan [ MTNIrancell - ITS ]</a><a href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ramin.ba" class="user-hover" rel="ramin.ba">Ramin Baghaei Mehr [ MTNIrancell - ITS ]</a><br/>
+Kindly clarify about below items: <br/>
+1-	About library cash mute X ,as you mentioned “Because of the varied causes, it is important to find the correct cause; so that the right solution can be implemented.” Please share your plan to find the exact root cause and then implement the right solution <br/>
+2-	Please share what was the exact job related to monitoring which is already stopped and clarify by whom is stopped and when.<br/>
+3-	About Hard Parse and Zabbix top query , please share result of investigation with P&amp;C team <br/>
+4-	Since this major incident happened close to Bill run change, was there any preparation activity which caused load on database <br/>
+5-	Please clarify if there is a possibility to set monitoring on Control version count and hard parse is based on coming query/operation by Zabbix <br/>
+6-     Please share all jobs and its description which killed to control the load before bouncing the database</p>
+
+<p>Dear <a href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=mehdi.kheir" class="user-hover" rel="mehdi.kheir">Mehdi Kheir Andish [ MTNIrancell - ITS ]</a><a href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=seuneh.b" class="user-hover" rel="seuneh.b">Seuneh Barkhordari [ Arya Hamrah Samaneh ]</a><br/>
+Please calrify about below item :<br/>
+1-	Is there any monitoring on OS /DB level to notify about high number of cash mute X  infrastructure before database get freeze </p>
+        </td></tr>
+                <tr id="comment-header-1748208"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="mehran.ra" id="word_commented_mehran.ra" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=mehran.ra">Mehran Rahimian [ Saei ]</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">21/Jun/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1748208"><td bgcolor="#ffffff">
+            <p>According to required action plans based on RCA, ticket will be moved to @bility bucket. </p>
+        </td></tr>
+                <tr id="comment-header-1759636"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="zeinab.sale" id="word_commented_zeinab.sale" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=zeinab.sale">Zeinab Salehi [ MTNIrancell - ITS ]</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">29/Jun/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1759636"><td bgcolor="#ffffff">
+            <p>Due to high version count error number of blocking session on Ability database were increased and caused inaccessibility of this database. Issue got fixed by bouncing database via emergency change <a href="https://icare.mtnirancell.ir/browse/MTNI-760463" title="To stop/start all TT services/apps and Restart post2p oracle DB to release high concurrency  " class="issue-link" data-issue-key="MTNI-760463"><del>MTNI-760463</del></a>.</p>
+        </td></tr>
+                <tr id="comment-header-1824671"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">24/Aug/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1824671"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-1824732"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">24/Aug/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1824732"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-1828590"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">28/Aug/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1828590"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-1828593"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">28/Aug/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1828593"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-1836005"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">03/Sep/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1836005"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-1835985"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">03/Sep/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1835985"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-1840136"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">05/Sep/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1840136"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-1859698"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">21/Sep/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1859698"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-1861465"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">24/Sep/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1861465"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-1861074"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">24/Sep/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1861074"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-1861076"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">24/Sep/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1861076"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-1864783"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">28/Sep/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1864783"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-1871061"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">02/Oct/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1871061"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-1907657"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">31/Oct/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1907657"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-1912833"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">05/Nov/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1912833"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-1914842"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">07/Nov/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1914842"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-1917561"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">09/Nov/22</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-1917561"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2058715"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">06/Mar/23</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2058715"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2064865"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">12/Mar/23</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2064865"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2073540"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">19/Mar/23</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2073540"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2080817"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">27/Mar/23</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2080817"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2107818"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">24/Apr/23</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2107818"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2114549"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">29/Apr/23</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2114549"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2158588"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">30/May/23</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2158588"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2162824"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">03/Jun/23</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2162824"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2243798"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">29/Jul/23</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2243798"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2244377"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">29/Jul/23</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2244377"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2244382"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">29/Jul/23</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2244382"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2248441"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">31/Jul/23</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2248441"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2248612"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">31/Jul/23</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2248612"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2252348"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">05/Aug/23</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2252348"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2325119"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">20/Sep/23</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2325119"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2334106"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">27/Sep/23</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2334106"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2384922"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">29/Oct/23</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2384922"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2531388"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">17/Jan/24</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2531388"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2537141"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">20/Jan/24</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2537141"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2567738"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">05/Feb/24</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2567738"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2569539"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">06/Feb/24</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2569539"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+                <tr id="comment-header-2620128"><td bgcolor="#f0f0f0">
+            Comment by  
+                                                        <a class="user-hover" rel="ilms" id="word_commented_ilms" href="https://icare.mtnirancell.ir/secure/ViewProfile.jspa?name=ilms">iApp-svc</a>
+                                        <font size="-2">
+            [
+                <font color="#336699">06/Mar/24</font>
+
+                            ]
+            </font>
+
+        </td></tr>
+        <tr id="comment-body-2620128"><td bgcolor="#ffffff">
+            <p>RCA table updated by RCA action tracker application.</p>
+        </td></tr>
+            </table>
+Generated at Sat Mar 14 17:29:55 GMT+03:30 2026 by Alireza Aghajanzadeh Gheshlaghi [ Arya Hamrah Samaneh ] using Jira 8.13.20#813020-sha1:424c361ba41777c0319c49c323027f14cae41061.
+
+</body>
+</html>

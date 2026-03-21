@@ -6,6 +6,272 @@ Alireza Aghajanzadeh Gheshlaghi
 AHS Database Administrator
 ITS Infrastructure Operation
 Phone: 09121488580
+09352106621 (DBA Oncall)
+
+From: Erfan Fatemi Zadeh [ MTNIrancell - Labs ] <erfan.f@mtnirancell.ir> 
+Sent: Saturday, March 14, 2026 4:27 PM
+To: Pardis Goudarzi [ MTNIrancell - Labs ] <pardis.go@mtnirancell.ir>; ITS Service Desk <itsservicedesk@mtnirancell.ir>
+Cc: #ITS CSS DBA <#ITSCSSDBA@mtnirancell.ir>; Yasamin Sepehr [ MTNIrancell - Labs ] <yasamin.s@mtnirancell.ir>; Alireza Aghajanzadeh Gheshlaghi [ Arya Hamrah Samaneh ] <alireza.aghaja@mtnirancell.ir>; Masoud Rafiei [ Arya Hamrah Samaneh ] <masoud.raf@mtnirancell.ir>; Mohsen Roudsaz [ Arya Hamrah Samaneh ] <mohsen.roud@mtnirancell.ir>; #ITS DC DBA <#ITSDCDBA@mtnirancell.ir>; #AHS Service Management <#AHSServiceManagement@mtnirancell.ir>; Saeid Motaei [ MTNIrancell - ITS ] <saeid.mo@mtnirancell.ir>; Hamidreza Saadat Pour [ MTNIrancell - Labs ] <hamidreza.saa@mtnirancell.ir>; ITS CRM Billing-NOC <itscrmbilling-noc@mtnirancell.ir>; #ITS DC UNIX <#ITSDCUNIX@mtnirancell.ir>; Amir Hemmati [ MTNIrancell - ITS ] <amir.hem@mtnirancell.ir>; Soheil Sarrafi [ MTNIrancell - ITS ] <soheil.sar@mtnirancell.ir>; Mohammadamin Mir Shekari [ MTNIrancell - Labs ] <mohammadamin.mir@mtnirancell.ir>; Sara Sedigh Zadeh [ MTNIrancell - ITS ] <sara.se@mtnirancell.ir>; Morteza Shohrati [ MTNIrancell - Labs ] <morteza.s@mtnirancell.ir>; Somayeh Solgi [ MTNIrancell - ITS ] <Somayeh.s@mtnirancell.ir>; Hossein Eskandari [ MTNIrancell - ITS ] <hossein.es@mtnirancell.ir>; Mohammadsaleh Bayat Jozani [ MTNIrancell - Labs ] <mohammadsaleh.b@mtnirancell.ir>; #ITS Incident Management <#ITSIncidentManagement@mtnirancell.ir>; #ITS SD Leadership <#ITSSDLeadership@mtnirancell.ir>; Omid Heravi [ MTNIrancell - ITS ] <omid.her@mtnirancell.ir>
+Subject: RE: Problem : @bility - dru104a - Critical CPU Utilization // MTNI-1459453
+
+Dear @Pardis Goudarzi [ MTNIrancell - Labs ]
+Based on the meeting held, the following points are presented:
+	The ASH report for the period 08:30 to 09:00 shows that the average number of active sessions was 250, which is consistent with the fact that no alarms or tickets were triggered by the monitoring system during that timeframe.
+	After 09:15, a noticeable increase in CPU load was observed; however, since the database had already become inaccessible prior to 09:00, this CPU spike is not the root cause of the incident.
+
+ 
+
+	Analysis of the blocking sessions indicates that two sessions were responsible for blocking: 
+o	the SYS session (SID 322) accounted for approximately 68% of the blocking activity,
+o	the application session (SID 3082) accounted for about 8%.
+
+ 
+	According to the alert log, multiple errors related to memory malfunction and corruption were detected. These are consistent with known Oracle 11.2.0.2 bugs related to mutex handling and library cache management.
+
+KGX cleanup...   --> corruption in Library Cache
+KGX Atomic Operation Log 3a95a7e310
+Mutex 3b1c0326a8(322, 0) idn 74472c7a oper GET_EXCL  --> corruption in Library Cache
+Library Cache uid 2777 efd 4 whr 85 slp 439
+oper=0 pt1=3b1c031328 pt2=0 pt3=0
+pt4=0 pt5=0 ub4=0
+
+*** 2026-03-09 08:52:43.402
+Incident 2661489 created, dump file: /tt_mig/dump/diag/rdbms/post2p/post2p/incident/incdir_2661489/post2p_ora_28130_i2661489.trc
+ORA-00600: internal error code, arguments: [kkscxa_1], [0], [], [], [], [], [], [], [], [], [], []
+
+Incident 2661490 created, dump file: /tt_mig/dump/diag/rdbms/post2p/post2p/incident/incdir_2661490/post2p_ora_28130_i2661490.trc
+ORA-00600: internal error code, arguments: [kgh_heap_sizes:ds], [0xFFFFFFFF79D23F30], [], [], [], [], [], [], [], [], [], []  --> corruption in SGA(heap memory)
+ORA-00600: internal error code, arguments: [kkscxa_1], [0], [], [], [], [], [], [], [], [], [], []  --> memory corruption on shared pool
+
+	It should be emphasized that no abnormal load or unusual workload was observed on the database compared to previous days.
+Action required:
+Please coordinate with the infrastructure team to prepare and execute an upgrade plan and apply the corresponding patch to Oracle version 11.2.0.4, as these issues are resolved in that release.
+
+BR
+Fatemizadeh
+
+From: ITS Service Desk <itsservicedesk@mtnirancell.ir> 
+Sent: Wednesday, March 11, 2026 3:21 PM
+To: Omid Heravi [ MTNIrancell - ITS ] <omid.her@mtnirancell.ir>
+Cc: #ITS CSS DBA <#ITSCSSDBA@mtnirancell.ir>; Yasamin Sepehr [ MTNIrancell - Labs ] <yasamin.s@mtnirancell.ir>; Erfan Fatemi Zadeh [ MTNIrancell - Labs ] <erfan.f@mtnirancell.ir>; Alireza Aghajanzadeh Gheshlaghi [ Arya Hamrah Samaneh ] <alireza.aghaja@mtnirancell.ir>; Pardis Goudarzi [ MTNIrancell - Labs ] <pardis.go@mtnirancell.ir>; Masoud Rafiei [ Arya Hamrah Samaneh ] <masoud.raf@mtnirancell.ir>; Mohsen Roudsaz [ Arya Hamrah Samaneh ] <mohsen.roud@mtnirancell.ir>; #ITS DC DBA <#ITSDCDBA@mtnirancell.ir>; #AHS Service Management <#AHSServiceManagement@mtnirancell.ir>; Saeid Motaei [ MTNIrancell - ITS ] <saeid.mo@mtnirancell.ir>; Hamidreza Saadat Pour [ MTNIrancell - Labs ] <hamidreza.saa@mtnirancell.ir>; ITS CRM Billing-NOC <itscrmbilling-noc@mtnirancell.ir>; #ITS DC UNIX <#ITSDCUNIX@mtnirancell.ir>; Amir Hemmati [ MTNIrancell - ITS ] <amir.hem@mtnirancell.ir>; Soheil Sarrafi [ MTNIrancell - ITS ] <soheil.sar@mtnirancell.ir>; Mohammadamin Mir Shekari [ MTNIrancell - Labs ] <mohammadamin.mir@mtnirancell.ir>; Sara Sedigh Zadeh [ MTNIrancell - ITS ] <sara.se@mtnirancell.ir>; Morteza Shohrati [ MTNIrancell - Labs ] <morteza.s@mtnirancell.ir>; Somayeh Solgi [ MTNIrancell - ITS ] <Somayeh.s@mtnirancell.ir>; Hossein Eskandari [ MTNIrancell - ITS ] <hossein.es@mtnirancell.ir>; Mohammadsaleh Bayat Jozani [ MTNIrancell - Labs ] <mohammadsaleh.b@mtnirancell.ir>; #ITS Incident Management <#ITSIncidentManagement@mtnirancell.ir>; #ITS SD Leadership <#ITSSDLeadership@mtnirancell.ir>
+Subject: RE: Problem : @bility - dru104a - Critical CPU Utilization // MTNI-1459453
+
+++Ticket number added to subject
+
+Dear Omid,
+If you are referring to ticket MTNI-1459453, please consider it was neither raised nor reassigned to infra DBA team by application or ITS Service Desk teams.
+Having been familiar with various incidents and issues, I assume you are aware such triggers are not set by ITS Service Desk as well.
+We recommend following for trigger modification if required, by alignment with responsible sides.
+We also do not recommend such ping pong mails between teams.
+Appropriate action in such situations is to discuss the matter either one to one by technical engineers, or having a meeting with presence of technical engineers, account managers and incident manager to hear all sides and take required decision.
+
+As I can see the meeting is set by Labs SM team for Saturday, March 14, 2026 2:00 PM-2:30 PM.
+Please let me know if further assistance was required to clarify the matters from ITS Service Desk side.
+
+
+ 
+
+
+Best Regards,	
+ 
+ 	Ali Davachi
+ITS Service Desk Team Leader
+	 
+Email	 
+Chat	 
+247	 
+09372470000
+
+
+From: Omid Heravi [ MTNIrancell - ITS ] <omid.her@mtnirancell.ir> 
+Sent: Wednesday, March 11, 2026 1:28 PM
+To: ITS Service Desk <itsservicedesk@mtnirancell.ir>
+Cc: #ITS CSS DBA <#ITSCSSDBA@mtnirancell.ir>; Yasamin Sepehr [ MTNIrancell - Labs ] <yasamin.s@mtnirancell.ir>; Erfan Fatemi Zadeh [ MTNIrancell - Labs ] <erfan.f@mtnirancell.ir>; Alireza Aghajanzadeh Gheshlaghi [ Arya Hamrah Samaneh ] <alireza.aghaja@mtnirancell.ir>; Pardis Goudarzi [ MTNIrancell - Labs ] <pardis.go@mtnirancell.ir>; Masoud Rafiei [ Arya Hamrah Samaneh ] <masoud.raf@mtnirancell.ir>; Mohsen Roudsaz [ Arya Hamrah Samaneh ] <mohsen.roud@mtnirancell.ir>; #ITS DC DBA <#ITSDCDBA@mtnirancell.ir>; #AHS Service Management <#AHSServiceManagement@mtnirancell.ir>; Saeid Motaei [ MTNIrancell - ITS ] <saeid.mo@mtnirancell.ir>; Hamidreza Saadat Pour [ MTNIrancell - Labs ] <hamidreza.saa@mtnirancell.ir>; ITS CRM Billing-NOC <itscrmbilling-noc@mtnirancell.ir>; #ITS DC UNIX <#ITSDCUNIX@mtnirancell.ir>; Amir Hemmati [ MTNIrancell - ITS ] <amir.hem@mtnirancell.ir>; Soheil Sarrafi [ MTNIrancell - ITS ] <soheil.sar@mtnirancell.ir>; Mohammadamin Mir Shekari [ MTNIrancell - Labs ] <mohammadamin.mir@mtnirancell.ir>; Sara Sedigh Zadeh [ MTNIrancell - ITS ] <sara.se@mtnirancell.ir>; Morteza Shohrati [ MTNIrancell - Labs ] <morteza.s@mtnirancell.ir>; Somayeh Solgi [ MTNIrancell - ITS ] <Somayeh.s@mtnirancell.ir>; Hossein Eskandari [ MTNIrancell - ITS ] <hossein.es@mtnirancell.ir>; Mohammadsaleh Bayat Jozani [ MTNIrancell - Labs ] <mohammadsaleh.b@mtnirancell.ir>
+Subject: RE: Problem : @bility - dru104a - Critical CPU Utilization
+
+Dear SD,
+When the DB is unavailable due to backup, maintenance jobs or any task related to the Infra DBA team, any load on the DB is impacted by the application load. Please assign the INC to the Infra DBA team after obtaining sufficient evidence from the application team. Otherwise, a lot of time will be wasted on ping pong technical emails, which is definitely a waste of time and energy.
+I really thanks to application team if first of all check all required parameters.
+Please assign it to Application team.
+
+Br
+Omid Heravi
+
+From: Erfan Fatemi Zadeh [ MTNIrancell - Labs ] <erfan.f@mtnirancell.ir> 
+Sent: Tuesday, March 10, 2026 5:38 PM
+To: Alireza Aghajanzadeh Gheshlaghi [ Arya Hamrah Samaneh ] <alireza.aghaja@mtnirancell.ir>; Pardis Goudarzi [ MTNIrancell - Labs ] <pardis.go@mtnirancell.ir>; Masoud Rafiei [ Arya Hamrah Samaneh ] <masoud.raf@mtnirancell.ir>; Mohsen Roudsaz [ Arya Hamrah Samaneh ] <mohsen.roud@mtnirancell.ir>; #ITS DC DBA <#ITSDCDBA@mtnirancell.ir>; #AHS Service Management <#AHSServiceManagement@mtnirancell.ir>; ITS Service Desk <itsservicedesk@mtnirancell.ir>; Saeid Motaei [ MTNIrancell - ITS ] <saeid.mo@mtnirancell.ir>; Omid Heravi [ MTNIrancell - ITS ] <omid.her@mtnirancell.ir>; Hamidreza Saadat Pour [ MTNIrancell - Labs ] <hamidreza.saa@mtnirancell.ir>
+Cc: #ITS CSS DBA <#ITSCSSDBA@mtnirancell.ir>; Yasamin Sepehr [ MTNIrancell - Labs ] <yasamin.s@mtnirancell.ir>; ITS CRM Billing-NOC <itscrmbilling-noc@mtnirancell.ir>; #ITS DC UNIX <#ITSDCUNIX@mtnirancell.ir>; Amir Hemmati [ MTNIrancell - ITS ] <amir.hem@mtnirancell.ir>; Soheil Sarrafi [ MTNIrancell - ITS ] <soheil.sar@mtnirancell.ir>; Mohammadamin Mir Shekari [ MTNIrancell - Labs ] <mohammadamin.mir@mtnirancell.ir>; Sara Sedigh Zadeh [ MTNIrancell - ITS ] <sara.se@mtnirancell.ir>; Morteza Shohrati [ MTNIrancell - Labs ] <morteza.s@mtnirancell.ir>; Somayeh Solgi [ MTNIrancell - ITS ] <Somayeh.s@mtnirancell.ir>; Hossein Eskandari [ MTNIrancell - ITS ] <hossein.es@mtnirancell.ir>; Mohammadsaleh Bayat Jozani [ MTNIrancell - Labs ] <mohammadsaleh.b@mtnirancell.ir>
+Subject: RE: Problem : @bility - dru104a - Critical CPU Utilization
+
+Dear Alireza,
+As it's clear, I extracted AWR 7th,8th to answer your question about the updates rate in the gsm_background_process for an example of during 8-9AM, I'm surprised you're ignoring this point.
+
+ 
+“number of updates in the gsm_background_process table, based on the attached workload reports for March 7th and 8th, is as follows: as you can see, the update rate during 8-9 AM on March 7th was 66 million, and 28 million on March 8th, which is significantly higher than the usual rate on March 9th, the day the issue occurred. This is a recurring pattern in the database and has not changed.”
+
+BR
+Fatemizadeh
+
+
+From: Alireza Aghajanzadeh Gheshlaghi [ Arya Hamrah Samaneh ] <alireza.aghaja@mtnirancell.ir> 
+Sent: Tuesday, March 10, 2026 5:08 PM
+To: Pardis Goudarzi [ MTNIrancell - Labs ] <pardis.go@mtnirancell.ir>; Erfan Fatemi Zadeh [ MTNIrancell - Labs ] <erfan.f@mtnirancell.ir>; Masoud Rafiei [ Arya Hamrah Samaneh ] <masoud.raf@mtnirancell.ir>; Mohsen Roudsaz [ Arya Hamrah Samaneh ] <mohsen.roud@mtnirancell.ir>; #ITS DC DBA <#ITSDCDBA@mtnirancell.ir>; #AHS Service Management <#AHSServiceManagement@mtnirancell.ir>; ITS Service Desk <itsservicedesk@mtnirancell.ir>; Saeid Motaei [ MTNIrancell - ITS ] <saeid.mo@mtnirancell.ir>; Omid Heravi [ MTNIrancell - ITS ] <omid.her@mtnirancell.ir>; Hamidreza Saadat Pour [ MTNIrancell - Labs ] <hamidreza.saa@mtnirancell.ir>
+Cc: #ITS CSS DBA <#ITSCSSDBA@mtnirancell.ir>; Yasamin Sepehr [ MTNIrancell - Labs ] <yasamin.s@mtnirancell.ir>; ITS CRM Billing-NOC <itscrmbilling-noc@mtnirancell.ir>; #ITS DC UNIX <#ITSDCUNIX@mtnirancell.ir>; Amir Hemmati [ MTNIrancell - ITS ] <amir.hem@mtnirancell.ir>; Soheil Sarrafi [ MTNIrancell - ITS ] <soheil.sar@mtnirancell.ir>; Mohammadamin Mir Shekari [ MTNIrancell - Labs ] <mohammadamin.mir@mtnirancell.ir>; Sara Sedigh Zadeh [ MTNIrancell - ITS ] <sara.se@mtnirancell.ir>; Morteza Shohrati [ MTNIrancell - Labs ] <morteza.s@mtnirancell.ir>; Somayeh Solgi [ MTNIrancell - ITS ] <Somayeh.s@mtnirancell.ir>; Hossein Eskandari [ MTNIrancell - ITS ] <hossein.es@mtnirancell.ir>; Mohammadsaleh Bayat Jozani [ MTNIrancell - Labs ] <mohammadsaleh.b@mtnirancell.ir>
+Subject: Re: Problem : @bility - dru104a - Critical CPU Utilization
+
+Dear Pardis,
+if you had actually read emails, the response was made by examining AWRs provided by Erfan that we considered as source of truth for comparison. In addition to that, i have identified the session id that caused the incident which was initiated from application server.
+As i said this is completely out of Infra DBA scope to troubleshoot application code and we are just helping application team to find the application session which was initiated and caused the incident.
+
+Best Regards,
+ 
+Alireza Aghajanzadeh Gheshlaghi
+AHS Database Administrator
+ITS Infrastructure Operation
+Phone: +09121488580
+ 
+
+________________________________________
+From: Pardis Goudarzi [ MTNIrancell - Labs ]
+Sent: Tuesday, March 10, 2026 4:15:25 PM
+To: Alireza Aghajanzadeh Gheshlaghi [ Arya Hamrah Samaneh ]; Erfan Fatemi Zadeh [ MTNIrancell - Labs ]; Masoud Rafiei [ Arya Hamrah Samaneh ]; Mohsen Roudsaz [ Arya Hamrah Samaneh ]; #ITS DC DBA; #AHS Service Management; ITS Service Desk; Saeid Motaei [ MTNIrancell - ITS ]; Omid Heravi [ MTNIrancell - ITS ]; Saeid Motaei [ MTNIrancell - ITS ]; Hamidreza Saadat Pour [ MTNIrancell - Labs ]
+Cc: #ITS CSS DBA; Yasamin Sepehr [ MTNIrancell - Labs ]; ITS CRM Billing-NOC; #ITS DC UNIX; ITS Service Desk; Amir Hemmati [ MTNIrancell - ITS ]; Soheil Sarrafi [ MTNIrancell - ITS ]; Mohammadamin Mir Shekari [ MTNIrancell - Labs ]; Sara Sedigh Zadeh [ MTNIrancell - ITS ]; Morteza Shohrati [ MTNIrancell - Labs ]; Somayeh Solgi [ MTNIrancell - ITS ]; Hossein Eskandari [ MTNIrancell - ITS ]; Mohammadsaleh Bayat Jozani [ MTNIrancell - Labs ]
+Subject: RE: Problem : @bility - dru104a - Critical CPU Utilization 
+ 
+Dear Alireza,
+
+Your comment regarding “PRC_RECON_REVOKING_DMS” is not correct. 
+
+This job is running daily 6 times  in crontab format on below times to revoke those subscribers which submit their document.
+Times: 9:00 - 11:30 - 13:30 - 17:00 - 20:00 - 23:00
+Please find the attachment which is our internal notification for daily running of this job. I attached for 8th and 7th of march. If this job is not running daily CR team will raise high incident for us.
+As you know issue started before 9:00 AM but our job will run daily at 9:00 AM. 
+From yesterday till now you shared 3 different root causes which are not valid. 
+Kindly please cross check from 8:30 till 9:00 once again and share the exact root cause regarding DB issue.
+
+Dear Saeid,
+
+For your information.
+
+Dear Hamid,
+
+Please set meeting for this case.
+
+Best Regards
+Pardis Goodarzi
+Billing & CRM operations Senior Manager, 
+Pardis.go@MTNIrancell.ir 
+Mob: 09352005222 
+
+From: Alireza Aghajanzadeh Gheshlaghi [ Arya Hamrah Samaneh ] <alireza.aghaja@mtnirancell.ir> 
+Sent: Monday, March 9, 2026 9:25 PM
+To: Erfan Fatemi Zadeh [ MTNIrancell - Labs ] <erfan.f@mtnirancell.ir>; Masoud Rafiei [ Arya Hamrah Samaneh ] <masoud.raf@mtnirancell.ir>; Mohsen Roudsaz [ Arya Hamrah Samaneh ] <mohsen.roud@mtnirancell.ir>; #ITS DC DBA <#ITSDCDBA@mtnirancell.ir>; #AHS Service Management <#AHSServiceManagement@mtnirancell.ir>; ITS Service Desk <itsservicedesk@mtnirancell.ir>; Saeid Motaei [ MTNIrancell - ITS ] <saeid.mo@mtnirancell.ir>; Omid Heravi [ MTNIrancell - ITS ] <omid.her@mtnirancell.ir>
+Cc: #ITS CSS DBA <#ITSCSSDBA@mtnirancell.ir>; Yasamin Sepehr [ MTNIrancell - Labs ] <yasamin.s@mtnirancell.ir>; ITS CRM Billing-NOC <itscrmbilling-noc@mtnirancell.ir>; #ITS DC UNIX <#ITSDCUNIX@mtnirancell.ir>; ITS Service Desk <itsservicedesk@mtnirancell.ir>; Amir Hemmati [ MTNIrancell - ITS ] <amir.hem@mtnirancell.ir>; Soheil Sarrafi [ MTNIrancell - ITS ] <soheil.sar@mtnirancell.ir>; Mohammadamin Mir Shekari [ MTNIrancell - Labs ] <mohammadamin.mir@mtnirancell.ir>; Pardis Goudarzi [ MTNIrancell - Labs ] <pardis.go@mtnirancell.ir>; Sara Sedigh Zadeh [ MTNIrancell - ITS ] <sara.se@mtnirancell.ir>; Morteza Shohrati [ MTNIrancell - Labs ] <morteza.s@mtnirancell.ir>; Somayeh Solgi [ MTNIrancell - ITS ] <Somayeh.s@mtnirancell.ir>; Hossein Eskandari [ MTNIrancell - ITS ] <hossein.es@mtnirancell.ir>; Mohammadsaleh Bayat Jozani [ MTNIrancell - Labs ] <mohammadsaleh.b@mtnirancell.ir>
+Subject: RE: Problem : @bility - dru104a - Critical CPU Utilization
+
+Dear Erfan,
+Thank you for the March 7th and 8th AWR reports. We have completed ASH per-second analysis, AWR internal statistics comparison, and source code review. The root cause has been identified and it points to an application-initiated session. Before going into the evidence, we need clarification on a few items from your side, as the investigation has reached a point where only the application team can provide answers.
+We need the following from the application team:
+1.	What process, script, or tool was executed from drvl1078 as ABL_DBOBJECTS via SQL*Plus at approximately 08:47 on March 9th? This is the session that caused the entire outage.
+2.	Who scheduled PRC_RECON_REVOKING_DMS for execution on March 9th morning? This procedure does not appear in any other AWR we have (March 7, March 8, 17 Esfand).
+I should mention that as infrastructure DBAs, we have spent considerable time tracing application-level code execution, stored procedure source, and application server session behavior. This level of investigation into application logic is outside our normal scope of responsibility, and we did it only because the incident was assigned to us. The evidence below clearly shows the root cause is an application session, and we expect the application team to take ownership from here.
+A single session from application server drvl1078 (SID 3082, schema ABL_DBOBJECTS, SQL*Plus) held a library cache mutex for 36 continuous minutes (08:47 to 09:23) while scanning archived redo logs. This blocked 2,878 sessions and generated 109,483 wait events across all application servers. When the session finally released the mutex, the storm ended immediately.
+This session does not appear in any comparison AWR (March 7, March 8, 17 Esfand). It is the only difference between a normal day and the incident day. No DBA or infrastructure change was made on POST2P
+Workload comparison
+You are correct that preUploadPK workload was normal on March 9th. We agree on this point:
+Date	preUploadPK Executions
+March 7	66,470,815
+March 8	28,098,251
+March 9	28,544,200 (comparable to March 8)
+But the same workload produced a completely different outcome on March 9th:
+Metric	March 7	March 8	March 9 (Incident)
+lib cache: mutex X	23 sec	49 sec	4,977,019 sec
+% of DB Time	0.01%	0.02%	93.36%
+Avg mutex wait	0 ms	0 ms	5,599 ms
+DB Time	170,948 sec	208,261 sec	5,331,216 sec
+That is a 100,000x increase in mutex wait time. Something that did not exist on March 7 or 8 was running on March 9. We found exactly what it was.
+The root blocker session
+ASH data (POST2P, DBID 2771519206, Snap IDs 233938–233941) identifies one session as the root blocker:
+Attribute	Value
+SID / Serial#	3082 / 44313
+User Schema	ABL_DBOBJECTS (user_id 267)
+Machine	drvl1078 (application server)
+Program	sqlplus@drvl1078 (TNS V1-V3)
+SQL ID	459f3z9u4fb3u
+SQL Text	select value$ from props$ where name = 'GLOBAL_DB_NAME'
+Wait Event	log file sequential read (redo log# 987952, 987953)
+First ASH sample	08:47:33
+Last ASH sample	09:23:03
+Duration	~36 minutes
+The SQL select value$ from props$ is an Oracle internal recursive query against SYS.PROPS$. It fires during database link resolution, LogMiner init, or session bootstrap. Normally it completes in microseconds. Here it persisted for 36 minutes because the session was reading redo logs underneath.
+The redo block numbers increment systematically, confirming sequential redo scanning:
+Time	Event	Log#	Block#	Blocks
+08:47:33	log file sequential read	987952	681,984	2,048
+08:47:43	log file sequential read	987952	3,592,192	2,048
+08:47:53	log file sequential read	987952	6,311,936	2,048
+08:48:03	log file sequential read	987952	8,419,328	2,048
+08:48:13	ON CPU	987952	9,431,040	2,048
+08:49:25	ON CPU	987953	497,664	2,048
+08:49:35	ON CPU	987953	1,138,688	2,048
+continued through 08:53:09, then resumed 09:16–09:23 ON CPU
+This is application-level behavior initiated from drvl1078, not a background database process.
+This behavior does not appear in ANY of the comparison AWRs: March 7, March 8, or 17 Esfand. It is unique to March 9.
+P2 mutex decode (mathematical proof)
+MMON_SLAVE (Session 322/45335) was blocked on library cache: mutex X across all 62 ASH samples with these parameters:
+P1 (idn) = 1,950,821,498 P2 (value) = 13,237,089,206,272 P3 (where) = 124
+In Oracle 11.2, the holder SID is encoded in the upper 32 bits of P2:
+TRUNC(13,237,089,206,272 / POWER(2,32)) = TRUNC(3082.06) = 3082 
+This is not an interpretation. It is arithmetic from Oracle's internal mutex encoding. 62 consecutive ASH samples, all with the same P2, all decoding to Session 3082/44313 from drvl1078.
+Between 08:53 and 09:16, the ASH in-memory ring buffer was overwhelmed by 500+ concurrent waiting sessions. When sampling resumed at 09:16, Session 322 was still blocked by Session 3082 with the same P2 value, confirming the mutex was held continuously through that gap.
+Blocking chain and impact
+Session 3082/44313 (ABL_DBOBJECTS, drvl1078) HOLDS library cache: mutex X Directly blocks: 7,141 ASH wait events from 153 unique sessions | +-- Blocks Session 322/45335 (MMON_SLAVE, background) WAITING for mutex held by 3082 Cascading blocks: 102,342 wait events from 2,878 unique sessions
+Impact per application server:
+Machine	Distinct Sessions	ASH Wait Samples
+drvl1078 (source of root blocker)	803	24,926
+drvl1078 (TT$ABILLITY_BATCH)	353	20,258
+drvl141	189	10,988
+drum711a	95	5,491
+dru822a	74	2,043
+JDBC pools (drvl240–255, drvl719–722, drvl665–668)	~50 per server	700–1,550 each
+Total	2,878+ sessions	109,483+ wait events
+MMON_SLAVE being blocked also prevented the AWR snapshot at 09:00 from generating. That is why EM top activity shows a gap between 08:47 and 09:15. The monitoring system itself was blocked by this application session.
+Internal library cache statistics
+AWR internal stats confirm catastrophic contention:
+Statistic	March 7 (normal)	March 9 (incident)	Increase
+kgllkdl1 (lock dealloc)	68,880 gets	1,487,021,925 gets	21,600x
+kglhdgn1 (handle get)	78,331 gets	936,986,368 gets	12,000x
+A 21,600x increase in lock deallocation and 12,000x increase in handle gets means the library cache was under massive contention. Same application workload, but one session (3082) was holding the mutex and forcing every other session to wait.
+Time	Event
+08:30–08:46	Normal. ~20 sessions from drvl1078, ~20 from drvl141.
+08:47:12	Storm begins. MMON blocked by Session 3082.
+08:47:33	Session 3082 first sampled: log file sequential read, redo log# 987952
+08:48	drvl1078 sessions: 20 → 439. Cascade starts.
+08:52	Peak: 545 sessions from drvl1078. Load average 2,628.
+08:53–09:16	ASH buffer overwhelmed. Mutex still held.
+09:05	Zabbix alert: DB is not accessible
+09:16:44	Session 1750/2249 appears with NO sql_id. It was waiting, blocked by the storm.
+09:23:03	Session 3082 last ASH sample. Mutex released. Storm ends.
+09:23:14	Session 1750 starts DDLs: CREATE TABLE TMP_REVOKING_DMS_0
+09:24:48	CREATE TABLE TMP_REVOKING_DMS_1
+PRC_RECON_REVOKING_DMS
+We retrieved the source from dba_source (owner ABL_DBOBJECTS). It is a billing/subscription procedure that drops and recreates TMP_REVOKING_DMS tables, joins with V_GSM_SERVICE_MAST, and calls Bulk_Revoke_Suspension. It references Change Request CR2028, DEFECT-20418, and DEFECT-20608. This is application-managed code. It does not appear in any comparison AWR. Its first appearance is during the incident window on March 9.
+Regarding your previous points:
+a) No waiting event before 9:15 in EM top activity
+The AWR snapshot at 09:00 did not generate because MMON_SLAVE was blocked by Session 3082. This is confirmed by 62 ASH samples. EM top activity only shows aggregated snapshot intervals and cannot display data for a snapshot that was never created. ASH per-second data (stored independently of AWR) proves the storm started at 08:47:12.
+b) Listener problems since 08:50
+Listener degradation (20,840ms at 08:50:10) is a direct consequence of the mutex storm. Every new connection needs library cache access to parse SQL. When Session 3082 holds the mutex, connection establishment blocks, causing listener timeouts. The listener had no independent problem. It recovered the moment the mutex was released at 09:23.
+c) sbpost2p Data Guard issues since 03:18
+Data Guard log shipping uses LGWR/ARCH processes and redo transport. These do not cause library cache: mutex X on the primary. The 5-hour gap between 03:18 and 08:47 further confirms no relationship.
+d) CPU load increased after 9:15, not before
+During the storm, sessions were not consuming CPU. They were waiting on mutexes (Concurrency-class wait). The load average of 2,628 confirms massive process pileup, but CPU appears low because sessions are sleeping. When Session 3082 releases the mutex at 09:23, all 2,878+ queued sessions execute simultaneously, producing the CPU spike. This is expected behavior after a mutex release.
+Based on everything above, we request that the incident be reassigned to the application team. The root cause is an application session from drvl1078 and all further investigation requires knowledge of what was running on that server. We have gone as far as we can from the database side.
+
+Best Regards,
+ 
+Alireza Aghajanzadeh Gheshlaghi
+AHS Database Administrator
+ITS Infrastructure Operation
+Phone: 09121488580
 09352106621 (DBA Standby)
 
 
@@ -385,4 +651,3 @@ Description: 	CPU Utilization is more than 85% in the last 15 minutes
 Problem Started	at 09:05:54 on 2026.03.09
 Ticket ID	
  
-

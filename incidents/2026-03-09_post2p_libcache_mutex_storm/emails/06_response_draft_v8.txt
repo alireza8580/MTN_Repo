@@ -1,0 +1,107 @@
+Dear Omid, Dear Mehdi,
+
+This is the second time POST2P has been brought down by a library cache: mutex X storm. The first was MTNI-760378 on May 15, 2022 — same database (dru104a), same wait event, same symptoms. That incident was classified as "Application Misuse" in Icare and resolved within days.
+
+    2022 (MTNI-760378): Application team (Tecnotree) examined the evidence, acknowledged the issue, RCA closed as "Application Misuse."
+    2026 (MTNI-1459453): Application team has not examined the session we identified. Instead, three alternative infrastructure explanations have been raised over nearly a week — all refuted by timeline evidence.
+
+Despite detailed technical evidence provided on the same day of the incident, the application team continues to present misleading conclusions. Each rebuttal we provide is met with a new alternative explanation rather than an examination of the root cause session. We believe this stems from a lack of proper handover from the previous Tecnotree team and insufficient familiarity with the database internals on the application side. The result is that we are being pulled deep into application-layer investigation — time that should be spent on our regular infrastructure responsibilities.
+
+Two key facts frame this incident:
+
+    1. We did not perform any operation on POST2P (dru104a) around the time of the incident. No ALTER SYSTEM, no parameter changes, no FLUSH, no maintenance jobs. The database had been running stable since 28 Azar 1404 startup (~3 months).
+
+    2. The database recovered the moment Session 3082 — originating from application server drvl1078, user ABL_DBOBJECTS, via SQL*Plus — was released/terminated. No DBA intervention was required for recovery.
+
+The three alternative explanations raised by the application team are:
+
+    1st (March 9-10):   "Listener problems since 08:50" — Refuted. Listener degradation is a consequence of database mutex serialization, not a cause.
+    2nd (March 14):     "ORA-00600 errors in alert log" — Refuted. These errors appeared at 08:52:43, which is 5 minutes AFTER the storm began at 08:47:12. They are consequences of prolonged mutex contention, not causes.
+    3rd (March 14):     "Upgrade Oracle to 11.2.0.4" — This shifts the burden to infrastructure without addressing what triggered the incident. An upgrade does not explain why Session 3082 was scanning redo logs on March 9th when it never did on March 7th or 8th.
+
+Each of these has consumed days of back-and-forth while the actual root cause — what application process was running from drvl1078 as ABL_DBOBJECTS — remains unanswered after nearly a week. During the March 14 meeting (2:00-2:30 PM), the application team continued this pattern — focusing on consequences and symptoms of the database contention rather than examining the root cause session. The post-meeting email at 4:27 PM reflected the same approach.
+
+For reference, we are not opposed to an Oracle upgrade. In fact, certain blocked infrastructure tasks such as server migration depend on it. However, an upgrade is a capacity planning topic, not an RCA for this incident. Even on 11.2.0.4, a session holding a library cache mutex for 36 minutes would produce an identical storm.
+
+
+TECHNICAL REBUTTAL — Application Team's March 14 Post-Meeting Response
+
+1. "SYS Session 322 = 68% blocking, application Session 3082 = only 8%"
+
+This is misleading. Session 322 (SYS, MMON_SLAVE) is an Oracle background process that was BLOCKED BY Session 3082. The blocking relationship is proven mathematically:
+
+    Session 322 waited on "library cache: mutex X" with P2 = 13,237,089,206,272
+    TRUNC(13,237,089,206,272 / POWER(2,32)) = 3082
+
+    This is Oracle's internal mutex encoding — the upper 32 bits of P2 contain the SID of the mutex holder.
+
+The cascade chain is: Session 3082 (root holder) → blocks Session 322 (MMON_SLAVE) → Session 322's held mutexes cascade-block 2,878 sessions. The "68%" attributed to Session 322 is cascading impact from Session 3082. Citing 322 as the blocker while ignoring that 322 was itself blocked BY 3082 is like blaming a traffic jam on the second car in line while ignoring the accident ahead of it.
+
+We have 62 consecutive ASH samples (08:47:12–09:23:03) confirming this chain without interruption.
+
+2. "ORA-00600 errors — Oracle bugs"
+
+The alert log entries cited:
+
+    ORA-00600: [kkscxa_1]              at 08:52:43
+    ORA-00600: [kgh_heap_sizes:ds]     at 08:52:43
+    KGX cleanup, Mutex 3b1c0326a8(322, 0)
+
+Key observations:
+- The storm began at 08:47:12 (confirmed by ASH). These errors appeared at 08:52:43 — a full 5 minutes and 31 seconds later.
+- The [kkscxa_1] error is "kernel kompile shared cursor add" — it occurs when the shared pool is under extreme contention, which is exactly what happens when a mutex is held for minutes instead of microseconds.
+- The mutex reference "(322, 0)" in the KGX cleanup line refers to Session 322 (MMON_SLAVE) — the same session our analysis showed was blocked by 3082.
+- These errors are SYMPTOMS of prolonged mutex holding, not independent bugs. They are expected consequences when a library cache mutex is not released for 36 minutes.
+
+Presenting consequences as causes reverses the causality chain.
+
+3. "No abnormal load observed"
+
+We agree. The workload was normal. That is precisely the point — the same normal workload produced a 100,000x increase in mutex wait time. The only difference on March 9th was Session 3082's redo-scanning operation from drvl1078, which does not appear in any comparison AWR (March 7, March 8, 17 Esfand).
+
+
+PRECEDENT — 2022 INCIDENT DETAILS (MTNI-760378)
+
+On May 15, 2022, incident MTNI-760378 was raised for the same database with the same symptoms:
+
+    - "library cache: mutex X" storm
+    - Massive blocking sessions making the database inaccessible
+    - Multiple services impacted (DPOS, CLM, UMS IVR, MFS, iChat, NGPG, eShop, MyIrancell, AAT lending)
+    - Resolution: kill blocking sessions + database bounce (CAT1 Emergency Change MTNI-760463)
+
+The official RCA:
+    Cause:        "Application Misuse"
+    Cause Detail: "There was a huge load on Ability database caused oracle background processes to fail"
+    Final RCA:    "Due to high version count error number of blocking session on Ability database were increased and caused inaccessibility of this database"
+
+(PFA — Attachment 1: MTNI-760378 Icare ticket showing the above RCA classification)
+
+At that time, the application DBA team (Tecnotree/Benyamin Teimouri) used the same defense: "our load and hard parse did not increase." We responded that "high concurrency of library cache: mutex X impacted the DB, this is application layer issue" and recommended setting up Zabbix monitoring triggers for blocking session thresholds.
+
+(PFA — Attachment 2: Email thread for MTNI-760378 showing the complete investigation and our recommendations)
+
+The P&C team (Zeinab Salehi) specifically asked the application team to investigate the root cause and implement a solution to prevent recurrence. Four years later, the identical scenario has recurred — confirming those preventive measures were never implemented.
+
+
+WHAT WE NEED
+
+The investigation from our side is complete. Session 3082/44313 from drvl1078 (ABL_DBOBJECTS, SQL*Plus) is the root blocker — confirmed by per-second ASH data, P2 mathematical decode, and 62 consecutive samples. This is not in dispute technically.
+
+What remains unanswered after one week:
+1. What process was executed from drvl1078 as ABL_DBOBJECTS at approximately 08:47 on March 9th?
+2. Was DBMS_LOGMNR, Flashback Transaction Query, or any redo-reading utility involved?
+3. Can this operation be prevented or rescheduled outside peak hours?
+
+These are questions only the application team can answer. If the application team is unable to identify what ran from their own server, SOC logs for drvl1078 at the relevant time window could also provide this information.
+
+We request that the investigation be directed toward answering these questions rather than continuing to explore infrastructure explanations that have been systematically refuted.
+
+The amount of time being consumed by this cycle is disproportionate to the complexity of the issue.
+
+Best Regards,
+
+Alireza Aghajanzadeh Gheshlaghi
+Infrastructure Team Database Administrator
+ITS Infrastructure Operation
+Phone: 09106909975
+09352106621 (DBA Standby)

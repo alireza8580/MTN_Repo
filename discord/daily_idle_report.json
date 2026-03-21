@@ -461,5 +461,27 @@
         "active_percent": 98.1
       }
     }
+  },
+  "2026-03-13": {
+    "date": "2026-03-13",
+    "generated_at": "2026-03-14T00:01:56.521316+00:00",
+    "work_hours": "08:00-20:00",
+    "total_work_minutes": 720,
+    "users": {
+      "Alireza": {
+        "idle_minutes": 57.3,
+        "idle_hours": 0.95,
+        "idle_percent": 8.0,
+        "active_minutes": 662.7,
+        "active_percent": 92.0
+      },
+      "Masoud": {
+        "idle_minutes": 440.8,
+        "idle_hours": 7.35,
+        "idle_percent": 61.2,
+        "active_minutes": 279.2,
+        "active_percent": 38.8
+      }
+    }
   }
 }
