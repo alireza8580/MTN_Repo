@@ -1337,6 +1337,9 @@ MONITORING
 ENABLE ROW MOVEMENT;
 
 
+-- TPS01_USED_CARDS excluded from pipeline: never exported/imported (commented out in legacy too)
+-- DDL kept below inside /* ... */ block comment for reference only.
+/*
 --
 -- TPS01_USED_CARDS  (Table)
 --
@@ -2003,6 +2006,7 @@ NOCOMPRESS
 NOPARALLEL
 MONITORING
 ENABLE ROW MOVEMENT;
+*/
 
 
 --

@@ -28,7 +28,7 @@ ensure_dir "${LOG_DIR_PPMS}"
 # ============================================================
 cleanup() {
     log_error "Caught signal — cleaning up before exit"
-    nfs_signal_fail "${NFS_PATH_PPMS}"
+    nfs_signal_fail "${NFS_PATH_PPMS}" "Export interrupted by signal"
     if [ "${NO_LOCK}" = "false" ]; then
         remove_lock
     fi
@@ -59,6 +59,34 @@ if [ "${NO_LOCK}" = "false" ]; then
 fi
 
 # ============================================================
+# Pre-flight: NFS space check (BEFORE touching any files)
+# ============================================================
+avail_kb=$(df -k "${NFS_PATH_PPMS}" 2>/dev/null | awk 'NR==2{print $4}')
+if [ -z "${avail_kb}" ]; then
+    log_error "Cannot check NFS space at ${NFS_PATH_PPMS}"
+    send_mail "PPMS_EXPORT_FAILED" "Cannot access NFS path ${NFS_PATH_PPMS}"
+    exit 1
+fi
+avail_gb=$((avail_kb / 1024 / 1024))
+min_free_kb=$((MIN_NFS_FREE_GB * 1024 * 1024))
+rem_space=$(df -h "${NFS_PATH_PPMS}" 2>/dev/null | awk 'NR==2{print $4,$5}')
+log_info "NFS space: ${avail_gb}GB available (minimum: ${MIN_NFS_FREE_GB}GB)"
+
+if [ "${avail_kb}" -lt "${min_free_kb}" ]; then
+    log_error "Insufficient NFS space: ${avail_gb}GB available, need ${MIN_NFS_FREE_GB}GB"
+    nfs_signal_fail "${NFS_PATH_PPMS}" "Insufficient NFS space: ${avail_gb}GB free, need ${MIN_NFS_FREE_GB}GB"
+    send_mail "PPMS_EXPORT_FAILED" "Export aborted: insufficient NFS space.
+
+Available: ${avail_gb} GB
+Required:  ${MIN_NFS_FREE_GB} GB
+NFS path:  ${NFS_PATH_PPMS}
+
+No dump files were modified. Old data remains intact.
+Import side will detect this failure via NFS signal and abort."
+    exit 1
+fi
+
+# ============================================================
 # Archive previous run logs and remove old dumps
 # ============================================================
 _old_logs=$(ls "${NFS_PATH_PPMS}"/exp_PREPAID*.log "${NFS_PATH_PPMS}"/imp_PREPAID*.log 2>/dev/null)
@@ -77,15 +105,6 @@ if [ -n "${_old_dumps}" ]; then
     rm -f "${NFS_PATH_PPMS}"/PREPAID_*.dmp
 fi
 
-# Check NFS space
-rem_space=$(df -h "${NFS_PATH_PPMS}" 2>/dev/null | awk 'NR==2{print $4,$5}')
-if [ -z "${rem_space}" ]; then
-    log_error "Cannot check NFS space at ${NFS_PATH_PPMS}"
-    send_mail "PPMS_EXPORT_FAILED" "Cannot access NFS path ${NFS_PATH_PPMS}"
-    exit 1
-fi
-log_info "NFS remaining space: ${rem_space}"
-
 # ============================================================
 # Create lock and notify
 # ============================================================
@@ -100,11 +119,18 @@ fi
 # NFS signal: mark export as running (always, independent of SSH lock)
 nfs_signal_start "${NFS_PATH_PPMS}"
 
-send_mail "PPMS_EXPORT_STARTED" "Export started.
+send_mail "PPMS_EXPORT_STARTED" "Export started on ${PPMS_HOST}.
 
-Remaining space on NFS (${NFS_PATH_PPMS}):
-${rem_space}
+Tables to export:
+  Heavy: ${HEAVY_TABLES[*]}
+  Light: ${LIGHT_TABLES[*]}
+  Total: $(( ${#HEAVY_TABLES[@]} + ${#LIGHT_TABLES[@]} )) tables
+
+NFS space: ${avail_gb}GB available (${rem_space})
+NFS path:  ${NFS_PATH_PPMS}
 "
+
+_export_start=$(epoch)
 
 # ============================================================
 # Export function
@@ -163,14 +189,26 @@ done
 # ============================================================
 # Post-export checks
 # ============================================================
+_export_end=$(epoch)
+_export_elapsed_min=$(( (_export_end - _export_start) / 60 ))
+_dump_count=$(ls -1 "${NFS_PATH_PPMS}"/PREPAID_*.dmp 2>/dev/null | wc -l | tr -d ' ')
+_dump_size=$(du -sk "${NFS_PATH_PPMS}"/PREPAID_*.dmp 2>/dev/null | awk '{sum+=$1} END{if (sum>0) printf "%.1fG", sum/1048576; else print "N/A"}')
+_dump_list=$(ls -lh "${NFS_PATH_PPMS}"/PREPAID_*.dmp 2>/dev/null | awk '{print $NF, $5}' | sed 's|.*/||')
+_remaining_space=$(df -h "${NFS_PATH_PPMS}" 2>/dev/null | awk 'NR==2{print $4,$5}')
+
+log_info "Export elapsed: ${_export_elapsed_min} minutes"
+log_info "Dump files: ${_dump_count}, total size: ${_dump_size:-N/A}"
 log_info "Checking export logs for errors..."
 error_logs=$(egrep -il 'ORA-|failed' "${NFS_PATH_PPMS}"/exp_PREPAID*.log 2>/dev/null)
 
 if [ ${export_failed} -ne 0 ] || [ -n "${error_logs}" ]; then
     log_error "Export completed WITH ERRORS"
     _error_detail=$(egrep -h 'ORA-' "${NFS_PATH_PPMS}"/exp_PREPAID*.log 2>/dev/null | sort -u | head -30)
-    nfs_signal_fail "${NFS_PATH_PPMS}"
-    send_mail "PPMS_EXPORT_FAILED" "Export completed with errors.
+    nfs_signal_fail "${NFS_PATH_PPMS}" "Export completed with ORA- errors"
+    send_mail "PPMS_EXPORT_FAILED" "Export completed with errors on ${PPMS_HOST}.
+
+Elapsed: ${_export_elapsed_min} minutes
+Dump files: ${_dump_count} (size: ${_dump_size:-N/A})
 
 Failed log files:
 ${error_logs:-check return codes}
@@ -183,7 +221,15 @@ Full logs at: ${NFS_PATH_PPMS}/exp_PREPAID*.log"
 else
     log_info "Export completed successfully"
     nfs_signal_done "${NFS_PATH_PPMS}"
-    send_mail "PPMS_EXPORT_COMPLETED" "Export completed successfully. All tables exported."
+    send_mail "PPMS_EXPORT_COMPLETED" "Export completed successfully on ${PPMS_HOST}.
+
+Elapsed: ${_export_elapsed_min} minutes
+Dump files: ${_dump_count} (total size: ${_dump_size:-N/A})
+NFS remaining: ${_remaining_space}
+
+Dump file details:
+${_dump_list:-no dump files found}
+"
 fi
 
 # Remove SSH lock when done (if using lock)

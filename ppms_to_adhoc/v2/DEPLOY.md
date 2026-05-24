@@ -114,7 +114,7 @@ Open `/oracle/ppms_to_adhoc/ppms_to_adhoc.conf` on **both servers** and verify:
 | `NFS_PATH_PPMS` | `/net/dru112c/dba_data/RAMIN/PPMS3P` | Must be accessible from dru110a |
 | `NFS_PATH_ADHOC` | `/net/dru112c/dba_data/RAMIN/PPMS3P` | Must be accessible from t1u904 |
 | `MAIL_DBA` | `isdcdba@mtnirancell.ir` | DBA distribution list |
-| `LOCK_MAX_WAIT_HOURS` | `12` | Adjust if exports take longer |
+| `LOCK_MAX_WAIT_HOURS` | `16` | Adjust if exports take longer |
 
 ## Step 6: Dry run (manual test)
 
@@ -281,7 +281,7 @@ To **add a new table** to the pipeline:
 3. Add the table's DDL to `sql/create_tables.sql`
 4. Add indexes to `sql/create_indexes_1.sql` or `sql/create_indexes_2.sql`
 5. If the table has PII columns, add to `PII_TABLES` array
-6. Update `EXPECTED_DUMP_COUNT` if the table produces multiple dump files
+6. Adjust `MIN_DUMP_COUNT` in conf if the new baseline dump count changes
 
 To **remove a table**: reverse the above (remove from arrays, comment out DDL).
 

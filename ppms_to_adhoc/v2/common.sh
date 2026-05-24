@@ -4,6 +4,11 @@
 # Source this after ppms_to_adhoc.conf
 #
 
+# Epoch seconds (Solaris 10 date doesn't support %s)
+epoch() {
+    nawk 'BEGIN { srand(); print srand() }'
+}
+
 # Timestamp for log messages
 ts() {
     date "+%Y-%m-%d %H:%M:%S"
@@ -86,27 +91,59 @@ remove_lock() {
 # Signal files live on the shared NFS directory visible to both servers.
 # Each script uses its own NFS_PATH_* variable as the base directory.
 
-# Mark export as started (removes any previous done signal)
+# Mark export as started (removes any previous done/failed signals)
 nfs_signal_start() {
     local _dir="$1"
-    rm -f "${_dir}/${NFS_SIGNAL_DONE}"
+    rm -f "${_dir}/${NFS_SIGNAL_DONE}" "${_dir}/${NFS_SIGNAL_FAILED}"
     echo "$(date +%Y%m%d) started pid=$$ at $(date +%H:%M:%S)" > "${_dir}/${NFS_SIGNAL_RUNNING}"
+    chmod 644 "${_dir}/${NFS_SIGNAL_RUNNING}" 2>/dev/null
     log_info "NFS signal: export running (${_dir}/${NFS_SIGNAL_RUNNING})"
 }
 
-# Mark export as completed successfully
+# Mark export as completed successfully, include manifest of exported tables
 nfs_signal_done() {
     local _dir="$1"
     rm -f "${_dir}/${NFS_SIGNAL_RUNNING}"
-    echo "$(date +%Y%m%d) completed pid=$$ at $(date +%H:%M:%S)" > "${_dir}/${NFS_SIGNAL_DONE}"
+    {
+        echo "$(date +%Y%m%d) completed pid=$$ at $(date +%H:%M:%S)"
+        echo "TABLES_EXPORTED:"
+        ls -1 "${_dir}"/PREPAID_*.dmp 2>/dev/null | sed 's|.*/||' | sort
+        echo "DUMP_COUNT=$(ls -1 "${_dir}"/PREPAID_*.dmp 2>/dev/null | wc -l | tr -d ' ')"
+    } > "${_dir}/${NFS_SIGNAL_DONE}"
+    chmod 644 "${_dir}/${NFS_SIGNAL_DONE}" 2>/dev/null
     log_info "NFS signal: export done (${_dir}/${NFS_SIGNAL_DONE})"
 }
 
-# Remove running signal on failure (does NOT create done signal)
+# Remove running signal on failure and write reason for early import abort
 nfs_signal_fail() {
     local _dir="$1"
+    local _reason="${2:-unknown failure}"
     rm -f "${_dir}/${NFS_SIGNAL_RUNNING}"
-    log_info "NFS signal: export failed, running signal removed"
+    {
+        echo "$(date +%Y%m%d) failed pid=$$ at $(date +%H:%M:%S)"
+        echo "REASON: ${_reason}"
+    } > "${_dir}/${NFS_SIGNAL_FAILED}"
+    chmod 644 "${_dir}/${NFS_SIGNAL_FAILED}" 2>/dev/null
+    log_info "NFS signal: export failed — ${_reason}"
+}
+
+# Check if export failed today. Returns 0 if failed, 1 if not.
+# Sets NFS_FAIL_REASON variable with the failure reason.
+nfs_check_failed() {
+    local _dir="$1"
+    local _today="$2"  # YYYYMMDD
+    if [ -f "${_dir}/${NFS_SIGNAL_FAILED}" ]; then
+        if [ ! -r "${_dir}/${NFS_SIGNAL_FAILED}" ]; then
+            log_error "NFS failed signal exists but is not readable: ${_dir}/${NFS_SIGNAL_FAILED}"
+            return 1
+        fi
+        local _sig_date=$(awk 'NR==1{print $1; exit}' "${_dir}/${NFS_SIGNAL_FAILED}" 2>/dev/null)
+        if [ "${_sig_date}" = "${_today}" ]; then
+            NFS_FAIL_REASON=$(grep '^REASON:' "${_dir}/${NFS_SIGNAL_FAILED}" 2>/dev/null | sed 's/^REASON: //')
+            return 0
+        fi
+    fi
+    return 1
 }
 
 # Check if export completed today. Returns 0 if done, 1 if not.
@@ -114,7 +151,11 @@ nfs_check_done() {
     local _dir="$1"
     local _today="$2"  # YYYYMMDD
     if [ -f "${_dir}/${NFS_SIGNAL_DONE}" ]; then
-        local _sig_date=$(awk '{print $1}' "${_dir}/${NFS_SIGNAL_DONE}" 2>/dev/null)
+        if [ ! -r "${_dir}/${NFS_SIGNAL_DONE}" ]; then
+            log_error "NFS done signal exists but is not readable: ${_dir}/${NFS_SIGNAL_DONE}"
+            return 1
+        fi
+        local _sig_date=$(awk 'NR==1{print $1; exit}' "${_dir}/${NFS_SIGNAL_DONE}" 2>/dev/null)
         if [ "${_sig_date}" = "${_today}" ]; then
             return 0
         fi
@@ -128,15 +169,7 @@ nfs_check_running() {
     [ -f "${_dir}/${NFS_SIGNAL_RUNNING}" ]
 }
 
-# Check export/import logs for errors
-# Usage: check_logs_for_errors "/path/to/logs" "prefix"
-# Returns 0 if errors found, 1 if clean
-check_logs_for_errors() {
-    _log_dir="$1"
-    _prefix="$2"
-    egrep -il 'ORA-|failed|error' "${_log_dir}/${_prefix}"*.log 2>/dev/null
-    return $?
-}
+# check_logs_for_errors() removed — was unused; inline egrep used instead
 
 # Ensure directory exists
 ensure_dir() {

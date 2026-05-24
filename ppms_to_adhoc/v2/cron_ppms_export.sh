@@ -19,4 +19,4 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "$(date '+%Y-%m-%d %H:%M:%S') 1st of Jalali month detected. Starting export..."
-exec ${SCRIPT_DIR}/run_export.sh
+exec ${SCRIPT_DIR}/run_export.sh --no-lock

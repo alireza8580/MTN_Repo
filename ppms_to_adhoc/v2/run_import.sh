@@ -46,10 +46,10 @@ if [ "${WAIT_MODE}" = "skip" ]; then
 
 elif [ "${WAIT_MODE}" = "ssh" ]; then
     log_info "Waiting for export to complete (SSH lock on ${LOCK_HOST})..."
-    _wait_start=$(date +%s)
+    _wait_start=$(epoch)
     _max_wait=$((LOCK_MAX_WAIT_HOURS * 3600))
     while check_lock; do
-        _elapsed=$(( $(date +%s) - _wait_start ))
+        _elapsed=$(( $(epoch) - _wait_start ))
         if [ ${_elapsed} -ge ${_max_wait} ]; then
             log_error "Lock file still present after ${LOCK_MAX_WAIT_HOURS}h. Stale lock detected."
             send_mail "PPMS_IMPORT_FAILED" "Import aborted: lock file ${LOCK_FILE} on ${LOCK_HOST} still exists after ${LOCK_MAX_WAIT_HOURS} hours. Possible stale lock."
@@ -63,7 +63,7 @@ elif [ "${WAIT_MODE}" = "ssh" ]; then
 else
     # Default: NFS signal polling
     log_info "Waiting for export to complete (NFS signal on ${NFS_PATH_ADHOC})..."
-    _wait_start=$(date +%s)
+    _wait_start=$(epoch)
     _max_wait=$((LOCK_MAX_WAIT_HOURS * 3600))
     while true; do
         if nfs_check_done "${NFS_PATH_ADHOC}" "${DATE_TAG}"; then
@@ -71,7 +71,12 @@ else
             break
         fi
 
-        _elapsed=$(( $(date +%s) - _wait_start ))
+        # Check if export failed — log it but keep polling (someone may re-run export)
+        if nfs_check_failed "${NFS_PATH_ADHOC}" "${DATE_TAG}"; then
+            log_info "NFS signal: export failed today (${NFS_FAIL_REASON}). Continuing to poll in case export is re-run..."
+        fi
+
+        _elapsed=$(( $(epoch) - _wait_start ))
         if [ ${_elapsed} -ge ${_max_wait} ]; then
             log_error "No export done signal after ${LOCK_MAX_WAIT_HOURS}h."
             send_mail "PPMS_IMPORT_FAILED" "Import aborted: NFS export done signal not found after ${LOCK_MAX_WAIT_HOURS} hours.
@@ -90,26 +95,69 @@ Checked for date: ${DATE_TAG}"
 fi
 
 # ============================================================
-# Validate dump files
+# Validate export: check logs for ORA- errors and verify dump files exist
 # ============================================================
-cnt_dumps=$(find "${NFS_PATH_ADHOC}" -name "PREPAID_*.dmp" -mtime -${DUMP_MAX_AGE_DAYS} 2>/dev/null | wc -l)
-cnt_dumps=$(echo "${cnt_dumps}" | tr -d ' ')
+log_info "Validating export logs for errors..."
+_export_errors=$(egrep -ih 'ORA-' "${NFS_PATH_ADHOC}"/exp_PREPAID*.log 2>/dev/null | sort -u | head -20)
+if [ -n "${_export_errors}" ]; then
+    log_error "Export logs contain ORA- errors:"
+    log_error "${_export_errors}"
+    send_mail "PPMS_IMPORT_FAILED" "Import aborted: export logs contain ORA- errors.
 
-if [ "${cnt_dumps}" -lt "${EXPECTED_DUMP_COUNT}" ]; then
-    log_error "Dump file count ${cnt_dumps} is less than expected ${EXPECTED_DUMP_COUNT}"
-    send_mail "PPMS_IMPORT_FAILED" "Import aborted: dump file count is ${cnt_dumps}, expected >= ${EXPECTED_DUMP_COUNT}"
+Errors found:
+${_export_errors}
+
+Export logs at: ${NFS_PATH_ADHOC}/exp_PREPAID*.log"
     exit 1
 fi
+log_info "Export logs: no ORA- errors found"
 
-log_info "Dump file count: ${cnt_dumps} (expected >= ${EXPECTED_DUMP_COUNT}) - OK"
+cnt_dumps=$(find "${NFS_PATH_ADHOC}" -name "PREPAID_*.dmp" -mtime -${DUMP_MAX_AGE_DAYS} 2>/dev/null | wc -l)
+cnt_dumps=$(echo "${cnt_dumps}" | tr -d ' ')
+if [ "${cnt_dumps}" -lt "${MIN_DUMP_COUNT}" ]; then
+    log_error "Dump file count ${cnt_dumps} is less than minimum expected ${MIN_DUMP_COUNT}"
+    send_mail "PPMS_IMPORT_FAILED" "Import aborted: only ${cnt_dumps} dump files found (minimum: ${MIN_DUMP_COUNT}).
+Something went wrong with export — check export logs at ${NFS_PATH_ADHOC}/exp_PREPAID*.log"
+    exit 1
+fi
+log_info "Dump file count: ${cnt_dumps} (minimum: ${MIN_DUMP_COUNT}) - OK"
+
+# Compute dump size summary
+_dump_size=$(du -sk "${NFS_PATH_ADHOC}"/PREPAID_*.dmp 2>/dev/null | awk '{sum+=$1} END{if (sum>0) printf "%.1fG", sum/1048576; else print "N/A"}')
+_pipeline_start=$(epoch)
 
 # ============================================================
 # Phase 1: Drop and recreate tables
 # ============================================================
 log_info "Phase 1: Dropping and recreating REPORT tables..."
-send_mail "PPMS_IMPORT_STARTED" "Import pipeline started. Dump count: ${cnt_dumps}"
+_total_tables=$(( ${#HEAVY_TABLES[@]} + ${#LIGHT_TABLES[@]} ))
+send_mail "PPMS_IMPORT_STARTED" "Import pipeline started on ${ADHOC_HOST}.
 
-# Build dynamic DROP list from HEAVY + LIGHT (excluding SPECIAL) + extras
+Dump files: ${cnt_dumps} (size: ${_dump_size:-N/A})
+Tables: ${_total_tables}
+  Heavy: ${HEAVY_TABLES[*]}
+  Light: ${LIGHT_TABLES[*]}
+
+Phases: Drop/Create -> Import -> Validate -> PII cleanup -> Indexes -> Grants"
+
+# Build table name list for kill/drop/validate operations
+_target_tables=""
+_expected_tables=""
+for _table in "${HEAVY_TABLES[@]}" "${LIGHT_TABLES[@]}"; do
+    [ "${_table}" = "${SPECIAL_IMPORT_TABLE}" ] && continue
+    _tname=$(table_short_name "${_table}")
+    _target_tables="${_target_tables}'${_tname}',"
+    _expected_tables="${_expected_tables}'${_tname}',"
+done
+for _table in "${DROP_EXTRA_TABLES[@]}"; do
+    _tname=$(echo "${_table}" | sed 's/.*\.//')
+    _target_tables="${_target_tables}'${_tname}',"
+    _expected_tables="${_expected_tables}'${_tname}',"
+done
+_target_tables="${_target_tables%,}"
+_expected_tables="${_expected_tables%,}"
+
+# Build DROP SQL (reused each attempt)
 drop_sql=""
 for _table in "${HEAVY_TABLES[@]}" "${LIGHT_TABLES[@]}"; do
     [ "${_table}" = "${SPECIAL_IMPORT_TABLE}" ] && continue
@@ -124,23 +172,109 @@ BEGIN EXECUTE IMMEDIATE 'DROP TABLE ${_table} CASCADE CONSTRAINTS'; EXCEPTION WH
 /"
 done
 
-sqlplus -S / as sysdba <<EOSQL >> "${LOG_FILE}" 2>&1
+# Retry loop: kill sessions → drop → validate, up to 10 minutes
+DROP_MAX_WAIT=600  # seconds (10 minutes)
+DROP_RETRY_INTERVAL=30  # seconds between retries
+_drop_start=$(epoch)
+_drop_attempt=0
+_tables_dropped=false
+
+while true; do
+    _drop_attempt=$(( _drop_attempt + 1 ))
+    _drop_elapsed=$(( $(epoch) - _drop_start ))
+
+    # Step 1: Kill sessions locking/accessing target tables
+    log_info "Drop attempt ${_drop_attempt}: killing sessions on REPORT tables..."
+    sqlplus -S / as sysdba <<EOSQL >> "${LOG_FILE}" 2>&1
+SET SERVEROUTPUT ON
+SET FEEDBACK OFF
+DECLARE
+    v_cnt NUMBER := 0;
+BEGIN
+    FOR r IN (SELECT DISTINCT s.sid, s.serial#
+              FROM v\$locked_object lo
+              JOIN v\$session s ON s.sid = lo.session_id
+              JOIN dba_objects o ON o.object_id = lo.object_id
+              WHERE o.owner = 'REPORT'
+                AND o.object_name IN (${_target_tables})) LOOP
+        BEGIN
+            EXECUTE IMMEDIATE 'ALTER SYSTEM KILL SESSION ''' || r.sid || ',' || r.serial# || ''' IMMEDIATE';
+            v_cnt := v_cnt + 1;
+        EXCEPTION WHEN OTHERS THEN NULL;
+        END;
+    END LOOP;
+    FOR r IN (SELECT DISTINCT s.sid, s.serial#
+              FROM v\$access a
+              JOIN v\$session s ON s.sid = a.sid
+              WHERE a.owner = 'REPORT'
+                AND a.type = 'TABLE'
+                AND a.object IN (${_target_tables})) LOOP
+        BEGIN
+            EXECUTE IMMEDIATE 'ALTER SYSTEM KILL SESSION ''' || r.sid || ',' || r.serial# || ''' IMMEDIATE';
+            v_cnt := v_cnt + 1;
+        EXCEPTION WHEN OTHERS THEN NULL;
+        END;
+    END LOOP;
+    IF v_cnt > 0 THEN
+        DBMS_OUTPUT.PUT_LINE('Attempt ${_drop_attempt}: killed ' || v_cnt || ' session(s).');
+    END IF;
+END;
+/
+EXIT;
+EOSQL
+
+    sleep 5
+
+    # Step 2: Attempt DROP
+    log_info "Drop attempt ${_drop_attempt}: dropping tables..."
+    sqlplus -S / as sysdba <<EOSQL >> "${LOG_FILE}" 2>&1
+WHENEVER SQLERROR EXIT SQL.SQLCODE
 SET ECHO OFF
 SET FEEDBACK OFF
 SET PAGESIZE 0
 ${drop_sql}
 EXIT;
 EOSQL
+    _drop_rc=$?
 
-if [ $? -ne 0 ]; then
-    log_error "Failed to drop tables"
-    send_mail "PPMS_IMPORT_FAILED" "Failed during table drop phase"
+    # Step 3: Validate — check which tables still exist
+    _stale_tables=$(sqlplus -S / as sysdba <<EOSQL
+SET ECHO OFF FEEDBACK OFF PAGESIZE 0 HEADING OFF
+SELECT table_name FROM dba_tables
+WHERE owner = 'REPORT' AND table_name IN (${_expected_tables});
+EXIT;
+EOSQL
+)
+    _stale_tables=$(echo "${_stale_tables}" | tr -d ' ' | grep -v '^$')
+
+    if [ -z "${_stale_tables}" ]; then
+        log_info "All tables dropped successfully (attempt ${_drop_attempt}, elapsed $((${_drop_elapsed}))s)"
+        _tables_dropped=true
+        break
+    fi
+
+    # Tables still exist — check if we have time to retry
+    if [ ${_drop_elapsed} -ge ${DROP_MAX_WAIT} ]; then
+        log_error "Tables NOT dropped after ${_drop_attempt} attempts (${DROP_MAX_WAIT}s): ${_stale_tables}"
+        break
+    fi
+
+    log_info "Tables still locked (attempt ${_drop_attempt}): ${_stale_tables} — retrying in ${DROP_RETRY_INTERVAL}s..."
+    sleep ${DROP_RETRY_INTERVAL}
+done
+
+if [ "${_tables_dropped}" != "true" ]; then
+    send_mail "PPMS_IMPORT_FAILED" "Phase 1 ABORT: could not drop these REPORT tables after ${_drop_attempt} attempts (${DROP_MAX_WAIT}s):
+${_stale_tables}
+
+Importing into tables with existing data+indexes would be catastrophically slow.
+Fix: kill sessions locking these tables, then re-run."
     exit 1
 fi
 
-log_info "Tables dropped. Running DDL creation..."
+log_info "All tables dropped successfully. Running DDL creation..."
 
-# Run the table creation SQL (this is the big DDL file)
+# Step 4: Create tables
 sqlplus -S / as sysdba @"${SQL_DIR}/create_tables.sql" >> "${LOG_FILE}" 2>&1
 
 if [ $? -ne 0 ]; then
@@ -149,7 +283,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# Set all tables to NOLOGGING for faster import (skip SPECIAL - uses REPLACE)
+# Step 5: Set NOLOGGING for faster bulk import (skip SPECIAL - uses REPLACE)
 nolog_sql=""
 for _table in "${HEAVY_TABLES[@]}" "${LIGHT_TABLES[@]}"; do
     [ "${_table}" = "${SPECIAL_IMPORT_TABLE}" ] && continue
@@ -159,9 +293,16 @@ ALTER TABLE ${_rtable} NOLOGGING;"
 done
 
 sqlplus -S / as sysdba <<EOSQL >> "${LOG_FILE}" 2>&1
+WHENEVER SQLERROR EXIT SQL.SQLCODE
 ${nolog_sql}
 EXIT;
 EOSQL
+
+if [ $? -ne 0 ]; then
+    log_error "Failed to set NOLOGGING on tables"
+    send_mail "PPMS_IMPORT_FAILED" "Failed to set NOLOGGING on REPORT tables. Check for locked objects."
+    exit 1
+fi
 
 log_info "Phase 1 complete: Tables recreated with NOLOGGING"
 
@@ -169,7 +310,12 @@ log_info "Phase 1 complete: Tables recreated with NOLOGGING"
 # Phase 2: Import data (parallel streams)
 # ============================================================
 log_info "Phase 2: Importing data..."
-send_mail "PPMS_IMPORT_DATA_LOADING" "Data import phase started"
+_import_data_start=$(epoch)
+send_mail "PPMS_IMPORT_DATA_LOADING" "Data import phase started on ${ADHOC_HOST}.
+
+Streams:
+  Heavy (parallel): ${HEAVY_TABLES[*]}
+  Light (sequential): ${LIGHT_TABLES[*]}"
 
 # Import function
 do_import() {
@@ -221,7 +367,7 @@ do_import_special() {
         directory=${ORA_DIR_IMPORT} \
         DUMPFILE="${_schema}_${_tname}.dmp" \
         TABLES="${_table}" \
-        logfile="imp_${_schema}_${_tname}_${DATE_TAG}.log" \
+        logfile="imp_${_schema}_${_tname}.log" \
         REMAP_SCHEMA=${_schema}:REPORT \
         TABLE_EXISTS_ACTION=REPLACE \
         EXCLUDE=GRANT
@@ -268,11 +414,13 @@ wait ${pid_light}
 rc_light=$?
 
 if [ ${rc_heavy} -ne 0 ] || [ ${rc_light} -ne 0 ]; then
+    _import_data_elapsed=$(( ($(epoch) - _import_data_start) / 60 ))
     log_error "Import failed (heavy=${rc_heavy}, light=${rc_light}). ABORTING pipeline."
     # Extract actual ORA- errors from import logs for the email
     _error_detail=$(egrep -h 'ORA-' "${NFS_PATH_ADHOC}"/imp_PREPAID*.log 2>/dev/null | sort -u | head -30)
     _failed_files=$(egrep -il 'ORA-|failed' "${NFS_PATH_ADHOC}"/imp_PREPAID*.log 2>/dev/null)
-    send_mail "PPMS_IMPORT_FAILED" "Import data phase failed (heavy=${rc_heavy}, light=${rc_light}).
+    send_mail "PPMS_IMPORT_FAILED" "Import data phase failed on ${ADHOC_HOST} (heavy=${rc_heavy}, light=${rc_light}).
+Elapsed: ${_import_data_elapsed} minutes
 Pipeline ABORTED before index creation to avoid wasting time on broken data.
 
 Files with errors:
@@ -285,7 +433,8 @@ Full logs at: ${NFS_PATH_ADHOC}/imp_PREPAID*.log"
     exit 1
 fi
 
-log_info "Phase 2 complete: Data import finished"
+_import_data_elapsed=$(( ($(epoch) - _import_data_start) / 60 ))
+log_info "Phase 2 complete: Data import finished (${_import_data_elapsed} minutes)"
 
 # ============================================================
 # Phase 2b: Row count validation (catch partial imports)
@@ -350,12 +499,13 @@ log_info "Phase 3 complete: PII columns set to UNUSED"
 # Phase 4: Create indexes (parallel streams)
 # ============================================================
 log_info "Phase 4: Creating indexes..."
-send_mail "PPMS_INDEX_CREATION_STARTED" "Index creation phase started"
+_index_start=$(epoch)
+send_mail "PPMS_INDEX_CREATION_STARTED" "Index creation phase started on ${ADHOC_HOST}"
 
-sqlplus / as sysdba @"${SQL_DIR}/create_indexes_1.sql" &
+sqlplus / as sysdba @"${SQL_DIR}/create_indexes_1.sql" >> "${LOG_DIR_ADHOC}/index_stream1_${DATE_TAG}.log" 2>&1 &
 pid_idx1=$!
 
-sqlplus / as sysdba @"${SQL_DIR}/create_indexes_2.sql" &
+sqlplus / as sysdba @"${SQL_DIR}/create_indexes_2.sql" >> "${LOG_DIR_ADHOC}/index_stream2_${DATE_TAG}.log" 2>&1 &
 pid_idx2=$!
 
 wait ${pid_idx1}
@@ -367,8 +517,13 @@ if [ ${rc_idx1} -ne 0 ] || [ ${rc_idx2} -ne 0 ]; then
     log_error "Some index creation failed (stream1=${rc_idx1}, stream2=${rc_idx2})"
 fi
 
-send_mail "PPMS_INDEX_CREATION_FINISHED" "Index creation completed"
-log_info "Phase 4 complete: Indexes created"
+_index_elapsed=$(( ($(epoch) - _index_start) / 60 ))
+send_mail "PPMS_INDEX_CREATION_FINISHED" "Index creation completed on ${ADHOC_HOST}.
+
+Elapsed: ${_index_elapsed} minutes
+Stream 1 rc: ${rc_idx1}
+Stream 2 rc: ${rc_idx2}"
+log_info "Phase 4 complete: Indexes created (${_index_elapsed} minutes)"
 
 # ============================================================
 # Phase 5: Post-processing
@@ -382,13 +537,31 @@ log_info "Phase 5 complete"
 # ============================================================
 # Final status
 # ============================================================
+_pipeline_elapsed=$(( ($(epoch) - _pipeline_start) / 60 ))
+
+# Build row count summary for email
+_rowcount_summary=""
+while IFS='=' read -r _tbl _cnt; do
+    [ -z "${_tbl}" ] && continue
+    _cnt=$(echo "${_cnt}" | tr -d ' ')
+    _rowcount_summary="${_rowcount_summary}  ${_tbl}: ${_cnt}
+"
+done <<< "${_rowcount_out}"
+
 # Check import logs for errors
 error_logs=$(egrep -il 'ORA-|failed' "${NFS_PATH_ADHOC}"/imp_PREPAID*.log 2>/dev/null)
 
 if [ -n "${error_logs}" ]; then
     log_error "Import pipeline completed WITH ERRORS"
     _error_detail=$(egrep -h 'ORA-' ${error_logs} 2>/dev/null | sort -u | head -30)
-    send_mail "PPMS_IMPORT_FAILED" "Import completed with errors.
+    send_mail "PPMS_IMPORT_FAILED" "Import completed with errors on ${ADHOC_HOST}.
+
+Total elapsed: ${_pipeline_elapsed} minutes
+  Data import: ${_import_data_elapsed} min
+  Index creation: ${_index_elapsed} min
+
+Row counts:
+${_rowcount_summary:-not available}
 
 Failed log files:
 ${error_logs}
@@ -400,14 +573,31 @@ Full logs at: ${NFS_PATH_ADHOC}/imp_PREPAID*.log"
     echo "FAILED IMPORT at $(date +%Y/%m/%d_%H:%M:%S)" >> "${LOG_FILE}"
     exit 1
 else
-    log_info "Import pipeline completed successfully"
+    log_info "Import pipeline completed successfully (${_pipeline_elapsed} minutes total)"
 
     # Clean up dump files after successful import
     log_info "Removing dump files from ${NFS_PATH_ADHOC}/"
     rm -f "${NFS_PATH_ADHOC}"/PREPAID_*.dmp
 
-    send_mail_to "${MAIL_ALIREZA}" "PPMS_IMPORT_COMPLETED" "Import pipeline completed successfully."
-    send_mail "PPMS_IMPORT_COMPLETED" "Full pipeline completed successfully."
+    send_mail_to "${MAIL_ALIREZA}" "PPMS_IMPORT_COMPLETED" "Import pipeline completed successfully on ${ADHOC_HOST}.
+
+Total elapsed: ${_pipeline_elapsed} minutes
+  Data import: ${_import_data_elapsed} min
+  Index creation: ${_index_elapsed} min
+
+Row counts:
+${_rowcount_summary:-not available}"
+
+    send_mail "PPMS_IMPORT_COMPLETED" "Full pipeline completed successfully on ${ADHOC_HOST}.
+
+Total elapsed: ${_pipeline_elapsed} minutes
+  Data import: ${_import_data_elapsed} min
+  Index creation: ${_index_elapsed} min
+Dump files: ${cnt_dumps}
+
+Row counts:
+${_rowcount_summary:-not available}"
+
     echo "Finished IMPORT at $(date +%Y/%m/%d_%H:%M:%S)" >> "${LOG_FILE}"
 fi
 
