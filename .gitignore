@@ -19,3 +19,6 @@ daily_attendance_*.csv
 
 # Symlink
 MTN_Repo
+discord/idle_time_users.json
+discord/voice_status.json
+discord/voice_time_database.json
