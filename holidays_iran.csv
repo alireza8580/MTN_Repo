@@ -1,0 +1,30 @@
+# Iranian official public holidays (source: emrooz.app/en/holidays/1405, University of Tehran Calendar Centre).
+# Weekends (Thursday/Friday) are handled in code and are NOT listed here.
+# Add a row per holiday; only the gregorian column is read. Lunar dates shift ~11 days
+# earlier each Persian year, so a new list is needed for 1406.
+gregorian,jalali,name
+2026-03-21,1405-01-01,Nowruz / Eid al-Fitr
+2026-03-22,1405-01-02,Nowruz / Eid al-Fitr Holiday
+2026-03-23,1405-01-03,Nowruz
+2026-03-24,1405-01-04,Nowruz
+2026-04-01,1405-01-12,Islamic Republic of Iran Day
+2026-04-02,1405-01-13,Sizdah Bedar (Nature Day)
+2026-04-14,1405-01-25,Martyrdom of Imam Ja'far al-Sadiq
+2026-05-27,1405-03-06,Eid al-Adha
+2026-06-04,1405-03-14,Demise of Imam Khomeini / Eid al-Ghadir Khumm
+2026-06-05,1405-03-15,15 Khordad Uprising
+2026-06-24,1405-04-03,Tasua of Hussain
+2026-06-25,1405-04-04,Ashura of Hussain
+2026-08-04,1405-05-13,Arbaeen of Hussain
+2026-08-12,1405-05-21,Demise of the Holy Prophet & Martyrdom of Imam Hasan
+2026-08-21,1405-05-30,Martyrdom of Imam Hasan al-Askari
+2026-08-30,1405-06-08,Birth of the Holy Prophet & Imam Ja'far al-Sadiq
+2026-11-13,1405-08-22,Martyrdom of Fatimah al-Zahra
+2026-12-22,1405-10-01,Birth of Imam Ali
+2027-01-05,1405-10-15,Mab'ath of the Holy Prophet
+2027-01-23,1405-11-03,Birth of Imam Mahdi
+2027-02-11,1405-11-22,Victory of the Islamic Revolution
+2027-02-28,1405-12-09,Martyrdom of Imam Ali
+2027-03-10,1405-12-19,Eid al-Fitr
+2027-03-11,1405-12-20,Eid al-Fitr Holiday
+2027-03-20,1405-12-29,Nationalization of the Iranian Oil Industry

@@ -9,12 +9,18 @@ from datetime import datetime
 import csv
 import jdatetime
 
+from iran_calendar import non_working_reason
+
 # Exchange Web Services
-from exchangelib import Credentials, Account, Configuration, DELEGATE, Message, Mailbox, FileAttachment, HTMLBody
+from exchangelib import Credentials, Account, Configuration, DELEGATE, NTLM, Message, Mailbox, FileAttachment, HTMLBody
 
 # === CONFIG ===
+# Mail is sent from the DBA team lead's mailbox (maryam.mare). Exchange has Basic
+# auth disabled, so the login must be the NTLM domain form DOMAIN\samaccountname.
 EWS_SERVER = os.environ.get('EWS_SERVER', 'mail.mtnirancell.ir')
-EWS_EMAIL = os.environ.get('EWS_EMAIL', 'alireza.aghaja@mtnirancell.ir')
+EWS_DOMAIN = os.environ.get('EWS_DOMAIN', 'mtnirancell.ir')
+EWS_USER = os.environ.get('EWS_USER', 'maryam.mare')
+EWS_EMAIL = os.environ.get('EWS_EMAIL', 'maryam.mare@mtnirancell.ir')
 EWS_PASSWORD = os.environ.get('SMTP_PASSWORD', '')  # Use same env var
 
 # Recipients
@@ -88,8 +94,8 @@ def get_ews_account():
         return None
     
     try:
-        credentials = Credentials(EWS_EMAIL, EWS_PASSWORD)
-        config = Configuration(server=EWS_SERVER, credentials=credentials)
+        credentials = Credentials(f"{EWS_DOMAIN}\\{EWS_USER}", EWS_PASSWORD)
+        config = Configuration(server=EWS_SERVER, credentials=credentials, auth_type=NTLM)
         account = Account(
             primary_smtp_address=EWS_EMAIL,
             config=config,
@@ -562,20 +568,16 @@ def main():
     parser.add_argument('--test', action='store_true', help='Test mode (exclude amirbahram)')
     parser.add_argument('--prod', action='store_true', help='Production mode (include all recipients)')
     parser.add_argument('--monthly', action='store_true', help='Send monthly report (adds BCC to manager)')
-    parser.add_argument('--force', action='store_true', help='Force send even on weekends (Thu/Fri)')
+    parser.add_argument('--force', action='store_true', help='Force send even on weekends (Thu/Fri) and Iranian holidays')
     args = parser.parse_args()
     
     date_str = args.date or datetime.now().strftime('%Y-%m-%d')
     test_mode = not args.prod  # Default to test mode
     
-    # Check if today is a weekend (Thursday=3, Friday=4 in Iran)
-    from datetime import datetime as dt
-    report_date = dt.strptime(date_str, '%Y-%m-%d')
-    weekday = report_date.weekday()  # Monday=0, Sunday=6
-    is_weekend = weekday in [3, 4]  # Thursday=3, Friday=4
-    
-    if is_weekend and not args.force:
-        print(f"⏭️  {date_str} is a weekend (Thu/Fri). Skipping email.")
+    # Skip weekends (Thu/Fri) and Iranian official holidays - see holidays_iran.csv
+    off_reason = non_working_reason(date_str)
+    if off_reason and not args.force:
+        print(f"⏭️  {date_str} is not a working day ({off_reason}). Skipping email.")
         print("Use --force to send anyway.")
         sys.exit(0)
     
