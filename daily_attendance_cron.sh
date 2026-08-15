@@ -21,10 +21,12 @@ if [ -d "/app" ] && [ -f "/app/attendance_tracker.py" ]; then
     LOG_DIR="/app/data/logs"
     VENV_PATH=""  # No venv in Docker
 else
-    SCRIPT_DIR="/root/infrastructure/scripts"
-    DISCORD_DIR="/root/infrastructure/scripts/discord"
-    LOG_DIR="/root/infrastructure/attendance_reports"
-    VENV_PATH="/root/infrastructure/venv"
+    # Overridable so the pipeline can run outside the original /root layout.
+    APP_BASE_DIR="${APP_BASE_DIR:-/root/infrastructure}"
+    SCRIPT_DIR="${SCRIPTS_DIR:-$APP_BASE_DIR/scripts}"
+    DISCORD_DIR="$SCRIPT_DIR/discord"
+    LOG_DIR="${LOG_DIR:-$APP_BASE_DIR/attendance_reports}"
+    VENV_PATH="${VENV_PATH:-$APP_BASE_DIR/venv}"
 fi
 
 # Create log directory if needed
@@ -106,6 +108,6 @@ echo "Completed at $(date '+%H:%M:%S')"
 if [ -d "/app" ]; then
     echo "CSV file: /app/data/attendance_reports/daily_attendance.csv"
 else
-    echo "CSV file: /root/infrastructure/attendance_reports/daily_attendance.csv"
+    echo "CSV file: $LOG_DIR/daily_attendance.csv"
 fi
 echo "=========================================="

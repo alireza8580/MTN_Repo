@@ -48,7 +48,7 @@ BOT_TOKEN = os.environ.get('DISCORD_BOT_TOKEN', '')
 GUILD_ID = int(os.environ.get('DISCORD_GUILD_ID', '0'))
 
 # Data storage
-DATA_DIR = Path('/root/infrastructure/scripts/discord')
+DATA_DIR = Path(os.environ.get('SCRIPTS_DIR', '/root/infrastructure/scripts')) / 'discord'
 IDLE_DATA_FILE = DATA_DIR / 'idle_time_database.json'
 DAILY_REPORT_FILE = DATA_DIR / 'daily_idle_report.json'
 
@@ -128,7 +128,7 @@ user_info = {}  # {user_id: {'name': str, 'display_name': str}}
 user_work_hours = {}  # {user_id: {'check_in': datetime, 'check_out': datetime}}
 
 # SQLite attendance database path
-ATTENDANCE_DB_PATH = Path('/root/infrastructure/attendance_reports/attendance.db')
+ATTENDANCE_DB_PATH = Path(os.environ.get('APP_BASE_DIR', '/root/infrastructure')) / 'attendance_reports' / 'attendance.db'
 
 # Standard name mapping (Discord display name -> Standard name for SQLite)
 STANDARD_NAME_MAP = {

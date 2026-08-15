@@ -9,8 +9,9 @@ import os
 from datetime import datetime
 
 # Database location
-DB_PATH = os.environ.get('ATTENDANCE_DB', '/root/infrastructure/attendance_reports/attendance.db')
-CSV_PATH = os.environ.get('ATTENDANCE_CSV', '/root/infrastructure/attendance_reports/daily_attendance.csv')
+BASE_DIR = os.environ.get('APP_BASE_DIR', '/root/infrastructure')
+DB_PATH = os.environ.get('ATTENDANCE_DB', os.path.join(BASE_DIR, 'attendance_reports/attendance.db'))
+CSV_PATH = os.environ.get('ATTENDANCE_CSV', os.path.join(BASE_DIR, 'attendance_reports/daily_attendance.csv'))
 
 # Schema version for future migrations
 SCHEMA_VERSION = 1
@@ -335,7 +336,7 @@ def import_holidays_csv(csv_path=None):
     import jdatetime
     
     if csv_path is None:
-        csv_path = os.environ.get('HOLIDAY_SHIFT_FILE', '/root/infrastructure/holiday_shifts.csv')
+        csv_path = os.environ.get('HOLIDAY_SHIFT_FILE', os.path.join(BASE_DIR, 'holiday_shifts.csv'))
     
     if not os.path.exists(csv_path):
         print(f"ERROR: Holiday CSV file not found: {csv_path}")

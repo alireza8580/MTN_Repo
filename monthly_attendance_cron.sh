@@ -7,8 +7,9 @@
 
 set -e
 
-SCRIPT_DIR="/root/infrastructure/scripts"
-VENV_PATH="/root/infrastructure/venv"
+APP_BASE_DIR="${APP_BASE_DIR:-/root/infrastructure}"
+SCRIPT_DIR="${SCRIPTS_DIR:-$APP_BASE_DIR/scripts}"
+VENV_PATH="${VENV_PATH:-$APP_BASE_DIR/venv}"
 
 echo "=========================================="
 echo "Monthly Attendance Check - $(date '+%Y-%m-%d %H:%M:%S')"

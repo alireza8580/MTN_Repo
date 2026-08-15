@@ -31,7 +31,7 @@ except ImportError:
 
 # Configuration
 BOT_TOKEN = os.environ.get('DISCORD_BOT_TOKEN', '')
-EXPORT_DIR = Path('/root/infrastructure/discord_exports')
+EXPORT_DIR = Path(os.environ.get('DISCORD_EXPORT_DIR', '/root/infrastructure/discord_exports'))
 EXPORT_DIR.mkdir(exist_ok=True)
 
 # Bot setup with required intents
