@@ -13,7 +13,7 @@ import sys
 import json
 from datetime import datetime, timedelta
 from exchangelib import (
-    Credentials, Account, Configuration, DELEGATE, IMPERSONATION,
+    Credentials, Account, Configuration, DELEGATE, IMPERSONATION, NTLM,
     EWSDateTime, EWSTimeZone, UTC
 )
 from exchangelib.folders import SentItems
@@ -21,15 +21,20 @@ from exchangelib.errors import UnauthorizedError
 import pytz
 
 # === CONFIG ===
+# Mailbox is the DBA team lead's (maryam.mare). Exchange has Basic auth disabled,
+# so the login must be the NTLM domain form DOMAIN\samaccountname.
 EWS_SERVER = os.environ.get('EWS_SERVER', 'mail.mtnirancell.ir')
-EWS_EMAIL = os.environ.get('EWS_EMAIL', 'alireza.aghaja@mtnirancell.ir')
+EWS_DOMAIN = os.environ.get('EWS_DOMAIN', 'mtnirancell.ir')
+EWS_USER = os.environ.get('EWS_USER', 'maryam.mare')
+EWS_EMAIL = os.environ.get('EWS_EMAIL', 'maryam.mare@mtnirancell.ir')
 EWS_PASSWORD = os.environ.get('SMTP_PASSWORD', '')
 
 # DBA shared mailbox - most team emails go here
 DBA_SHARED_MAILBOX = '#ITSDCDBA@mtnirancell.ir'
 
 # Output directory for email exports
-EMAIL_EXPORT_DIR = os.environ.get('EMAIL_EXPORT_DIR', '/root/infrastructure/email_exports')
+BASE_DIR = os.environ.get('APP_BASE_DIR', '/root/infrastructure')
+EMAIL_EXPORT_DIR = os.environ.get('EMAIL_EXPORT_DIR', os.path.join(BASE_DIR, 'email_exports'))
 
 # Timezone for Iran
 IRAN_TZ = pytz.timezone('Asia/Tehran')
@@ -65,8 +70,8 @@ def get_my_account():
         return None
     
     try:
-        credentials = Credentials(EWS_EMAIL, EWS_PASSWORD)
-        config = Configuration(server=EWS_SERVER, credentials=credentials)
+        credentials = Credentials(f"{EWS_DOMAIN}\\{EWS_USER}", EWS_PASSWORD)
+        config = Configuration(server=EWS_SERVER, credentials=credentials, auth_type=NTLM)
         account = Account(
             primary_smtp_address=EWS_EMAIL,
             config=config,
@@ -89,15 +94,17 @@ def get_shared_mailbox_account(shared_email):
         return None
     
     try:
-        credentials = Credentials(EWS_EMAIL, EWS_PASSWORD)
-        config = Configuration(server=EWS_SERVER, credentials=credentials)
+        credentials = Credentials(f"{EWS_DOMAIN}\\{EWS_USER}", EWS_PASSWORD)
+        config = Configuration(server=EWS_SERVER, credentials=credentials, auth_type=NTLM)
         account = Account(
             primary_smtp_address=shared_email,
             config=config,
             autodiscover=False,
-            access_type=DELEGATE,
-            credentials=credentials
+            access_type=DELEGATE
         )
+        # Account() is lazy - touch a folder so a missing mailbox or a denied
+        # delegation fails here instead of much later at the call site.
+        account.inbox.total_count
         return account
     except Exception as e:
         print(f"ERROR connecting to shared mailbox {shared_email}: {e}")

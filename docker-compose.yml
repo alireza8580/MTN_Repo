@@ -62,7 +62,8 @@ services:
 # 1. Create .env file with:
 #    DISCORD_TOKEN=your_bot_token
 #    SMTP_PASSWORD=your_exchange_password
-#    EWS_EMAIL=alireza.aghaja@mtnirancell.ir
+#    EWS_EMAIL=maryam.mare@mtnirancell.ir
+#    EWS_USER=maryam.mare          (NTLM login, domain mtnirancell.ir)
 #
 # 2. Copy config files:
 #    cp ../MTN_standby_shift.csv ./MTN_standby_shift.csv

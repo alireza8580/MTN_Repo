@@ -11,18 +11,23 @@ import sys
 import csv
 from datetime import datetime, timedelta
 from exchangelib import (
-    Credentials, Account, Configuration, DELEGATE,
+    Credentials, Account, Configuration, DELEGATE, NTLM,
     EWSDateTime, EWSTimeZone
 )
 import pytz
 
 # === CONFIG ===
+# Mailbox is the DBA team lead's (maryam.mare). Exchange has Basic auth disabled,
+# so the login must be the NTLM domain form DOMAIN\samaccountname.
 EWS_SERVER = os.environ.get('EWS_SERVER', 'mail.mtnirancell.ir')
-EWS_EMAIL = os.environ.get('EWS_EMAIL', 'alireza.aghaja@mtnirancell.ir')
+EWS_DOMAIN = os.environ.get('EWS_DOMAIN', 'mtnirancell.ir')
+EWS_USER = os.environ.get('EWS_USER', 'maryam.mare')
+EWS_EMAIL = os.environ.get('EWS_EMAIL', 'maryam.mare@mtnirancell.ir')
 EWS_PASSWORD = os.environ.get('SMTP_PASSWORD', '')
 
 # Output directory
-EMAIL_DIR = os.environ.get('MTN_EMAIL_DIR', '/root/infrastructure/mtn_emails')
+BASE_DIR = os.environ.get('APP_BASE_DIR', '/root/infrastructure')
+EMAIL_DIR = os.environ.get('MTN_EMAIL_DIR', os.path.join(BASE_DIR, 'mtn_emails'))
 
 # Skip patterns (noise emails)
 SKIP_SENDERS = ['icare@', 'Oracle User', 'oracle@', 'root@']
@@ -36,8 +41,8 @@ def get_ews_account():
         return None
     
     try:
-        credentials = Credentials(EWS_EMAIL, EWS_PASSWORD)
-        config = Configuration(server=EWS_SERVER, credentials=credentials)
+        credentials = Credentials(f"{EWS_DOMAIN}\\{EWS_USER}", EWS_PASSWORD)
+        config = Configuration(server=EWS_SERVER, credentials=credentials, auth_type=NTLM)
         account = Account(
             primary_smtp_address=EWS_EMAIL,
             config=config,

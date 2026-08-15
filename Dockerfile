@@ -72,7 +72,9 @@ RUN mkdir -p /app/data/logs
 # Environment variables (override with docker-compose or -e)
 ENV DISCORD_TOKEN=""
 ENV SMTP_PASSWORD=""
-ENV EWS_EMAIL="alireza.aghaja@mtnirancell.ir"
+ENV EWS_EMAIL="maryam.mare@mtnirancell.ir"
+ENV EWS_USER="maryam.mare"
+ENV EWS_DOMAIN="mtnirancell.ir"
 ENV EWS_SERVER="mail.mtnirancell.ir"
 
 # Base directory for application paths (attendance_tracker.py uses this)

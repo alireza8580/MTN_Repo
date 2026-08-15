@@ -39,8 +39,10 @@ docker-compose logs -f
 | Variable | Description | Example |
 |----------|-------------|---------|
 | `DISCORD_TOKEN` | Discord bot token | Bot token from Discord Dev Portal |
-| `SMTP_PASSWORD` | Exchange/Outlook password | Your email password |
-| `EWS_EMAIL` | Exchange email address | alireza.aghaja@mtnirancell.ir |
+| `SMTP_PASSWORD` | Exchange password for `EWS_USER` | maryam.mare domain password |
+| `EWS_EMAIL` | Sender mailbox (SMTP address) | maryam.mare@mtnirancell.ir |
+| `EWS_USER` | NTLM login name | maryam.mare |
+| `EWS_DOMAIN` | NTLM domain | mtnirancell.ir |
 | `EWS_SERVER` | Exchange server | mail.mtnirancell.ir |
 | `TZ` | Timezone | Asia/Tehran |
 
