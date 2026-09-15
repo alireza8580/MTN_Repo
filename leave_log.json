@@ -1,6 +1,6 @@
 {
   "Erfan Heidari": {
-    "total_days": 4,
+    "total_days": 5,
     "requests": [
       {
         "date": "2025-12-22",
@@ -17,6 +17,10 @@
       {
         "date": "2026-02-24",
         "content": "<@736498592168280114> khanoom slm, baraye saat 14 ta 16 morakhasi mikhastam \nOkeye?"
+      },
+      {
+        "date": "2026-08-17",
+        "content": "Slm bakhshid hamoontor k sohbat kardim kesalat dashtam va dir morakhasi gereftam\nAlan behraram va fa"
       }
     ]
   },
@@ -126,7 +130,7 @@
     ]
   },
   "Yassin Alivand": {
-    "total_days": 2,
+    "total_days": 4,
     "requests": [
       {
         "date": "2026-02-14",
@@ -135,6 +139,14 @@
       {
         "date": "2026-02-24",
         "content": "مرخصی 6 اسفند"
+      },
+      {
+        "date": "2026-09-02",
+        "content": "مرخصی  ۱۱ شهریور"
+      },
+      {
+        "date": "2026-09-14",
+        "content": "مرخصی 23 شهریور"
       }
     ]
   }
