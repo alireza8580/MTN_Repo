@@ -22,3 +22,23 @@ MTN_Repo
 discord/idle_time_users.json
 discord/voice_status.json
 discord/voice_time_database.json
+
+# RFC archive: the submitted change requests carry internal MTNI hostnames and
+# personal mobile numbers. Keep the spreadsheets out of git; the runbook is tracked.
+RFCs/*.xlsx
+RFCs/*.XLSX
+RFCs/**/*.xlsx
+RFCs/**/*.XLSX
+
+# RCA archive: the incident root-cause documents carry internal MTNI hostnames,
+# log excerpts and ticket detail. Keep the documents out of git; the runbook is tracked.
+RCAs/*.docx
+RCAs/*.DOCX
+RCAs/*.doc
+RCAs/*.pdf
+RCAs/*.PDF
+RCAs/**/*.docx
+RCAs/**/*.DOCX
+RCAs/**/*.doc
+RCAs/**/*.pdf
+RCAs/**/*.PDF
