@@ -345,6 +345,26 @@ Base: `drop_nfc_production.xlsx`. `stop Apps/Jobs (App team)` → `bounce and dr
 Test plan: `there is no test plan`. Rollback: `there is no rollback plan` — the safety net is
 the backup, and it belongs in the risk cell.
 
+### 7.9 Read-load-only change: full export / dump of a production DB
+
+Base: `crm_swap_full_mongoexport_to_nfs.xlsx` (2026-09-16, CAT 3, PROD, no downtime), cloned from
+`NGMI DB Migration Dry Run - Night 1 (Dump & Restore Batch 1).xlsx`.
+
+Shape: `check NFS share on export hosts (10 min)` → one export row **per cluster**, each with the
+real driver command (`MODE=full … crm_export.sh`) and an honest multi-day duration, marked
+*"runs in parallel with lines …"* → `monitor load, stop if the app reports slowness` (command =
+the `pkill` that stops it) → `verify counts, hand over the path (2h)`. Window = the longest row,
+not the sum; say so in the Downtime note (`D12`). Rollback is two rows: `pkill` the export (nothing
+to revert on the DB) and `rm -rf` the partial output. `J18` says *no outage* **and** names the
+services that may slow down; `H24` carries the mitigation (parallelism cap, resumable ranges, can be
+stopped any time) and any data-quality caveat the requester already accepted in writing (balancer
+not stopped → possible missed/duplicated documents), quoting the mail date.
+
+Layout trap when cloning the NGMI workbook: its `Detail Plan` step rows are merged (`B4:B6`,
+`H4:H8` …) and `Rollback Plan!F8:F10` is merged — `openpyxl` refuses to write into a `MergedCell`,
+so unmerge those ranges first and copy row 4's `_style` onto the new rows. `Resource management`
+there starts at **row 5** (`A`=SN, `B`=name … `H`=end time), not row 8.
+
 ---
 
 ## 8. Boilerplate bank — reusable exact text
