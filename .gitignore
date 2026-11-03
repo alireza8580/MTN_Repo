@@ -42,3 +42,7 @@ RCAs/**/*.DOCX
 RCAs/**/*.doc
 RCAs/**/*.pdf
 RCAs/**/*.PDF
+
+# PLO archive: iCare New Infrastructure Request attachments (CI forms, topologies,
+# server lists) carry internal MTNI hostnames, IPs and names. Local reference only.
+PLOs/
